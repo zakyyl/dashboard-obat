@@ -5,6 +5,7 @@
     <h2 class="text-xl font-semibold mb-4">Grafik Stok Barang</h2>
 
     {{-- Dropdown Filter Jenis --}}
+    {{-- askdjka --}}
     <div class="mb-6">
         <form method="GET">
             <label for="jenis" class="mr-2 font-medium">Filter Jenis Barang:</label>
