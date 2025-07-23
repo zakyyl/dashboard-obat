@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Stok Obat Minimal')
+@section('title', 'Stok Obat Saat Ini')
 
 @section('content')
     <div class="container">
-        <h2 class="mb-4">📊 Grafik Stok Obat Minimal</h2>
+        <h2 class="mb-4">💊 Grafik Stok Obat Saat Ini</h2>
         <div class="card mb-4 shadow-sm">
             <div class="card-body">
                 <form method="GET" class="row gy-2 gx-3 align-items-center">
@@ -27,30 +27,32 @@
                 </form>
             </div>
         </div>
+
         <div class="card shadow-sm">
             <div class="card-body">
                 <div style="height: 400px;">
-                    <canvas id="stokChart"></canvas>
+                    <canvas id="stokSaatIniChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
+
     <script>
-        let stokChart;
+        let stokSaatIniChart;
 
         function createChart(labels, data) {
-            const ctx = document.getElementById('stokChart').getContext('2d');
-            if (stokChart) stokChart.destroy();
+            const ctx = document.getElementById('stokSaatIniChart').getContext('2d');
+            if (stokSaatIniChart) stokSaatIniChart.destroy();
 
-            stokChart = new Chart(ctx, {
+            stokSaatIniChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: 'Stok Minimal',
+                        label: 'Stok Saat Ini',
                         data: data,
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 1
                     }]
                 },
@@ -62,7 +64,7 @@
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Jumlah Stok Minimal'
+                                text: 'Jumlah Stok Saat Ini'
                             }
                         },
                         x: {
@@ -79,7 +81,7 @@
                         },
                         title: {
                             display: true,
-                            text: 'Grafik Stok Minimal per Barang'
+                            text: 'Grafik Stok Saat Ini per Barang'
                         },
                         tooltip: {
                             callbacks: {
@@ -92,10 +94,12 @@
                 }
             });
         }
+
         createChart(
             {!! json_encode($data->pluck('nama_brng')) !!},
-            {!! json_encode($data->pluck('stokminimal')) !!}
+            {!! json_encode($data->pluck('total_stok')) !!}
         );
+
         let debounceTimer;
         document.getElementById('search').addEventListener('input', function() {
             clearTimeout(debounceTimer);
@@ -103,11 +107,11 @@
 
             debounceTimer = setTimeout(() => {
                 if (keyword.length >= 2) {
-                    fetch(`{{ route('obat.search-obat') }}?q=${encodeURIComponent(keyword)}`)
+                    fetch(`{{ route('obat.search-obat-saat-ini') }}?q=${encodeURIComponent(keyword) }`)
                         .then(res => res.json())
                         .then(data => {
                             const labels = data.map(item => item.nama_brng);
-                            const stok = data.map(item => item.stokminimal);
+                            const stok = data.map(item => item.total_stok);
                             createChart(labels, stok);
                         });
                 }
