@@ -3,12 +3,13 @@
 @section('title', 'Stok Obat Saat Ini')
 
 @section('content')
-    <div class="container">
-        <h2 class="mb-4">💊 Grafik Stok Obat Saat Ini</h2>
+    <div class="container py-4"> {{-- Tambahkan padding atas/bawah untuk ruang --}}
+        <h2 class="mb-4 text-center">💊 Grafik Stok Obat Saat Ini</h2> {{-- Tambahkan text-center --}}
+
         <div class="card mb-4 shadow-sm">
             <div class="card-body">
                 <form method="GET" class="row gy-2 gx-3 align-items-center">
-                    <div class="col-auto">
+                    <div class="col-md-auto"> {{-- Gunakan col-md-auto agar lebih responsif --}}
                         <label for="jenis" class="form-label mb-0">Filter Jenis Barang:</label>
                         <select name="jenis" id="jenis" onchange="this.form.submit()" class="form-select">
                             <option value="">Semua Jenis</option>
@@ -20,7 +21,7 @@
                         </select>
                     </div>
 
-                    <div class="col-auto">
+                    <div class="col-md-auto"> {{-- Gunakan col-md-auto agar lebih responsif --}}
                         <label for="search" class="form-label mb-0">Cari Nama Obat:</label>
                         <input type="text" id="search" class="form-control" placeholder="Ketik nama obat...">
                     </div>
@@ -40,9 +41,21 @@
     <script>
         let stokSaatIniChart;
 
+        // Fungsi untuk mendapatkan warna tema saat ini dari variabel CSS
+        function getComputedThemeColors() {
+            const style = getComputedStyle(document.documentElement);
+            return {
+                bodyColor: style.getPropertyValue('--bs-body-color').trim(),
+                bodyBg: style.getPropertyValue('--bs-body-bg').trim(),
+                borderColor: style.getPropertyValue('--navbar-border').trim(), // Menggunakan border navbar untuk grid
+            };
+        }
+
         function createChart(labels, data) {
             const ctx = document.getElementById('stokSaatIniChart').getContext('2d');
             if (stokSaatIniChart) stokSaatIniChart.destroy();
+
+            const themeColors = getComputedThemeColors(); // Dapatkan warna secara dinamis
 
             stokSaatIniChart = new Chart(ctx, {
                 type: 'bar',
@@ -51,7 +64,7 @@
                     datasets: [{
                         label: 'Stok Saat Ini',
                         data: data,
-                        backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)', // Warna merah dengan sedikit transparansi
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 1
                     }]
@@ -64,24 +77,39 @@
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Jumlah Stok Saat Ini'
+                                text: 'Jumlah Stok Saat Ini',
+                                color: themeColors.bodyColor // Gunakan warna dinamis
+                            },
+                            ticks: {
+                                color: themeColors.bodyColor // Gunakan warna dinamis
+                            },
+                            grid: {
+                                color: themeColors.borderColor // Gunakan warna dinamis
                             }
                         },
                         x: {
                             ticks: {
                                 maxRotation: 90,
                                 minRotation: 45,
-                                autoSkip: false
+                                autoSkip: false,
+                                color: themeColors.bodyColor // Gunakan warna dinamis
+                            },
+                            grid: {
+                                color: themeColors.borderColor // Gunakan warna dinamis
                             }
                         }
                     },
                     plugins: {
                         legend: {
-                            position: 'top'
+                            position: 'top',
+                            labels: {
+                                color: themeColors.bodyColor // Gunakan warna dinamis
+                            }
                         },
                         title: {
                             display: true,
-                            text: 'Grafik Stok Saat Ini per Barang'
+                            text: 'Grafik Stok Saat Ini per Barang',
+                            color: themeColors.bodyColor // Gunakan warna dinamis
                         },
                         tooltip: {
                             callbacks: {
@@ -95,25 +123,51 @@
             });
         }
 
+        // Pembuatan grafik awal
         createChart(
             {!! json_encode($data->pluck('nama_brng')) !!},
             {!! json_encode($data->pluck('total_stok')) !!}
         );
 
+        // --- Pendengar Pembaruan Grafik untuk Dark Mode ---
+        // Awasi perubahan pada atribut 'data-bs-theme' dari elemen html
+        const observer = new MutationObserver((mutationsList) => {
+            for (const mutation of mutationsList) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'data-bs-theme') {
+                    // Buat ulang grafik saat tema berubah
+                    createChart(
+                        stokSaatIniChart.data.labels, // Gunakan label saat ini
+                        stokSaatIniChart.data.datasets[0].data // Gunakan data saat ini
+                    );
+                }
+            }
+        });
+
+        // Mulai mengamati elemen html untuk perubahan atribut
+        observer.observe(document.documentElement, { attributes: true });
+
+        // --- Logika Pencarian/Filter (sudah ada) ---
         let debounceTimer;
         document.getElementById('search').addEventListener('input', function() {
             clearTimeout(debounceTimer);
             const keyword = this.value;
 
             debounceTimer = setTimeout(() => {
-                if (keyword.length >= 2) {
-                    fetch(`{{ route('obat.search-obat-saat-ini') }}?q=${encodeURIComponent(keyword) }`)
-                        .then(res => res.json())
+                // Hanya ambil data jika keyword 2 karakter atau lebih, atau jika kosong untuk menampilkan semua
+                if (keyword.length >= 2 || keyword.length === 0) {
+                    fetch(`{{ route('obat.search-obat-saat-ini') }}?q=${encodeURIComponent(keyword)}&jenis={{ $jenisFilter }}`)
+                        .then(res => {
+                            if (!res.ok) {
+                                throw new Error('Network response was not ok ' + res.statusText);
+                            }
+                            return res.json();
+                        })
                         .then(data => {
                             const labels = data.map(item => item.nama_brng);
                             const stok = data.map(item => item.total_stok);
                             createChart(labels, stok);
-                        });
+                        })
+                        .catch(error => console.error('Error fetching search data:', error));
                 }
             }, 300);
         });

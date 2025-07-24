@@ -3,12 +3,13 @@
 @section('title', 'Stok Obat Minimal')
 
 @section('content')
-    <div class="container">
-        <h2 class="mb-4">📊 Grafik Stok Obat Minimal</h2>
+    <div class="container py-4">
+        <h2 class="mb-4 text-center">📊 Grafik Stok Obat Minimal & Saat Ini</h2>
+
         <div class="card mb-4 shadow-sm">
             <div class="card-body">
                 <form method="GET" class="row gy-2 gx-3 align-items-center">
-                    <div class="col-auto">
+                    <div class="col-md-auto">
                         <label for="jenis" class="form-label mb-0">Filter Jenis Barang:</label>
                         <select name="jenis" id="jenis" onchange="this.form.submit()" class="form-select">
                             <option value="">Semua Jenis</option>
@@ -20,96 +21,205 @@
                         </select>
                     </div>
 
-                    <div class="col-auto">
+                    <div class="col-md-auto">
                         <label for="search" class="form-label mb-0">Cari Nama Obat:</label>
                         <input type="text" id="search" class="form-control" placeholder="Ketik nama obat...">
                     </div>
                 </form>
             </div>
         </div>
+
         <div class="card shadow-sm">
             <div class="card-body">
-                <div style="height: 400px;">
-                    <canvas id="stokChart"></canvas>
+                <div id="stokChartContainer" style="height: 400px;">
+                    {{-- ApexCharts akan dirender di sini --}}
                 </div>
             </div>
         </div>
     </div>
+
     <script>
-        let stokChart;
+        let stokApexChart;
 
-        function createChart(labels, data) {
-            const ctx = document.getElementById('stokChart').getContext('2d');
-            if (stokChart) stokChart.destroy();
+        function getComputedThemeColors() {
+            const style = getComputedStyle(document.documentElement);
+            return {
+                bodyColor: style.getPropertyValue('--bs-body-color').trim(),
+                borderColor: style.getPropertyValue('--navbar-border').trim(),
+            };
+        }
 
-            stokChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Stok Minimal',
-                        data: data,
-                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1
-                    }]
+        function createApexChart(data) {
+            const themeColors = getComputedThemeColors();
+
+            // PASTIKAN data adalah array, bahkan jika kosong
+            // Jika data dari PHP di-json_encode sebagai objek kosong {}, ini akan jadi array kosong []
+            const dataArray = Array.isArray(data) ? data : Object.values(data || {});
+
+            const seriesData = dataArray.map(item => ({
+                x: item.nama_brng,
+                y: item.total_stok,
+                goals: [{
+                    name: 'Stok Minimal',
+                    value: item.stokminimal,
+                    strokeColor: '#FFD700', // Warna garis untuk stok minimal
+                }]
+            }));
+
+            const options = {
+                series: [{
+                    name: 'Stok Saat Ini',
+                    data: seriesData
+                }],
+                chart: {
+                    height: 400,
+                    type: 'bar',
+                    toolbar: {
+                        show: false
+                    },
+                    background: 'transparent',
+                    foreColor: themeColors.bodyColor
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: {
-                                display: true,
-                                text: 'Jumlah Stok Minimal'
-                            }
-                        },
-                        x: {
-                            ticks: {
-                                maxRotation: 90,
-                                minRotation: 45,
-                                autoSkip: false
-                            }
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '90%', // <--- NILAI INI YANG DIUBAH UNTUK MENEBALKAN BATANG
+                        endingShape: 'rounded'
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                stroke: {
+                    show: true,
+                    width: 2,
+                    colors: ['transparent']
+                },
+                xaxis: {
+                    type: 'category',
+                    labels: {
+                        rotate: -45,
+                        style: {
+                            colors: themeColors.bodyColor
                         }
                     },
-                    plugins: {
-                        legend: {
-                            position: 'top'
-                        },
-                        title: {
-                            display: true,
-                            text: 'Grafik Stok Minimal per Barang'
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.parsed.y + ' unit';
-                                }
-                            }
+                    axisBorder: {
+                        show: true,
+                        color: themeColors.borderColor
+                    },
+                    axisTicks: {
+                        show: true,
+                        color: themeColors.borderColor
+                    }
+                },
+                yaxis: {
+                    title: {
+                        text: 'Jumlah Stok',
+                        style: {
+                            colors: themeColors.bodyColor
+                        }
+                    },
+                    labels: {
+                        style: {
+                            colors: themeColors.bodyColor
+                        }
+                    },
+                    axisBorder: {
+                        show: true,
+                        color: themeColors.borderColor
+                    },
+                    axisTicks: {
+                        show: true,
+                        color: themeColors.borderColor
+                    },
+                    grid: {
+                        borderColor: themeColors.borderColor
+                    }
+                },
+                fill: {
+                    opacity: 1,
+                     colors: ['#28a745'] // <-- SAYA JUGA MENINGKATKAN OPACITY AGAR WARNA LEBIH SOLID
+                },
+                tooltip: {
+                    y: {
+                        formatter: function(val) {
+                            return val + " unit"
+                        }
+                    },
+                    theme: document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light'
+                },
+                legend: {
+                    labels: {
+                        colors: themeColors.bodyColor
+                    },
+                    markers: {
+                        fillColors: ['rgba(54, 162, 235, 0.9)', '#775DD0']
+                    }
+                },
+                grid: {
+                    borderColor: themeColors.borderColor,
+                    xaxis: {
+                        lines: {
+                            show: false
+                        }
+                    },
+                    yaxis: {
+                        lines: {
+                            show: true
                         }
                     }
                 }
-            });
+            };
+
+            const chartElement = document.querySelector("#stokChartContainer");
+            if (stokApexChart) {
+                stokApexChart.destroy();
+            }
+            stokApexChart = new ApexCharts(chartElement, options);
+            stokApexChart.render();
         }
-        createChart(
-            {!! json_encode($data->pluck('nama_brng')) !!},
-            {!! json_encode($data->pluck('stokminimal')) !!}
-        );
+        createApexChart({!! json_encode($data->values()) !!});
+        // --- Dark Mode Chart Update Listener ---
+        const observer = new MutationObserver((mutationsList) => {
+            for (const mutation of mutationsList) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'data-bs-theme') {
+                    if (stokApexChart && stokApexChart.w && stokApexChart.w.config && stokApexChart.w.config.series[0]) {
+                        createApexChart(stokApexChart.w.config.series[0].data.map(item => ({
+                            nama_brng: item.x,
+                            total_stok: item.y,
+                            stokminimal: item.goals[0].value
+                        })));
+                    } else {
+                        console.warn("Chart not yet initialized or data not available for theme change.");
+                    }
+                }
+            }
+        });
+        observer.observe(document.documentElement, {
+            attributes: true
+        });
+
+
+        // --- Search/Filter Logic ---
         let debounceTimer;
         document.getElementById('search').addEventListener('input', function() {
             clearTimeout(debounceTimer);
             const keyword = this.value;
 
             debounceTimer = setTimeout(() => {
-                if (keyword.length >= 2) {
-                    fetch(`{{ route('obat.search-obat') }}?q=${encodeURIComponent(keyword)}`)
-                        .then(res => res.json())
+                if (keyword.length >= 2 || keyword.length === 0) {
+                    fetch(`{{ route('obat.search-obat') }}?q=${encodeURIComponent(keyword)}&jenis={{ $jenisFilter }}`)
+                        .then(res => {
+                            if (!res.ok) {
+                                throw new Error('Network response was not ok ' + res.statusText);
+                            }
+                            return res.json();
+                        })
                         .then(data => {
-                            const labels = data.map(item => item.nama_brng);
-                            const stok = data.map(item => item.stokminimal);
-                            createChart(labels, stok);
-                        });
+                            // PASTIKAN data dari fetch adalah array
+                            createApexChart(data);
+                        })
+                        .catch(error => console.error('Error fetching search data:', error));
                 }
             }, 300);
         });
