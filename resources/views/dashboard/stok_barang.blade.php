@@ -31,9 +31,14 @@
 
         <div class="card shadow-sm">
             <div class="card-body">
-                <div id="stokChartContainer" style="height: 400px;">
-                    {{-- ApexCharts akan dirender di sini --}}
-                </div>
+                @php
+    $chartHeight = min($data->count() * 45, 1200); // maksimal tinggi 1200px
+@endphp
+                <div style="max-height: 500px; overflow-y: auto;">
+    <div id="stokChartContainer" style="height: {{ $data->count() * 45 }}px; min-height: 400px;">
+        {{-- ApexCharts akan dirender di sini --}}
+    </div>
+</div>
             </div>
         </div>
     </div>
@@ -50,147 +55,99 @@
         }
 
         function createApexChart(data) {
-            const themeColors = getComputedThemeColors();
+    const themeColors = getComputedThemeColors();
 
-            // PASTIKAN data adalah array, bahkan jika kosong
-            // Jika data dari PHP di-json_encode sebagai objek kosong {}, ini akan jadi array kosong []
-            const dataArray = Array.isArray(data) ? data : Object.values(data || {});
+    const dataArray = Array.isArray(data) ? data : Object.values(data || []);
+    // console.log("Data Array isi:", dataArray);
 
-            const seriesData = dataArray.map(item => ({
-                x: item.nama_brng,
-                y: item.total_stok,
-                goals: [{
-                    name: 'Stok Minimal',
-                    value: item.stokminimal,
-                    strokeColor: '#FFD700', // Warna garis untuk stok minimal
-                    strokeWidth: 22, // <-- Tambahkan atau ubah nilai ini untuk menebalkan garis
-                }]
-            }));
+    // Ambil data untuk dua series: stok minimal & total stok
+    const kategoriObat = dataArray.map(item => item?.nama_brng ?? '-');
+    const stokMinimal = dataArray.map(item => item?.stokminimal ?? 0);
+    const totalStok = dataArray.map(item => item?.total_stok ?? 0);
 
-            const options = {
-                series: [{
-                    name: 'Stok Saat Ini',
-                    data: seriesData
-                }],
-                chart: {
-                    height: 400,
-                    type: 'bar',
-                    toolbar: {
-                        show: false
-                    },
-                    background: 'transparent',
-                    foreColor: themeColors.bodyColor
-                },
-                plotOptions: {
-                    bar: {
-                        horizontal: false,
-                        columnWidth: '90%', // <--- NILAI INI YANG DIUBAH UNTUK MENEBALKAN BATANG
-                        endingShape: 'rounded'
-                    },
-                },
-                dataLabels: {
-                    enabled: false
-                },
-                stroke: {
-                    show: true,
-                    width: 2,
-                    colors: ['transparent']
-                },
-                xaxis: {
-                    type: 'category',
-                    labels: {
-                        rotate: -45,
-                        style: {
-                            colors: themeColors.bodyColor
-                        }
-                    },
-                    axisBorder: {
-                        show: true,
-                        color: themeColors.borderColor
-                    },
-                    axisTicks: {
-                        show: true,
-                        color: themeColors.borderColor
-                    }
-                },
-                yaxis: {
-                    title: {
-                        text: 'Jumlah Stok',
-                        style: {
-                            colors: themeColors.bodyColor
-                        }
-                    },
-                    labels: {
-                        style: {
-                            colors: themeColors.bodyColor
-                        }
-                    },
-                    axisBorder: {
-                        show: true,
-                        color: themeColors.borderColor
-                    },
-                    axisTicks: {
-                        show: true,
-                        color: themeColors.borderColor
-                    },
-                    grid: {
-                        borderColor: themeColors.borderColor
-                    }
-                },
-                fill: {
-                    opacity: 1,
-                     colors: ['#28a745'] // <-- SAYA JUGA MENINGKATKAN OPACITY AGAR WARNA LEBIH SOLID
-                },
-                tooltip: {
-                    y: {
-                        formatter: function(val) {
-                            return val + " unit"
-                        }
-                    },
-                    theme: document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light'
-                },
-                legend: {
-                    labels: {
-                        colors: themeColors.bodyColor
-                    },
-                    markers: {
-                        fillColors: ['rgba(54, 162, 235, 0.9)', '#775DD0']
-                    }
-                },
-                grid: {
-                    borderColor: themeColors.borderColor,
-                    xaxis: {
-                        lines: {
-                            show: false
-                        }
-                    },
-                    yaxis: {
-                        lines: {
-                            show: true
-                        }
-                    }
-                }
-            };
+    const options = {
+    series: [
+        { name: 'Stok Minimal', data: stokMinimal },
+        { name: 'Total Stok', data: totalStok }
+    ],
+    chart: {
+        type: 'bar',
+        height: 930,
+        toolbar: { show: false },
+        background: 'transparent',
+        foreColor: themeColors.bodyColor
+    },
+    plotOptions: {
+        bar: {
+            horizontal: true,
+            barHeight: '80%'
+        }
+    },
+    dataLabels: {
+        enabled: false
+    },
+    stroke: {
+        show: true,
+        width: 1,
+        colors: ['#fff']
+    },
+    tooltip: {
+        shared: true,
+        intersect: false,
+        y: {
+            formatter: val => val + ' unit'
+        },
+        theme: document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light'
+    },
+    xaxis: {
+        categories: kategoriObat,
+        labels: { style: { colors: themeColors.bodyColor } },
+        axisBorder: { show: true, color: themeColors.borderColor },
+        axisTicks: { show: true, color: themeColors.borderColor }
+    },
+    yaxis: {
+        labels: { style: { colors: themeColors.bodyColor } },
+        title: { text: undefined }
+    },
+    legend: {
+        labels: { colors: themeColors.bodyColor },
+        markers: { fillColors: ['#FF4560', '#00E396'] }
+    },
+    colors: ['#FF4560', '#00E396'],
+    grid: {
+        borderColor: themeColors.borderColor,
+        xaxis: { lines: { show: false } },
+        yaxis: { lines: { show: true } }
+    }
+};
 
-            const chartElement = document.querySelector("#stokChartContainer");
-            if (stokApexChart) {
-                stokApexChart.destroy();
-            }
-            stokApexChart = new ApexCharts(chartElement, options);
-            stokApexChart.render();
+
+    const chartElement = document.querySelector("#stokChartContainer");
+
+    if (stokApexChart) stokApexChart.destroy();
+
+    stokApexChart = new ApexCharts(chartElement, options);
+    stokApexChart.render();
         }
         createApexChart({!! json_encode($data->values()) !!});
         // --- Dark Mode Chart Update Listener ---
         const observer = new MutationObserver((mutationsList) => {
             for (const mutation of mutationsList) {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'data-bs-theme') {
-                    if (stokApexChart && stokApexChart.w && stokApexChart.w.config && stokApexChart.w.config.series[0]) {
-                        createApexChart(stokApexChart.w.config.series[0].data.map(item => ({
-                            nama_brng: item.x,
-                            total_stok: item.y,
-                            stokminimal: item.goals[0].value
-                        })));
-                    } else {
+                    if (stokApexChart && stokApexChart.w && stokApexChart.w.config && stokApexChart.w.config.series.length === 2) {
+    const kategoriObat = stokApexChart.w.globals.labels;
+    const stokMinimal = stokApexChart.w.config.series[0].data;
+    const totalStok = stokApexChart.w.config.series[1].data;
+
+    const combined = kategoriObat.map((nama_brng, i) => ({
+        nama_brng,
+        stokminimal: stokMinimal[i] ?? 0,
+        total_stok: totalStok[i] ?? 0
+    }));
+
+    createApexChart(combined);
+}
+else {
                         console.warn("Chart not yet initialized or data not available for theme change.");
                     }
                 }
