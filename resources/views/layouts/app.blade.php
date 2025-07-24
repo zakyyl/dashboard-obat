@@ -14,15 +14,12 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <style>
-        /* CSS Variables for theming */
         :root, [data-bs-theme="light"] {
-            --bs-body-bg: #f8f9fa; /* Default light background */
-            --bs-body-color: #212529; /* Default light text */
-
-            --navbar-bg: #f8f9fa; /* Light navbar background */
-            --navbar-text: #212529; /* Light navbar text */
+            --bs-body-bg: #f8f9fa;
+            --bs-body-color: #212529;
+            --navbar-bg: #f8f9fa;
+            --navbar-text: #212529;
             --navbar-border: #dee2e6;
-
             --sidebar-bg: #ffffff;
             --sidebar-text: #212529;
             --sidebar-border: #dee2e6;
@@ -35,14 +32,12 @@
         }
 
         [data-bs-theme="dark"] {
-            --bs-body-bg: #212529; /* Dark background */
-            --bs-body-color: #f8f9fa; /* Dark text */
-
-            --navbar-bg: #343a40; /* Dark navbar background */
-            --navbar-text: #f8f9fa; /* Dark navbar text */
+            --bs-body-bg: #212529;
+            --bs-body-color: #f8f9fa;
+            --navbar-bg: #343a40;
+            --navbar-text: #f8f9fa;
             --navbar-border: #495057;
-
-            --sidebar-bg: #343a40; /* Darker sidebar background */
+            --sidebar-bg: #343a40;
             --sidebar-text: #f8f9fa;
             --sidebar-border: #495057;
             --list-group-item-bg: #343a40;
@@ -56,25 +51,19 @@
         body {
             background-color: var(--bs-body-bg);
             color: var(--bs-body-color);
-            transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        /* Navbar Styling */
         .navbar {
             background-color: var(--navbar-bg) !important;
             border-bottom: 1px solid var(--navbar-border) !important;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         .navbar .navbar-nav .nav-link,
         .navbar .navbar-brand {
             color: var(--navbar-text) !important;
-            transition: color 0.3s ease;
-        }
-        .navbar .navbar-brand span.text-primary { /* Keep brand primary color */
-            color: var(--bs-primary) !important;
         }
         .navbar .navbar-nav .nav-link:hover {
-            color: color-mix(in srgb, var(--navbar-text) 75%, transparent) !important; /* Slightly transparent on hover */
+            color: color-mix(in srgb, var(--navbar-text) 75%, transparent) !important;
         }
         .navbar .navbar-nav .dropdown-menu {
             background-color: var(--navbar-bg);
@@ -87,9 +76,6 @@
             background-color: var(--list-group-item-hover-bg);
             color: var(--list-group-item-hover-text);
         }
-        .navbar .navbar-nav .dropdown-divider {
-            border-top: 1px solid var(--navbar-border);
-        }
 
         #wrapper {
             overflow-x: hidden;
@@ -97,12 +83,11 @@
 
         #sidebar-wrapper {
             min-height: 100vh;
-            width: 300px; /* Lebar sidebar baru */
-            margin-left: -300px; /* Default: hidden on all screens, sesuaikan dengan lebar baru */
+            width: 300px;
+            margin-left: -300px;
             transition: margin .25s ease-out, background-color 0.3s ease, border-color 0.3s ease;
             background-color: var(--sidebar-bg);
             border-right: 1px solid var(--sidebar-border);
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
         }
 
         #sidebar-wrapper .sidebar-heading {
@@ -112,14 +97,9 @@
             color: var(--bs-primary) !important;
         }
 
-        #sidebar-wrapper .list-group {
-            width: 100%;
-        }
-
         #sidebar-wrapper .list-group-item {
             background-color: var(--list-group-item-bg);
             color: var(--list-group-item-text);
-            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         #sidebar-wrapper .list-group-item:hover {
@@ -132,142 +112,139 @@
             color: var(--list-group-item-active-text) !important;
         }
 
-        #sidebar-wrapper .list-group-item span {
-            color: var(--list-group-item-text);
-        }
-        #sidebar-wrapper .list-group-item span.text-primary {
-            color: var(--bs-primary) !important;
-        }
-
         #page-content-wrapper {
             min-width: 100vw;
-            padding-left: 0.75rem;
-            padding-right: 0.75rem;
-            overflow-x: hidden;
+            padding: 0.75rem;
         }
 
-        /* Saat sidebar terbuka (di-toggle) - ini berlaku untuk SEMUA ukuran layar */
         body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
-            margin-left: 0; /* Sidebar terlihat */
+            margin-left: 0;
         }
 
         body.sb-sidenav-toggled #wrapper #page-content-wrapper {
-            min-width: calc(100vw - 300px); /* Konten menyusut saat sidebar terbuka, sesuaikan dengan lebar baru */
-            width: 100%; /* Memastikan tidak ada scrollbar horizontal yang tidak diinginkan */
+            min-width: calc(100vw - 300px);
         }
 
-
-        /* Adjust for larger screens (e.g., desktops >= 768px) */
         @media (min-width: 768px) {
             #sidebar-wrapper {
-                margin-left: 0; /* Sidebar terlihat secara default di desktop */
+                margin-left: 0;
             }
 
             #page-content-wrapper {
-                min-width: calc(100vw - 300px); /* Konten mengambil sisa lebar saat sidebar terlihat, sesuaikan dengan lebar baru */
-                width: 100%; /* Memastikan tidak ada scrollbar horizontal yang tidak diinginkan */
+                min-width: calc(100vw - 300px);
             }
 
-            /* Di desktop, ketika di-toggle, sidebar akan disembunyikan */
             body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
-                margin-left: -300px; /* Sesuaikan dengan lebar baru */
+                margin-left: -300px;
             }
 
             body.sb-sidenav-toggled #wrapper #page-content-wrapper {
-                min-width: 100vw; /* Konten mengambil seluruh lebar saat sidebar tersembunyi */
+                min-width: 100vw;
+            }
+        }
+
+        @media (max-width: 767.98px) {
+            #sidebar-wrapper {
+                position: fixed;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                z-index: 1040;
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+            }
+
+            body.sb-sidenav-toggled::before {
+                content: '';
+                position: fixed;
+                top: 0;
+                left: 300px;
+                right: 0;
+                bottom: 0;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 1030;
             }
         }
     </style>
 </head>
 
 <body>
-    <div class="d-flex" id="wrapper">
-        @include('layouts.sidebar') {{-- Memasukkan sidebar --}}
+<div class="d-flex" id="wrapper">
+    @include('layouts.sidebar')
 
-        <div id="page-content-wrapper">
-            @include('layouts.navbar') {{-- Memasukkan navbar --}}
+    <div id="page-content-wrapper">
+        @include('layouts.navbar')
 
-            <div class="container-fluid mt-4">
-                @yield('content') {{-- Placeholder untuk konten halaman --}}
-            </div>
+        <div class="container-fluid mt-4">
+            @yield('content')
         </div>
     </div>
+</div>
 
-    {{-- Bootstrap Bundle with Popper --}}
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const htmlElement = document.documentElement;
+        const bodyElement = document.body;
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        const mainNavbar = document.getElementById('mainNavbar');
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const htmlElement = document.documentElement;
-            const bodyElement = document.body;
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            const darkModeIcon = document.getElementById('darkModeIcon');
-            const mainNavbar = document.getElementById('mainNavbar');
+        function setTheme(theme) {
+            htmlElement.setAttribute('data-bs-theme', theme);
+            localStorage.setItem('theme', theme);
 
-            // --- Theme / Dark Mode Logic ---
-            function setTheme(theme) {
-                htmlElement.setAttribute('data-bs-theme', theme);
-                localStorage.setItem('theme', theme);
-
-                if (mainNavbar) {
-                    if (theme === 'dark') {
-                        mainNavbar.classList.remove('navbar-light');
-                        mainNavbar.classList.add('navbar-dark');
-                    } else {
-                        mainNavbar.classList.remove('navbar-dark');
-                        mainNavbar.classList.add('navbar-light');
-                    }
-                }
-
-                if (darkModeIcon) { // Ensure darkModeIcon exists
-                    if (theme === 'dark') {
-                        darkModeIcon.classList.remove('bi-moon-fill');
-                        darkModeIcon.classList.add('bi-sun-fill');
-                        darkModeIcon.title = 'Switch to Light Mode';
-                    } else {
-                        darkModeIcon.classList.remove('bi-sun-fill');
-                        darkModeIcon.classList.add('bi-moon-fill');
-                        darkModeIcon.title = 'Switch to Dark Mode';
-                    }
-                }
+            if (mainNavbar) {
+                mainNavbar.classList.toggle('navbar-dark', theme === 'dark');
+                mainNavbar.classList.toggle('navbar-light', theme !== 'dark');
             }
 
-            // Load theme from localStorage or default to light
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            setTheme(savedTheme);
-
-            // --- Sidebar Toggle Logic ---
-            if (sidebarToggle) {
-                sidebarToggle.addEventListener('click', function() {
-                    bodyElement.classList.toggle('sb-sidenav-toggled');
-                });
+            if (darkModeIcon) {
+                darkModeIcon.classList.toggle('bi-sun-fill', theme === 'dark');
+                darkModeIcon.classList.toggle('bi-moon-fill', theme !== 'dark');
+                darkModeIcon.title = theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode';
             }
+        }
 
-            // --- Initial Sidebar State on Load ---
-            function adjustSidebarOnLoad() {
-                if (window.innerWidth < 768) {
-                    // On mobile, ensure sidebar is hidden by default
-                    bodyElement.classList.remove('sb-sidenav-toggled');
-                } else {
-                    // On desktop, ensure sidebar is shown by default
-                    bodyElement.classList.add('sb-sidenav-toggled');
-                }
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        setTheme(savedTheme);
+
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function() {
+                bodyElement.classList.toggle('sb-sidenav-toggled');
+            });
+        }
+
+        function adjustSidebarOnLoad() {
+            if (window.innerWidth < 768) {
+                bodyElement.classList.remove('sb-sidenav-toggled');
+            } else {
+                bodyElement.classList.add('sb-sidenav-toggled');
             }
+        }
 
-            adjustSidebarOnLoad(); // Call on initial load
-            window.addEventListener('resize', adjustSidebarOnLoad); // Adjust on window resize
+        adjustSidebarOnLoad();
+        window.addEventListener('resize', adjustSidebarOnLoad);
 
-            // --- Dark Mode Toggle Event Listener ---
-            if (darkModeToggle) {
-                darkModeToggle.addEventListener('click', function() {
-                    const currentTheme = htmlElement.getAttribute('data-bs-theme');
-                    const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-                    setTheme(newTheme);
-                });
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', function() {
+                const currentTheme = htmlElement.getAttribute('data-bs-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                setTheme(newTheme);
+            });
+        }
+
+        document.body.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar-wrapper');
+            if (
+                bodyElement.classList.contains('sb-sidenav-toggled') &&
+                !sidebar.contains(e.target) &&
+                !e.target.closest('#sidebarToggle')
+            ) {
+                bodyElement.classList.remove('sb-sidenav-toggled');
             }
         });
-    </script>
+    });
+</script>
 </body>
-
 </html>
