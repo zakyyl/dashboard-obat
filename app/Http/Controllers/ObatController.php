@@ -20,22 +20,26 @@ class ObatController extends Controller
         ->groupBy('kode_brng')
         ->pluck('total_stok', 'kode_brng'); // hasilnya: [kode_brng => total_stok]
 
-    $query = DB::table('databarang')
-        ->join('kodesatuan', 'databarang.kode_sat', '=', 'kodesatuan.kode_sat')
-        ->join('jenis', 'databarang.kdjns', '=', 'jenis.kdjns')
-        ->select(
-            'databarang.kode_brng',
-            'databarang.nama_brng',
-            'kodesatuan.satuan',
-            'databarang.stokminimal',
-            'jenis.nama as jenis'
-        )
-        ->where('databarang.status', '1')
-        ->when($jenisFilter, function ($query, $jenisFilter) {
-            return $query->where('jenis.nama', $jenisFilter);
-        });
+   $query = DB::table('databarang')
+    ->join('kodesatuan', 'databarang.kode_sat', '=', 'kodesatuan.kode_sat')
+    ->join('jenis', 'databarang.kdjns', '=', 'jenis.kdjns')
+    ->select(
+        'databarang.kode_brng',
+        'databarang.nama_brng',
+        'kodesatuan.satuan',
+        'databarang.stokminimal',
+        'jenis.nama as jenis'
+    )
+    ->where('databarang.status', '1')
+    ->when($jenisFilter, function ($q) use ($jenisFilter) {
+        return $q->where('jenis.nama', $jenisFilter);
+    })
+    ->when($request->filled('search'), function ($q) use ($request) {
+        return $q->where('databarang.nama_brng', 'like', '%' . $request->search . '%');
+    });
 
-    $data = $query->get();
+$data = $query->get();
+
 
     // Gabungkan hasil stok ke masing-masing item
     foreach ($data as $item) {

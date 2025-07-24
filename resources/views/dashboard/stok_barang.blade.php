@@ -8,24 +8,30 @@
 
         <div class="card mb-4 shadow-sm">
             <div class="card-body">
-                <form method="GET" class="row gy-2 gx-3 align-items-center">
-                    <div class="col-md-auto">
-                        <label for="jenis" class="form-label mb-0">Filter Jenis Barang:</label>
-                        <select name="jenis" id="jenis" onchange="this.form.submit()" class="form-select">
-                            <option value="">Semua Jenis</option>
-                            @foreach ($listJenis as $j)
-                                <option value="{{ $j->nama }}" {{ $jenisFilter == $j->nama ? 'selected' : '' }}>
-                                    {{ $j->nama }}
-                                </option>
-                            @endforeach
-                        </select>
-                    </div>
+                <form method="GET" action="{{ route('obat.stok-barang') }}" class="row gy-2 gx-3 align-items-end">
+    <div class="col-md-auto">
+        <label for="jenis" class="form-label mb-0">Filter Jenis Barang:</label>
+        <select name="jenis" id="jenis" class="form-select">
+            <option value="">Semua Jenis</option>
+            @foreach ($listJenis as $j)
+                <option value="{{ $j->nama }}" {{ $jenisFilter == $j->nama ? 'selected' : '' }}>
+                    {{ $j->nama }}
+                </option>
+            @endforeach
+        </select>
+    </div>
 
-                    <div class="col-md-auto">
-                        <label for="search" class="form-label mb-0">Cari Nama Obat:</label>
-                        <input type="text" id="search" class="form-control" placeholder="Ketik nama obat...">
-                    </div>
-                </form>
+    <div class="col-md-auto">
+        <label for="search" class="form-label mb-0">Cari Nama Obat:</label>
+        <input type="text" id="search" name="search" class="form-control"
+            placeholder="Ketik nama obat..." value="{{ request('search') }}">
+    </div>
+
+    <div class="col-md-auto">
+        <button type="submit" class="btn btn-primary">Cari</button>
+    </div>
+</form>
+
             </div>
         </div>
 
@@ -159,27 +165,27 @@ else {
 
 
         // --- Search/Filter Logic ---
-        let debounceTimer;
-        document.getElementById('search').addEventListener('input', function() {
-            clearTimeout(debounceTimer);
-            const keyword = this.value;
+        // let debounceTimer;
+        // document.getElementById('search').addEventListener('input', function() {
+        //     clearTimeout(debounceTimer);
+        //     const keyword = this.value;
 
-            debounceTimer = setTimeout(() => {
-                if (keyword.length >= 2 || keyword.length === 0) {
-                    fetch(`{{ route('obat.search-obat') }}?q=${encodeURIComponent(keyword)}&jenis={{ $jenisFilter }}`)
-                        .then(res => {
-                            if (!res.ok) {
-                                throw new Error('Network response was not ok ' + res.statusText);
-                            }
-                            return res.json();
-                        })
-                        .then(data => {
-                            // PASTIKAN data dari fetch adalah array
-                            createApexChart(data);
-                        })
-                        .catch(error => console.error('Error fetching search data:', error));
-                }
-            }, 300);
-        });
+        //     debounceTimer = setTimeout(() => {
+        //         if (keyword.length >= 2 || keyword.length === 0) {
+        //             fetch(`{{ route('obat.search-obat') }}?q=${encodeURIComponent(keyword)}&jenis={{ $jenisFilter }}`)
+        //                 .then(res => {
+        //                     if (!res.ok) {
+        //                         throw new Error('Network response was not ok ' + res.statusText);
+        //                     }
+        //                     return res.json();
+        //                 })
+        //                 .then(data => {
+        //                     // PASTIKAN data dari fetch adalah array
+        //                     createApexChart(data);
+        //                 })
+        //                 .catch(error => console.error('Error fetching search data:', error));
+        //         }
+        //     }, 300);
+        // });
     </script>
 @endsection
