@@ -63,6 +63,7 @@
                     name: 'Stok Minimal',
                     value: item.stokminimal,
                     strokeColor: '#FFD700', // Warna garis untuk stok minimal
+                    strokeWidth: 22, // <-- Tambahkan atau ubah nilai ini untuk menebalkan garis
                 }]
             }));
 

@@ -64,7 +64,7 @@
                     datasets: [{
                         label: 'Stok Saat Ini',
                         data: data,
-                        backgroundColor: 'rgba(255, 99, 132, 0.7)', // Warna merah dengan sedikit transparansi
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
                         borderColor: 'rgba(255, 99, 132, 1)',
                         borderWidth: 1
                     }]
@@ -78,13 +78,13 @@
                             title: {
                                 display: true,
                                 text: 'Jumlah Stok Saat Ini',
-                                color: themeColors.bodyColor // Gunakan warna dinamis
+                                color: themeColors.bodyColor 
                             },
                             ticks: {
-                                color: themeColors.bodyColor // Gunakan warna dinamis
+                                color: themeColors.bodyColor 
                             },
                             grid: {
-                                color: themeColors.borderColor // Gunakan warna dinamis
+                                color: themeColors.borderColor 
                             }
                         },
                         x: {
