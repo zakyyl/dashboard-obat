@@ -21,12 +21,18 @@ class DashboardController extends Controller
             ->distinct('no_rawat')
             ->count();
 
-        // Variabel lainnya dikosongkan (diatur ke 0)
-        $pasienBaruHariIni = 0;
-        $kunjunganHariIni = 0;
-        $kunjunganBulanIni = 0;
+        // Rawat jalan per bulan
+        $rawatJalanPerBulan = DB::table('reg_periksa')
+            ->select(
+                DB::raw('MONTH(tgl_registrasi) as bulan'),
+                DB::raw('COUNT(DISTINCT no_rawat) as jumlah')
+            )
+            ->whereYear('tgl_registrasi', now()->year)
+            ->where('status_lanjut', 'Ralan')
+            ->groupBy(DB::raw('MONTH(tgl_registrasi)'))
+            ->get();
 
-        // Mengirim data ke view
-        return view('home', compact('pasienHariIni', 'pasienBaruHariIni', 'kunjunganHariIni', 'kunjunganBulanIni'));
+        // Kirim ke view
+        return view('home', compact('pasienHariIni', 'rawatJalanPerBulan'));
     }
 }
