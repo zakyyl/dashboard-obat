@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PoliController;
+use App\Http\Controllers\RawatJalanController;
 
 
 // Rute untuk menampilkan halaman login (GET)
@@ -28,6 +29,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/obat/search-obat', [ObatController::class, 'searchObat'])->name('obat.search-obat');
 
     Route::get('/dashboard/poli', [PoliController::class, 'index'])->name('dashboard.poli');
+    Route::get('/dashboard/poli-perdokter', [PoliController::class, 'indexPerDokter']);
+
+    Route::get('/dashboard/labor-kunjungan-ralan', [RawatJalanController::class, 'index'])->name('dashboard.labor');
+    Route::get('/dashboard/radiologi-kunjungan-ralan', [RawatJalanController::class, 'indexRadiologi'])->name('radiologi.kunjungan.ralan');
+
 
     // Tambahkan rute dashboard lainnya di sini jika memerlukan autentikasi
     // Route::get('/poli', function () {
