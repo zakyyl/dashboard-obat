@@ -51,5 +51,42 @@
         </div>
     </div>
 
+    <div class="card bg-dark text-white shadow mb-4">
+        <div class="card-header border-bottom border-secondary">
+            <h5 class="mb-0 fw-bold text-warning">Graphic</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-sm-6 col-md-3">
+                    <div class="card bg-secondary text-white text-center shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-calendar-month fs-2 mb-2"></i>
+                            <h6></h6>
+                            <p class="fw-bold">cara bayar</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="card bg-secondary text-white text-center shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-calendar-month fs-2 mb-2"></i>
+                            <h6></h6>
+                            <p class="fw-bold">cara bayar</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-3">
+                    <div class="card bg-secondary text-white text-center shadow-sm">
+                        <div class="card-body">
+                            <i class="bi bi-calendar-month fs-2 mb-2"></i>
+                            <h6></h6>
+                            <p class="fw-bold">cara bayar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 @endsection
