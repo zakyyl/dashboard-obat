@@ -3,54 +3,54 @@
 @section('title', 'Stok Obat Minimal')
 
 @section('content')
-    <div class="container py-4">
-        <h2 class="mb-4 text-center">📊 Grafik Stok Obat Minimal & Saat Ini</h2>
+<div class="container py-4">
+    <h2 class="mb-4 text-center">📊 Grafik Stok Obat Minimal & Saat Ini</h2>
 
-        <div class="card mb-4 shadow-sm">
-            <div class="card-body">
-                <form method="GET" action="{{ route('obat.stok-barang') }}" class="row gy-2 gx-3 align-items-end">
-    <div class="col-md-auto">
-        <label for="jenis" class="form-label mb-0">Filter Jenis Barang:</label>
-        <select name="jenis" id="jenis" class="form-select">
-            <option value="">Semua Jenis</option>
-            @foreach ($listJenis as $j)
-                <option value="{{ $j->nama }}" {{ $jenisFilter == $j->nama ? 'selected' : '' }}>
-                    {{ $j->nama }}
-                </option>
-            @endforeach
-        </select>
+    <div class="card mb-4 shadow-sm">
+        <div class="card-body">
+            <form method="GET" action="{{ route('obat.stok-barang') }}" class="row gy-2 gx-3 align-items-end">
+                <div class="col-md-auto">
+                    <label for="jenis" class="form-label mb-0">Filter Jenis Barang:</label>
+                    <select name="jenis" id="jenis" class="form-select">
+                        <option value="">Semua Jenis</option>
+                        @foreach ($listJenis as $j)
+                        <option value="{{ $j->nama }}" {{ $jenisFilter==$j->nama ? 'selected' : '' }}>
+                            {{ $j->nama }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-auto">
+                    <label for="search" class="form-label mb-0">Cari Nama Obat:</label>
+                    <input type="text" id="search" name="search" class="form-control" placeholder="Ketik nama obat..."
+                        value="{{ request('search') }}">
+                </div>
+
+                <div class="col-md-auto">
+                    <button type="submit" class="btn btn-primary">Cari</button>
+                </div>
+            </form>
+
+        </div>
     </div>
 
-    <div class="col-md-auto">
-        <label for="search" class="form-label mb-0">Cari Nama Obat:</label>
-        <input type="text" id="search" name="search" class="form-control"
-            placeholder="Ketik nama obat..." value="{{ request('search') }}">
-    </div>
-
-    <div class="col-md-auto">
-        <button type="submit" class="btn btn-primary">Cari</button>
-    </div>
-</form>
-
+    <div class="card shadow-sm">
+        <div class="card-body">
+            @php
+            $chartHeight = min($data->count() * 45, 1200); // maksimal tinggi 1200px
+            @endphp
+            <div style="max-height: 500px; overflow-y: auto;">
+                <div id="stokChartContainer" style="height: {{ $data->count() * 45 }}px; min-height: 400px;">
+                    {{-- ApexCharts akan dirender di sini --}}
+                </div>
             </div>
         </div>
-
-        <div class="card shadow-sm">
-            <div class="card-body">
-                @php
-    $chartHeight = min($data->count() * 45, 1200); // maksimal tinggi 1200px
-@endphp
-                <div style="max-height: 500px; overflow-y: auto;">
-    <div id="stokChartContainer" style="height: {{ $data->count() * 45 }}px; min-height: 400px;">
-        {{-- ApexCharts akan dirender di sini --}}
     </div>
 </div>
-            </div>
-        </div>
-    </div>
 
-    <script>
-        let stokApexChart;
+<script>
+    let stokApexChart;
 
         function getComputedThemeColors() {
             const style = getComputedStyle(document.documentElement);
@@ -187,5 +187,5 @@ else {
         //         }
         //     }, 300);
         // });
-    </script>
+</script>
 @endsection
