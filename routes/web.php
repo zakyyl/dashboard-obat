@@ -5,7 +5,11 @@ use App\Http\Controllers\ObatController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PoliController;
 use App\Http\Controllers\RawatJalanController;
+<<<<<<< HEAD
 use App\Http\Controllers\DashboardController;
+=======
+use App\Http\Controllers\RawatInapController;
+>>>>>>> 88acef0bc602da819a563c334eb8c704e8f06c1c
 
 
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
@@ -29,6 +33,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/labor-kunjungan-ralan', [RawatJalanController::class, 'index'])->name('dashboard.labor');
     Route::get('/dashboard/radiologi-kunjungan-ralan', [RawatJalanController::class, 'indexRadiologi'])->name('radiologi.kunjungan.ralan');
 
+    Route::get('/dashboard/labor-kunjungan-ranap', [RawatInapController::class, 'index'])->name('dashboard.labor');
+    Route::get('/dashboard/radiologi-kunjungan-ranap', [RawatInapController::class, 'indexRadiologi'])->name('radiologi.kunjungan.ranap');
 
     // Tambahkan rute dashboard lainnya di sini jika memerlukan autentikasi
     // Route::get('/poli', function () {
