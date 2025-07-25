@@ -6,7 +6,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PoliController;
 use App\Http\Controllers\RawatJalanController;
 use App\Http\Controllers\DashboardController;
-
+use App\Http\Controllers\RawatInapController;
 
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
 
