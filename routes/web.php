@@ -5,10 +5,9 @@ use App\Http\Controllers\ObatController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\PoliController;
 use App\Http\Controllers\RawatJalanController;
+use App\Http\Controllers\DashboardController;
 
 
-// Rute untuk menampilkan halaman login (GET)
-// Jika Anda ingin URL '/' langsung ke login, gunakan ini
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
 
 // Rute POST untuk menangani proses login
@@ -18,12 +17,8 @@ Route::post('/login', [LoginController::class, 'authenticate'])->name('login.pos
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
-// -- Rute-rute yang memerlukan autentikasi --
-// Gabungkan rute-rute dashboard Anda dalam sebuah grup middleware 'auth'
 Route::middleware('auth')->group(function () {
-    Route::get('/home', function () {
-        return view('home'); // Ganti dengan view home/dashboard utama Anda
-    })->name('home');
+    Route::get('/home', [DashboardController::class, 'index'])->name('home');
 
     Route::get('/obat/stok-barang', [ObatController::class, 'stokBarang'])->name('obat.stok-barang');
     Route::get('/obat/search-obat', [ObatController::class, 'searchObat'])->name('obat.search-obat');
