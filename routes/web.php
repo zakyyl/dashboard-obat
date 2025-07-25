@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ObatController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\PoliController;
+
 
 // Rute untuk menampilkan halaman login (GET)
 // Jika Anda ingin URL '/' langsung ke login, gunakan ini
@@ -24,6 +26,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/obat/stok-barang', [ObatController::class, 'stokBarang'])->name('obat.stok-barang');
     Route::get('/obat/search-obat', [ObatController::class, 'searchObat'])->name('obat.search-obat');
+
+    Route::get('/dashboard/poli', [PoliController::class, 'index'])->name('dashboard.poli');
 
     // Tambahkan rute dashboard lainnya di sini jika memerlukan autentikasi
     // Route::get('/poli', function () {

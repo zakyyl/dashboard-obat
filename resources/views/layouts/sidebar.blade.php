@@ -12,10 +12,10 @@
            class="list-group-item list-group-item-action py-3 px-4 {{ request()->is('obat/stok-barang*') ? 'active bg-primary text-white' : '' }}">
             <i class="bi bi-box-seam-fill me-2"></i> Obat
         </a>
-        <a href="{{ url('/poli') }}"
-           class="list-group-item list-group-item-action py-3 px-4 {{ request()->is('poli*') ? 'active bg-primary text-white' : '' }}">
-            <i class="bi bi-hospital-fill me-2"></i> Poli
-        </a>
+        <a href="{{ url('/dashboard/poli') }}"
+   class="list-group-item list-group-item-action py-3 px-4 {{ request()->is('dashboard/poli*') ? 'active bg-primary text-white' : '' }}">
+    <i class="bi bi-hospital-fill me-2"></i> Poli
+</a>
         <a href="{{ url('/ranap') }}"
            class="list-group-item list-group-item-action py-3 px-4 {{ request()->is('ranap*') ? 'active bg-primary text-white' : '' }}">
             <i class="bi bi-hospital-fill me-2"></i> Ranap
