@@ -13,6 +13,8 @@
     {{-- ApexCharts (if needed for your dashboard content) --}}
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
+
+    
     <style>
         :root, [data-bs-theme="light"] {
             --bs-body-bg: #f8f9fa;
@@ -246,5 +248,6 @@
         });
     });
 </script>
+@yield('scripts')
 </body>
 </html>

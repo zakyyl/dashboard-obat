@@ -74,7 +74,7 @@
         </div>
 
         {{-- KLAIM --}}
-        <a href="{{ url('/pengajuan-klaim') }}"
+        <a href="{{ url('/dashboard/pengajuan-claim') }}"
            class="list-group-item list-group-item-action py-3 px-4 {{ request()->is('pengajuan-klaim*') ? 'active bg-primary text-white' : '' }}">
             <i class="bi bi-journal-check me-2"></i> Pengajuan Klaim
         </a>

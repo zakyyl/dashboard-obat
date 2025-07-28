@@ -44,8 +44,6 @@
             </div>
         </div>
     </div>
-
-    {{-- CDN ApexCharts --}}
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <script>
@@ -95,32 +93,51 @@
                     categories: chartData.map(item => item.x),
                     labels: {
                         rotate: -45,
-                        style: { colors: themeColors.bodyColor }
+                        style: {
+                            colors: themeColors.bodyColor,
+                            fontSize: '12px',
+                            fontWeight: '500',
+                        }
                     },
-                    axisBorder: { color: themeColors.borderColor },
-                    axisTicks: { color: themeColors.borderColor },
+                    axisBorder: {
+                        color: themeColors.borderColor
+                    },
+                    axisTicks: {
+                        color: themeColors.borderColor
+                    },
                     title: {
                         text: 'Kunjungan Lab',
-                        style: { color: themeColors.bodyColor }
+                        style: {
+                            color: themeColors.bodyColor,
+                            fontSize: '12px',
+                            fontWeight: '500',
+                        }
                     }
                 },
                 yaxis: {
                     title: {
                         text: 'Jumlah Kunjungan',
-                        style: { color: themeColors.bodyColor }
+                        style: {
+                            color: themeColors.bodyColor,
+                            fontSize: '12px',
+                            fontWeight: '500',
+                        },
                     },
                     labels: {
                         style: {
-                            colors: themeColors.bodyColor,
-                            fontSize: '13px'
+                            colors: themeColors.bodyColor
                         }
                     },
-                    axisBorder: { color: themeColors.borderColor },
-                    axisTicks: { color: themeColors.borderColor }
+                    axisBorder: {
+                        color: themeColors.borderColor
+                    },
+                    axisTicks: {
+                        color: themeColors.borderColor
+                    }
                 },
                 fill: {
                     opacity: 1,
-                    colors: ['#FFAF61']
+                    colors: ['#F8DE22']
                 },
                 stroke: {
                     show: true,
