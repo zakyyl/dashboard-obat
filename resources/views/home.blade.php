@@ -28,13 +28,16 @@
     $namaBulan =
     [1=>'Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
     $categories = [];
-    $dataSeries = [];
+    $seriesColumn = [];
+    $seriesLine = []; // Dummy
 
     foreach ($rawatJalanPerBulan as $item) {
     $categories[] = $namaBulan[$item->bulan];
-    $dataSeries[] = $item->jumlah;
+    $seriesColumn[] = $item->jumlah;
+    $seriesLine[] = $item->jumlah; // Dummy data untuk line (bisa diganti nanti)
     }
     @endphp
+
 
     <!-- Card Grafik RAWAT JALAN PERBULAN -->
     <div class="card bg-dark text-white shadow mb-4">
@@ -51,37 +54,66 @@
         document.addEventListener('DOMContentLoaded', function () {
         var options = {
             series: [{
-                data: @json($dataSeries)
+                name: 'Rawat Jalan',
+                type: 'column',
+                data: @json($seriesColumn)
+            }, {
+                name: 'Pembanding',
+                type: 'line',
+                data: @json($seriesLine)
             }],
             chart: {
-                type: 'bar',
-                height: 350
+                height: 350,
+                type: 'line',
+                toolbar: { show: false }
             },
-            plotOptions: {
-                bar: {
-                    borderRadius: 4,
-                    borderRadiusApplication: 'end',
-                    horizontal: true,
+            stroke: {
+                width: [0, 4]
+            },
+            title: {
+                text: 'Rawat Jalan per Bulan',
+                style: {
+                    color: '#fff'
                 }
             },
             dataLabels: {
-                enabled: false
+                enabled: true,
+                enabledOnSeries: [1]
             },
+            labels: @json($categories),
             xaxis: {
-                categories: @json($categories),
                 labels: {
                     style: {
                         colors: '#fff'
                     }
                 }
             },
-            yaxis: {
+            yaxis: [{
+                title: {
+                    text: 'Rawat Jalan',
+                    style: {
+                        color: '#fff'
+                    }
+                },
                 labels: {
                     style: {
                         colors: '#fff'
                     }
                 }
-            },
+            }, {
+                opposite: true,
+                title: {
+                    text: 'Pembanding',
+                    style: {
+                        color: '#fff'
+                    }
+                },
+                labels: {
+                    style: {
+                        colors: '#fff'
+                    }
+                }
+            }],
             tooltip: {
                 theme: 'dark'
             },
@@ -96,6 +128,7 @@
     </script>
 
 
+
     <div class="card bg-dark text-white shadow mb-4">
         <div class="card-header border-bottom border-secondary">
             <h5 class="mb-0 fw-bold text-warning">Graphic</h5>
@@ -107,7 +140,7 @@
                         <div class="card-body">
                             <i class="bi bi-calendar-month fs-2 mb-2"></i>
                             <h6></h6>
-                            <p class="fw-bold">cara bayar</p>
+                            <p class="fw-bold">BELUM TAU</p>
                         </div>
                     </div>
                 </div>
@@ -116,7 +149,7 @@
                         <div class="card-body">
                             <i class="bi bi-calendar-month fs-2 mb-2"></i>
                             <h6></h6>
-                            <p class="fw-bold">cara bayar</p>
+                            <p class="fw-bold">BELUM TAU</p>
                         </div>
                     </div>
                 </div>

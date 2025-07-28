@@ -32,7 +32,15 @@ class DashboardController extends Controller
             ->groupBy(DB::raw('MONTH(tgl_registrasi)'))
             ->get();
 
+        // Query Cara Bayar
+        $caraBayar = DB::table('reg_periksa')
+            ->join('penjab', 'reg_periksa.kd_pj', '=', 'penjab.kd_pj')
+            ->select('penjab.png_jawab', DB::raw('COUNT(*) as jumlah'))
+            ->whereBetween('reg_periksa.tgl_registrasi', [now()->subDays(3)->toDateString(), now()->toDateString()])
+            ->groupBy('penjab.png_jawab')
+            ->get();
+
         // Kirim ke view
-        return view('home', compact('pasienHariIni', 'rawatJalanPerBulan'));
+        return view('home', compact('pasienHariIni', 'rawatJalanPerBulan', 'caraBayar'));
     }
 }
