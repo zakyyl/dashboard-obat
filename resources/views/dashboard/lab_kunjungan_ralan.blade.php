@@ -13,12 +13,14 @@
                 <form method="GET" class="row gy-2 gx-3 align-items-end">
                     <div class="col-md-auto">
                         <label for="tgl_dari" class="form-label mb-0">Dari Tanggal:</label>
-                        <input type="date" name="tgl_dari" id="tgl_dari" value="{{ $tgl_dari }}" class="form-control">
+                        <input type="date" name="tgl_dari" id="tgl_dari" value="{{ $tgl_dari }}"
+                            class="form-control">
                     </div>
 
                     <div class="col-md-auto">
                         <label for="tgl_sampai" class="form-label mb-0">Sampai Tanggal:</label>
-                        <input type="date" name="tgl_sampai" id="tgl_sampai" value="{{ $tgl_sampai }}" class="form-control">
+                        <input type="date" name="tgl_sampai" id="tgl_sampai" value="{{ $tgl_sampai }}"
+                            class="form-control">
                     </div>
 
                     <div class="col-md-auto">
@@ -45,7 +47,6 @@
         </div>
     </div>
 
-    {{-- CDN ApexCharts --}}
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
     <script>
@@ -76,7 +77,9 @@
                 chart: {
                     type: 'bar',
                     height: 400,
-                    toolbar: { show: false },
+                    toolbar: {
+                        show: false
+                    },
                     background: 'transparent',
                     foreColor: themeColors.bodyColor
                 },
@@ -89,34 +92,56 @@
                 },
                 dataLabels: {
                     enabled: true,
-                    style: { colors: [themeColors.bodyColor] }
+                    style: {
+                        colors: [themeColors.bodyColor]
+                    }
                 },
                 xaxis: {
                     categories: chartData.map(item => item.x),
                     labels: {
                         rotate: -45,
-                        style: { colors: themeColors.bodyColor }
+                        style: {
+                            colors: themeColors.bodyColor,
+                            fontSize: '12px',
+                            fontWeight: '500',
+                        }
                     },
-                    axisBorder: { color: themeColors.borderColor },
-                    axisTicks: { color: themeColors.borderColor },
+                    axisBorder: {
+                        color: themeColors.borderColor
+                    },
+                    axisTicks: {
+                        color: themeColors.borderColor
+                    },
                     title: {
                         text: 'Kunjungan Lab',
-                        style: { color: themeColors.bodyColor }
+                        style: {
+                            color: themeColors.bodyColor,
+                            fontSize: '12px',
+                            fontWeight: '500',
+                        }
                     }
                 },
+
                 yaxis: {
                     title: {
                         text: 'Jumlah Kunjungan',
-                        style: { color: themeColors.bodyColor }
+                        style: {
+                            color: themeColors.bodyColor,
+                            fontSize: '12px',
+                            fontWeight: '500',
+                        },
                     },
                     labels: {
                         style: {
-                            colors: themeColors.bodyColor,
-                            fontSize: '13px'
+                            colors: themeColors.bodyColor
                         }
                     },
-                    axisBorder: { color: themeColors.borderColor },
-                    axisTicks: { color: themeColors.borderColor }
+                    axisBorder: {
+                        color: themeColors.borderColor
+                    },
+                    axisTicks: {
+                        color: themeColors.borderColor
+                    }
                 },
                 fill: {
                     opacity: 1,
@@ -135,10 +160,20 @@
                 },
                 grid: {
                     borderColor: themeColors.borderColor,
-                    xaxis: { lines: { show: false } },
-                    yaxis: { lines: { show: true } }
+                    xaxis: {
+                        lines: {
+                            show: false
+                        }
+                    },
+                    yaxis: {
+                        lines: {
+                            show: true
+                        }
+                    }
                 },
-                legend: { show: false }
+                legend: {
+                    show: false
+                }
             };
 
             const chartElement = document.querySelector("#labChartContainer");
@@ -153,8 +188,6 @@
         if (labData.length > 0) {
             createApexChart(labData);
         }
-
-        // Observe perubahan tema gelap/terang
         const observer = new MutationObserver((mutationsList) => {
             for (const mutation of mutationsList) {
                 if (mutation.type === 'attributes' && mutation.attributeName === 'data-bs-theme') {
@@ -162,6 +195,8 @@
                 }
             }
         });
-        observer.observe(document.documentElement, { attributes: true });
+        observer.observe(document.documentElement, {
+            attributes: true
+        });
     </script>
 @endsection
