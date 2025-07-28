@@ -7,6 +7,9 @@ use App\Http\Controllers\PoliController;
 use App\Http\Controllers\RawatJalanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RawatInapController;
+use App\Http\Controllers\PengajuanClaimController;
+
+
 
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
 
@@ -31,6 +34,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard/labor-kunjungan-ranap', [RawatInapController::class, 'index'])->name('dashboard.labor');
     Route::get('/dashboard/radiologi-kunjungan-ranap', [RawatInapController::class, 'indexRadiologi'])->name('radiologi.kunjungan.ranap');
+
+    Route::get('/dashboard/pengajuan-claim', [PengajuanClaimController::class, 'index']);
 
     // Tambahkan rute dashboard lainnya di sini jika memerlukan autentikasi
     // Route::get('/poli', function () {
