@@ -120,7 +120,7 @@
                 },
                 fill: {
                     opacity: 1,
-                    colors: ['#FFAF61']
+                    colors: ['#F8DE22']
                 },
                 stroke: {
                     show: true,
