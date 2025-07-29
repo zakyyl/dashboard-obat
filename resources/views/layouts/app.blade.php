@@ -5,14 +5,9 @@
     <meta charset="UTF-8">
     <title>@yield('title', 'Dashboard')</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    {{-- Bootstrap CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    {{-- Bootstrap Icons CSS --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
-    {{-- ApexCharts --}}
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    {{-- Google Fonts --}}
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
@@ -47,13 +42,12 @@
             line-height: 1.5;
         }
 
-        /* Navbar Styles */
         .navbar {
             background-color: var(--navbar-bg) !important;
             border-bottom: 1px solid var(--navbar-border) !important;
             box-shadow: var(--shadow-light);
             backdrop-filter: blur(10px);
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 1.5rem;
         }
 
         .navbar .navbar-brand {
@@ -95,13 +89,11 @@
             color: var(--sidebar-hover-text);
         }
 
-        /* Layout */
         #wrapper {
             overflow-x: hidden;
             min-height: 100vh;
         }
 
-        /* Sidebar Styles */
         #sidebar-wrapper {
             min-height: 100vh;
             width: 280px;
@@ -125,7 +117,6 @@
             z-index: -1;
         }
 
-        /* Sidebar Header */
         #sidebar-wrapper .sidebar-heading {
             padding: 1.5rem 1.25rem;
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
@@ -145,10 +136,9 @@
 
         #sidebar-wrapper .sidebar-heading i {
             font-size: 1.25rem;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
         }
 
-        /* Sidebar Navigation */
         #sidebar-wrapper .list-group {
             padding: 1rem 0;
         }
@@ -176,7 +166,7 @@
             font-size: 16px;
         }
 
-        #sidebar-wrapper .list-group-item:hover {
+        #sidebar-wrapper .list-group-item:hover:not(.active) {
             background-color: var(--sidebar-hover-bg) !important;
             color: var(--sidebar-hover-text) !important;
             transform: translateX(4px);
@@ -186,11 +176,10 @@
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%) !important;
             color: var(--sidebar-active-text) !important;
             box-shadow: 0 4px 12px rgb(245 158 11 / 0.4), 0 0 20px rgb(251 191 36 / 0.2);
-            transform: translateX(4px);
+            transform: none !important;
             border-left: 4px solid #fbbf24;
         }
 
-        /* Submenu Styles */
         #sidebar-wrapper .collapse .list-group-item {
             padding-left: 3rem !important;
             font-size: 0.8rem;
@@ -212,18 +201,32 @@
             opacity: 0.5;
         }
 
+        #sidebar-wrapper .collapse .list-group-item:hover:not(.active) {
+            transform: translateX(2px);
+        }
+
+        #sidebar-wrapper .collapse .list-group-item.active {
+            background: linear-gradient(90deg, transparent 0%, rgba(251, 191, 36, 0.1) 100%) !important;
+            border-left: 3px solid #fbbf24;
+            transform: none !important;
+        }
+
         #sidebar-wrapper .collapse .list-group-item.active::before {
             background-color: #fbbf24;
             opacity: 1;
             box-shadow: 0 0 8px rgb(251 191 36 / 0.6);
         }
 
-        #sidebar-wrapper .collapse .list-group-item.active {
-            background: linear-gradient(90deg, transparent 0%, rgba(251, 191, 36, 0.1) 100%) !important;
-            border-left: 3px solid #fbbf24;
+        .sidebar-footer {
+            flex-shrink: 0;
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.75rem;
+            opacity: 0.6;
+            background-color: var(--sidebar-bg);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Chevron Animation */
         .bi-chevron-down {
             transition: transform 0.2s ease;
         }
@@ -232,7 +235,6 @@
             transform: rotate(-90deg);
         }
 
-        /* Content Area */
         #page-content-wrapper {
             min-width: 100vw;
             padding: 0;
@@ -243,23 +245,15 @@
             padding: 1.5rem;
         }
 
-        /* Toggle States */
-        /*
-         * Ketika body memiliki sb-sidenav-toggled:
-         * Desktop: Sidebar tersembunyi (margin-left: -280px)
-         * Mobile: Sidebar terlihat (margin-left: 0)
-         */
         body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
-            margin-left: 0; /* Override default -280px for sidebar, making it visible */
+            margin-left: 0;
         }
 
         body.sb-sidenav-toggled #wrapper #page-content-wrapper {
-            min-width: calc(100vw - 280px); /* Content shrinks to accommodate sidebar */
+            min-width: calc(100vw - 280px);
         }
 
-        /* Responsive Design */
         @media (min-width: 768px) {
-            /* Default desktop behavior: sidebar visible, content shrinks */
             #sidebar-wrapper {
                 margin-left: 0;
             }
@@ -268,18 +262,17 @@
                 min-width: calc(100vw - 280px);
             }
 
-            /* Ketika body memiliki sb-sidenav-toggled di desktop: sidebar tersembunyi, content melebar */
             body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
-                margin-left: -280px; /* Hide sidebar */
+                margin-left: -280px;
             }
 
             body.sb-sidenav-toggled #wrapper #page-content-wrapper {
-                min-width: 100vw; /* Content takes full width */
+                min-width: 100vw;
             }
         }
 
         @media (max-width: 767.98px) {
-            /* Default mobile behavior: sidebar hidden, content full width */
+
             #sidebar-wrapper {
                 position: fixed;
                 top: 0;
@@ -287,10 +280,9 @@
                 bottom: 0;
                 z-index: 1040;
                 box-shadow: var(--shadow-medium);
-                margin-left: -280px; /* Ensure it's hidden by default on mobile */
+                margin-left: -280px;
             }
 
-            /* Ketika body memiliki sb-sidenav-toggled di mobile: sidebar terlihat, overlay muncul */
             body.sb-sidenav-toggled::before {
                 content: '';
                 position: fixed;
@@ -302,8 +294,9 @@
                 z-index: 1030;
                 backdrop-filter: blur(2px);
             }
+
             body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
-                margin-left: 0; /* Make it visible on mobile when toggled */
+                margin-left: 0;
             }
 
 
@@ -312,7 +305,6 @@
             }
         }
 
-        /* Dark mode toggle button */
         .btn-outline-secondary {
             border-color: var(--navbar-border);
             color: var(--navbar-text);
@@ -326,7 +318,6 @@
             box-shadow: 0 2px 8px rgb(245 158 11 / 0.3);
         }
 
-        /* Scrollbar with golden theme */
         #sidebar-wrapper::-webkit-scrollbar {
             width: 4px;
         }
@@ -346,7 +337,7 @@
     </style>
 </head>
 
-{{-- === PENTING: PASTIKAN TAG BODY TIDAK MEMILIKI KELAS 'sb-sidenav-toggled' SECARA DEFAULT DI SINI === --}}
+
 <body>
     <div class="d-flex" id="wrapper">
         @include('layouts.sidebar')
@@ -366,41 +357,26 @@
             const bodyElement = document.body;
             const sidebarToggle = document.getElementById('sidebarToggle');
 
-            // Sidebar toggle
             if (sidebarToggle) {
                 sidebarToggle.addEventListener('click', function(e) {
                     e.preventDefault();
-                    // Ini akan menambahkan 'sb-sidenav-toggled' untuk menyembunyikan sidebar di desktop
-                    // Dan menghapus 'sb-sidenav-toggled' untuk menyembunyikan sidebar di mobile (jika sebelumnya terlihat)
                     bodyElement.classList.toggle('sb-sidenav-toggled');
                 });
             }
 
-            // Responsive sidebar behavior
             function adjustSidebarOnLoad() {
                 if (window.innerWidth < 768) {
-                    // Di mobile, sidebar harus tersembunyi secara default.
-                    // Kelas 'sb-sidenav-toggled' membuat sidebar terlihat di mobile.
-                    // Jadi, pastikan kelas ini TIDAK ADA di mobile saat pertama kali dimuat.
                     bodyElement.classList.remove('sb-sidenav-toggled');
                 } else {
-                    // Di desktop, sidebar harus terlihat secara default.
-                    // Kelas 'sb-sidenav-toggled' membuat sidebar tersembunyi di desktop.
-                    // Jadi, pastikan kelas ini TIDAK ADA di desktop saat pertama kali dimuat.
-                    bodyElement.classList.remove('sb-sidenav-toggled'); // <--- PERUBAHAN UTAMA DI SINI
+                    bodyElement.classList.remove('sb-sidenav-toggled');
                 }
             }
 
             adjustSidebarOnLoad();
             window.addEventListener('resize', adjustSidebarOnLoad);
-
-            // Close sidebar on outside click (mobile)
             document.body.addEventListener('click', function(e) {
                 const sidebar = document.getElementById('sidebar-wrapper');
                 const sidebarToggleBtn = document.getElementById('sidebarToggle');
-
-                // Pastikan untuk menutup sidebar di mobile jika diklik di luar sidebar
-                // dan sidebar sedang dalam kondisi terlihat (memiliki sb-sidenav-toggled)
                 if (window.innerWidth < 768 &&
                     bodyElement.classList.contains('sb-sidenav-toggled') &&
                     !sidebar.contains(e.target) &&
@@ -408,17 +384,16 @@
                     bodyElement.classList.remove('sb-sidenav-toggled');
                 }
             });
-
-            // Improve collapse animation
             const collapseElements = document.querySelectorAll('[data-bs-toggle="collapse"]');
             collapseElements.forEach(element => {
                 element.addEventListener('click', function() {
                     const chevron = this.querySelector('.bi-chevron-down');
                     if (chevron) {
                         setTimeout(() => {
-                            chevron.style.transform = this.getAttribute('aria-expanded') === 'true'
-                                ? 'rotate(0deg)'
-                                : 'rotate(-90deg)';
+                            chevron.style.transform = this.getAttribute('aria-expanded') ===
+                                'true' ?
+                                'rotate(0deg)' :
+                                'rotate(-90deg)';
                         }, 50);
                     }
                 });
@@ -427,4 +402,5 @@
     </script>
     @yield('scripts')
 </body>
+
 </html>
