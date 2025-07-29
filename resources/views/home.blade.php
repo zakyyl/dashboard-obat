@@ -24,15 +24,16 @@
         <div class="col-md-3 mb-3">
             <div class="card text-white bg-dark h-100 shadow">
                 <div class="card-body">
-                    <h3 class="text-warning fw-bold">0</h3> {{-- Assuming 0 or a placeholder if data is not available --}}
-                    <p class="card-text">Kunjungan Hari ini</p>
+                    <h3 class="text-warning fw-bold">{{ $rawatInapHariIni }}</h3>
+                    <p class="card-text">Pasien Rawat Inap Hari Ini</p>
                 </div>
             </div>
         </div>
+
         <div class="col-md-3 mb-3">
             <div class="card text-white bg-dark h-100 shadow">
                 <div class="card-body">
-                    <h3 class="text-warning fw-bold">0</h3> {{-- Assuming 0 or a placeholder if data is not available --}}
+                    <h3 class="text-warning fw-bold">0</h3>
                     <p class="card-text">Kunjungan Bulan ini</p>
                 </div>
             </div>
@@ -174,24 +175,24 @@
         },
         colors: ['#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#6366f1'],
         labels: @json($caraBayarLabels),
-        dataLabels: { // Added dataLabels configuration for the pie chart
+        dataLabels: {
             enabled: true,
             formatter: function (val) {
-                return parseFloat(val).toFixed(1) + '%' // Format to one decimal place (e.g., 88.5%)
+                return parseFloat(val).toFixed(1) + '%'
             },
             style: {
-                colors: ['#000000'] // Text color of the data labels (black)
+                colors: ['#000000']
             },
-            background: { // Background for the data labels
+            background: {
                 enabled: true,
-                foreColor: '#fff', // White background color
+                foreColor: '#fff',
                 borderRadius: 2,
                 padding: 4,
                 opacity: 0.9,
-                borderWidth: 0, // No border
+                borderWidth: 0,
             },
             dropShadow: {
-                enabled: false // No visible shadow as in the image
+                enabled: false
             }
         },
         responsive: [{
@@ -291,8 +292,37 @@
                         <h5 class="mb-0 fw-bold text-warning">Kunjungan Pasien</h5>
                     </div>
                     <div class="card-body">
-                        {{-- The chart for "Kunjungan Pasien Per Bulan (Ranap)" was removed as requested. --}}
-                        <div id="chart-ranap" style="height: 350px;"></div>
+                        <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
+                            <table class="table table-striped table-sm table-bordered text-white">
+                                <thead class="bg-secondary text-light text-center">
+                                    <tr>
+                                        <th>No. RM</th>
+                                        <th>Nama Pasien</th>
+                                        <th>Kamar</th>
+                                        <th>Tanggal Masuk</th>
+                                        <th>Nama Dokter</th>
+                                        <th>Cara Bayar</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-white">
+                                    @forelse($rawatInapHariIniData as $item)
+                                    <tr>
+                                        <td>{{ $item->no_rkm_medis }}</td>
+                                        <td>{{ $item->nm_pasien }}</td>
+                                        <td>{{ $item->kamar }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->tgl_masuk)->format('d-m-Y') }}</td>
+                                        <td>{{ $item->nm_dokter }}</td>
+                                        <td>{{ $item->png_jawab }}</td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center text-warning">Tidak ada data rawat inap hari
+                                            ini</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -311,7 +341,8 @@
             <div class="col-lg-4 col-md-12 mb-4">
                 <div class="card text-white h-100 shadow">
                     <div class="card-header border-secondary border-bottom">
-                        <h5 class="mb-0 fw-bold text-warning">Cara Bayar {{ \Carbon\Carbon::now()->translatedFormat('F Y') }}</h5>
+                        <h5 class="mb-0 fw-bold text-warning">Cara Bayar {{ \Carbon\Carbon::now()->translatedFormat('F
+                            Y') }}</h5>
                     </div>
                     <div class="card-body">
                         <div id="chart-cara-bayar" style="height: 250px; max-width: 100%; overflow: true;"></div>
