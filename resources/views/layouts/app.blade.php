@@ -244,16 +244,22 @@
         }
 
         /* Toggle States */
+        /*
+         * Ketika body memiliki sb-sidenav-toggled:
+         * Desktop: Sidebar tersembunyi (margin-left: -280px)
+         * Mobile: Sidebar terlihat (margin-left: 0)
+         */
         body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
-            margin-left: 0;
+            margin-left: 0; /* Override default -280px for sidebar, making it visible */
         }
 
         body.sb-sidenav-toggled #wrapper #page-content-wrapper {
-            min-width: calc(100vw - 280px);
+            min-width: calc(100vw - 280px); /* Content shrinks to accommodate sidebar */
         }
 
         /* Responsive Design */
         @media (min-width: 768px) {
+            /* Default desktop behavior: sidebar visible, content shrinks */
             #sidebar-wrapper {
                 margin-left: 0;
             }
@@ -262,16 +268,18 @@
                 min-width: calc(100vw - 280px);
             }
 
+            /* Ketika body memiliki sb-sidenav-toggled di desktop: sidebar tersembunyi, content melebar */
             body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
-                margin-left: -280px;
+                margin-left: -280px; /* Hide sidebar */
             }
 
             body.sb-sidenav-toggled #wrapper #page-content-wrapper {
-                min-width: 100vw;
+                min-width: 100vw; /* Content takes full width */
             }
         }
 
         @media (max-width: 767.98px) {
+            /* Default mobile behavior: sidebar hidden, content full width */
             #sidebar-wrapper {
                 position: fixed;
                 top: 0;
@@ -279,8 +287,10 @@
                 bottom: 0;
                 z-index: 1040;
                 box-shadow: var(--shadow-medium);
+                margin-left: -280px; /* Ensure it's hidden by default on mobile */
             }
 
+            /* Ketika body memiliki sb-sidenav-toggled di mobile: sidebar terlihat, overlay muncul */
             body.sb-sidenav-toggled::before {
                 content: '';
                 position: fixed;
@@ -292,6 +302,10 @@
                 z-index: 1030;
                 backdrop-filter: blur(2px);
             }
+            body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
+                margin-left: 0; /* Make it visible on mobile when toggled */
+            }
+
 
             .container-fluid {
                 padding: 1rem;
@@ -332,74 +346,85 @@
     </style>
 </head>
 
+{{-- === PENTING: PASTIKAN TAG BODY TIDAK MEMILIKI KELAS 'sb-sidenav-toggled' SECARA DEFAULT DI SINI === --}}
 <body>
-<div class="d-flex" id="wrapper">
-    @include('layouts.sidebar')
+    <div class="d-flex" id="wrapper">
+        @include('layouts.sidebar')
 
-    <div id="page-content-wrapper">
-        @include('layouts.navbar')
+        <div id="page-content-wrapper">
+            @include('layouts.navbar')
 
-        <div class="container-fluid">
-            @yield('content')
+            <div class="container-fluid">
+                @yield('content')
+            </div>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const bodyElement = document.body;
-        const sidebarToggle = document.getElementById('sidebarToggle');
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const bodyElement = document.body;
+            const sidebarToggle = document.getElementById('sidebarToggle');
 
-        // Sidebar toggle
-        if (sidebarToggle) {
-            sidebarToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                bodyElement.classList.toggle('sb-sidenav-toggled');
-            });
-        }
-
-        // Responsive sidebar behavior
-        function adjustSidebarOnLoad() {
-            if (window.innerWidth < 768) {
-                bodyElement.classList.remove('sb-sidenav-toggled');
-            } else {
-                bodyElement.classList.add('sb-sidenav-toggled');
+            // Sidebar toggle
+            if (sidebarToggle) {
+                sidebarToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    // Ini akan menambahkan 'sb-sidenav-toggled' untuk menyembunyikan sidebar di desktop
+                    // Dan menghapus 'sb-sidenav-toggled' untuk menyembunyikan sidebar di mobile (jika sebelumnya terlihat)
+                    bodyElement.classList.toggle('sb-sidenav-toggled');
+                });
             }
-        }
 
-        adjustSidebarOnLoad();
-        window.addEventListener('resize', adjustSidebarOnLoad);
-
-        // Close sidebar on outside click (mobile)
-        document.body.addEventListener('click', function(e) {
-            const sidebar = document.getElementById('sidebar-wrapper');
-            const sidebarToggleBtn = document.getElementById('sidebarToggle');
-            
-            if (window.innerWidth < 768 && 
-                bodyElement.classList.contains('sb-sidenav-toggled') &&
-                !sidebar.contains(e.target) &&
-                !sidebarToggleBtn.contains(e.target)) {
-                bodyElement.classList.remove('sb-sidenav-toggled');
+            // Responsive sidebar behavior
+            function adjustSidebarOnLoad() {
+                if (window.innerWidth < 768) {
+                    // Di mobile, sidebar harus tersembunyi secara default.
+                    // Kelas 'sb-sidenav-toggled' membuat sidebar terlihat di mobile.
+                    // Jadi, pastikan kelas ini TIDAK ADA di mobile saat pertama kali dimuat.
+                    bodyElement.classList.remove('sb-sidenav-toggled');
+                } else {
+                    // Di desktop, sidebar harus terlihat secara default.
+                    // Kelas 'sb-sidenav-toggled' membuat sidebar tersembunyi di desktop.
+                    // Jadi, pastikan kelas ini TIDAK ADA di desktop saat pertama kali dimuat.
+                    bodyElement.classList.remove('sb-sidenav-toggled'); // <--- PERUBAHAN UTAMA DI SINI
+                }
             }
-        });
 
-        // Improve collapse animation
-        const collapseElements = document.querySelectorAll('[data-bs-toggle="collapse"]');
-        collapseElements.forEach(element => {
-            element.addEventListener('click', function() {
-                const chevron = this.querySelector('.bi-chevron-down');
-                if (chevron) {
-                    setTimeout(() => {
-                        chevron.style.transform = this.getAttribute('aria-expanded') === 'true' 
-                            ? 'rotate(0deg)' 
-                            : 'rotate(-90deg)';
-                    }, 50);
+            adjustSidebarOnLoad();
+            window.addEventListener('resize', adjustSidebarOnLoad);
+
+            // Close sidebar on outside click (mobile)
+            document.body.addEventListener('click', function(e) {
+                const sidebar = document.getElementById('sidebar-wrapper');
+                const sidebarToggleBtn = document.getElementById('sidebarToggle');
+
+                // Pastikan untuk menutup sidebar di mobile jika diklik di luar sidebar
+                // dan sidebar sedang dalam kondisi terlihat (memiliki sb-sidenav-toggled)
+                if (window.innerWidth < 768 &&
+                    bodyElement.classList.contains('sb-sidenav-toggled') &&
+                    !sidebar.contains(e.target) &&
+                    !sidebarToggleBtn.contains(e.target)) {
+                    bodyElement.classList.remove('sb-sidenav-toggled');
                 }
             });
+
+            // Improve collapse animation
+            const collapseElements = document.querySelectorAll('[data-bs-toggle="collapse"]');
+            collapseElements.forEach(element => {
+                element.addEventListener('click', function() {
+                    const chevron = this.querySelector('.bi-chevron-down');
+                    if (chevron) {
+                        setTimeout(() => {
+                            chevron.style.transform = this.getAttribute('aria-expanded') === 'true'
+                                ? 'rotate(0deg)'
+                                : 'rotate(-90deg)';
+                        }, 50);
+                    }
+                });
+            });
         });
-    });
-</script>
-@yield('scripts')
+    </script>
+    @yield('scripts')
 </body>
 </html>

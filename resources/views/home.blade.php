@@ -4,23 +4,39 @@
 
 @section('content')
 <div class="container-fluid text-white py-4 min-vh-100 overflow-auto">
-    <!-- Statistik -->
     <div class="row text-center mb-4">
         <div class="col-md-3 mb-3">
-            <h3 class="text-warning fw-bold">{{ $pasienHariIni }}</h3>
-            <p>Pasien Hari Ini</p>
+            <div class="card text-white bg-dark h-100 shadow">
+                <div class="card-body">
+                    <h3 class="text-warning fw-bold">{{ $pasienHariIni }}</h3>
+                    <p class="card-text">Pasien Hari Ini</p>
+                </div>
+            </div>
         </div>
         <div class="col-md-3 mb-3">
-            <h3 class="text-warning fw-bold">{{ $resepHariIni }}</h3>
-            <p>Resep Hari Ini</p>
+            <div class="card text-white bg-dark h-100 shadow">
+                <div class="card-body">
+                    <h3 class="text-warning fw-bold">{{ $resepHariIni }}</h3>
+                    <p class="card-text">Resep Hari Ini</p>
+                </div>
+            </div>
         </div>
         <div class="col-md-3 mb-3">
-            <h3 class="text-warning fw-bold"></h3>
-            <p>Kunjungan Hari ini</p>
+            <div class="card text-white bg-dark h-100 shadow">
+                <div class="card-body">
+                    <h3 class="text-warning fw-bold">{{ $rawatInapHariIni }}</h3>
+                    <p class="card-text">Pasien Rawat Inap Hari Ini</p>
+                </div>
+            </div>
         </div>
+
         <div class="col-md-3 mb-3">
-            <h3 class="text-warning fw-bold"></h3>
-            <p>Kunjungan Bulan ini</p>
+            <div class="card text-white bg-dark h-100 shadow">
+                <div class="card-body">
+                    <h3 class="text-warning fw-bold">0</h3>
+                    <p class="card-text">Kunjungan Bulan ini</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -43,25 +59,15 @@
     $caraBayarValues[] = $cb->jumlah;
     }
 
-    $labelsRanap = [];
-    $dataRanap = [];
-    foreach ($ranapPerBulan as $item) {
-    $labelsRanap[] = \Carbon\Carbon::parse($item->bulan . '-01')->translatedFormat('F Y');
-    $dataRanap[] = $item->jumlah;
-    }
-
     $labelsKematian = [];
     $dataKematian = [];
     foreach ($kematianPerBulan as $item) {
     $labelsKematian[] = $item->bulan;
     $dataKematian[] = $item->jumlah;
     }
-
-
     @endphp
 
-    <!-- Card Grafik RAWAT JALAN PERBULAN -->
-    <div class="card  text-white shadow mb-4">
+    <div class="card text-white shadow mb-4">
         <div class="card-header border-bottom border-secondary">
             <h5 class="mb-0 fw-bold text-warning">RAWAT JALAN PERBULAN</h5>
         </div>
@@ -70,9 +76,8 @@
         </div>
     </div>
 
-    <!-- Script ApexCharts -->
     <script>
-document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function () {
     // Chart Rawat Jalan
     var options = {
         series: [{
@@ -80,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'column',
             data: @json($seriesColumn)
         }, {
-            name: 'Nilai',
+            name: 'Jumlah',
             type: 'line',
             data: @json($seriesLine)
         }],
@@ -111,13 +116,12 @@ document.addEventListener('DOMContentLoaded', function () {
             style: { color: '#fff' }
         },
         dataLabels: {
-    enabled: true,
-    enabledOnSeries: [1],
-    style: {
-        colors: ['#000000'] // warna hitam
-    }
-},
-
+            enabled: true,
+            enabledOnSeries: [1],
+            style: {
+                colors: ['#000000']
+            }
+        },
         labels: @json($categories),
         xaxis: {
             labels: {
@@ -166,11 +170,31 @@ document.addEventListener('DOMContentLoaded', function () {
         series: @json($caraBayarValues),
         chart: {
             type: 'pie',
-            width: 380,
+            width: '100%',
             foreColor: '#fff'
         },
         colors: ['#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#6366f1'],
         labels: @json($caraBayarLabels),
+        dataLabels: {
+            enabled: true,
+            formatter: function (val) {
+                return parseFloat(val).toFixed(1) + '%'
+            },
+            style: {
+                colors: ['#000000']
+            },
+            background: {
+                enabled: true,
+                foreColor: '#fff',
+                borderRadius: 2,
+                padding: 4,
+                opacity: 0.9,
+                borderWidth: 0,
+            },
+            dropShadow: {
+                enabled: false
+            }
+        },
         responsive: [{
             breakpoint: 480,
             options: {
@@ -179,65 +203,11 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }],
         legend: {
+            position: 'bottom',
             labels: { colors: ['#e5e7eb'] }
         }
     };
     new ApexCharts(document.querySelector("#chart-cara-bayar"), optionsCaraBayar).render();
-
-    // Bar Chart Ranap - Horizontal
-    var optionsRanap = {
-        series: [{
-            name: 'Ranap',
-            data: @json($dataRanap)
-        }],
-        chart: {
-            type: 'bar',
-            height: 350,
-            foreColor: '#fff',
-            toolbar: { show: false }
-        },
-        colors: ['#8b5cf6'],
-        fill: {
-            type: 'gradient',
-            gradient: {
-                shade: 'dark',
-                type: 'horizontal',
-                gradientToColors: ['#a78bfa'],
-                shadeIntensity: 0.5,
-                opacityFrom: 0.9,
-                opacityTo: 0.7,
-                stops: [0, 100]
-            }
-        },
-        plotOptions: {
-            bar: {
-                borderRadius: 6,
-                horizontal: true
-            }
-        },
-        dataLabels: {
-            enabled: true,
-            style: {
-                colors: ['#fefce8'],
-                fontSize: '12px'
-            }
-        },
-        xaxis: {
-            categories: @json($labelsRanap),
-            labels: {
-                style: {
-                    colors: '#e5e7eb'
-                }
-            }
-        },
-        grid: {
-            borderColor: '#444'
-        },
-        tooltip: {
-            theme: 'dark'
-        }
-    };
-    new ApexCharts(document.querySelector("#chart-ranap"), optionsRanap).render();
 
     // Bar Chart Kematian
     var optionsKematian = {
@@ -246,7 +216,7 @@ document.addEventListener('DOMContentLoaded', function () {
             type: 'column',
             data: @json($dataKematian)
         }, {
-            name: 'Nilai Kematian',
+            name: 'Jumlah Kematian',
             type: 'line',
             data: @json($dataKematian)
         }],
@@ -281,9 +251,9 @@ document.addEventListener('DOMContentLoaded', function () {
         },
         dataLabels: {
             enabled: true,
-            enabledOnSeries: [1],
+            enabledOnSeries: [0],
             style: {
-                colors: ['#fefce8']
+                colors: ['#000000']
             }
         },
         labels: @json($labelsKematian),
@@ -312,26 +282,53 @@ document.addEventListener('DOMContentLoaded', function () {
     };
     new ApexCharts(document.querySelector("#chart-pasien-mati"), optionsKematian).render();
 });
-</script>
-
+    </script>
 
     <div class="container-fluid">
         <div class="row">
-            <!-- Card 1 -->
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card  text-white h-100 shadow">
+                <div class="card text-white h-100 shadow">
                     <div class="card-header border-secondary border-bottom">
-                        <h5 class="mb-0 fw-bold text-warning">Kunjungan Pasien Per Bulan (Ranap)</h5>
+                        <h5 class="mb-0 fw-bold text-warning">Kunjungan Pasien</h5>
                     </div>
                     <div class="card-body">
-                        <div id="chart-ranap" style="height: 350px;"></div>
+                        <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
+                            <table class="table table-striped table-sm table-bordered text-white">
+                                <thead class="bg-secondary text-light text-center">
+                                    <tr>
+                                        <th>No. RM</th>
+                                        <th>Nama Pasien</th>
+                                        <th>Kamar</th>
+                                        <th>Tanggal Masuk</th>
+                                        <th>Nama Dokter</th>
+                                        <th>Cara Bayar</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-white">
+                                    @forelse($rawatInapHariIniData as $item)
+                                    <tr>
+                                        <td>{{ $item->no_rkm_medis }}</td>
+                                        <td>{{ $item->nm_pasien }}</td>
+                                        <td>{{ $item->kamar }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->tgl_masuk)->format('d-m-Y') }}</td>
+                                        <td>{{ $item->nm_dokter }}</td>
+                                        <td>{{ $item->png_jawab }}</td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center text-warning">Tidak ada data rawat inap hari
+                                            ini</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Card Pasien Mati Per Bulan -->
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card  text-white h-100 shadow">
+                <div class="card text-white h-100 shadow">
                     <div class="card-header border-secondary border-bottom">
                         <h5 class="mb-0 fw-bold text-warning">Pasien Mati Per Bulan</h5>
                     </div>
@@ -341,21 +338,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
             </div>
 
-
-            <!-- Card 3 - Cara Bayar Perbulan-->
             <div class="col-lg-4 col-md-12 mb-4">
-                <div class="card  text-white h-100 shadow">
+                <div class="card text-white h-100 shadow">
                     <div class="card-header border-secondary border-bottom">
-                        <h5 class="mb-0 fw-bold text-warning">Cara Bayar Per Bulan</h5>
+                        <h5 class="mb-0 fw-bold text-warning">Cara Bayar {{ \Carbon\Carbon::now()->translatedFormat('F
+                            Y') }}</h5>
                     </div>
                     <div class="card-body">
                         <div id="chart-cara-bayar" style="height: 250px; max-width: 100%; overflow: true;"></div>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
-
 </div>
 @endsection
