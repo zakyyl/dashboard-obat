@@ -3,8 +3,14 @@
 @section('title', 'Stok Obat Minimal')
 
 @section('content')
-<div class="container py-4">
-    <h2 class="mb-4 text-center">📊 Grafik Stok Obat Minimal & Saat Ini</h2>
+<div class="container py-4 text-white min-vh-100">
+    <h2 class="mb-4 text-center">
+        Grafik Stok Obat Minimal & Saat Ini
+        <br>
+        <small class="text-muted">
+            {{ now()->translatedFormat('F Y') }}
+        </small>
+    </h2>
 
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
@@ -23,169 +29,131 @@
 
                 <div class="col-md-auto">
                     <label for="search" class="form-label mb-0">Cari Nama Obat:</label>
-                    <input type="text" id="search" name="search" class="form-control" placeholder="Ketik nama obat..."
-                        value="{{ request('search') }}">
+                    <input type="text" id="search" name="search" class="form-control"
+                        placeholder="Ketik nama obat..." value="{{ request('search') }}">
                 </div>
 
                 <div class="col-md-auto">
-                    <button type="submit" class="btn btn-warning">Cari</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-search"></i> Cari
+                    </button>
                 </div>
             </form>
-
         </div>
     </div>
 
     <div class="card shadow-sm">
         <div class="card-body">
             @php
-            $chartHeight = min($data->count() * 45, 1200); // maksimal tinggi 1200px
+            $chartHeight = min($data->count() * 45, 1200);
             @endphp
-            <div style="max-height: 500px; overflow-y: auto;">
-                <div id="stokChartContainer" style="height: {{ $data->count() * 45 }}px; min-height: 400px;">
-                    {{-- ApexCharts akan dirender di sini --}}
+
+            @if ($data->count() === 0)
+                <div class="alert alert-info text-center">
+                    <i class="bi bi-info-circle-fill me-1"></i> Tidak ada data obat.
                 </div>
-            </div>
+            @else
+                <div style="max-height: 500px; overflow-y: auto;">
+                    <div id="stokChartContainer" style="height: {{ $chartHeight }}px; min-height: 400px;"></div>
+                </div>
+            @endif
         </div>
     </div>
 </div>
 
 <script>
+document.addEventListener('DOMContentLoaded', function () {
     let stokApexChart;
 
-        function getComputedThemeColors() {
-            const style = getComputedStyle(document.documentElement);
-            return {
-                bodyColor: style.getPropertyValue('--bs-body-color').trim(),
-                borderColor: style.getPropertyValue('--navbar-border').trim(),
-            };
-        }
-
-        function createApexChart(data) {
-    const themeColors = getComputedThemeColors();
-
-    const dataArray = Array.isArray(data) ? data : Object.values(data || []);
-    // console.log("Data Array isi:", dataArray);
-
-    // Ambil data untuk dua series: stok minimal & total stok
-    const kategoriObat = dataArray.map(item => item?.nama_brng ?? '-');
-    const stokMinimal = dataArray.map(item => item?.stokminimal ?? 0);
-    const totalStok = dataArray.map(item => item?.total_stok ?? 0);
-
-    const options = {
-    series: [
-        { name: 'Stok Minimal', data: stokMinimal },
-        { name: 'Total Stok', data: totalStok }
-    ],
-    chart: {
-        type: 'bar',
-        height: 930,
-        toolbar: { show: false },
-        background: 'transparent',
-        foreColor: themeColors.bodyColor
-    },
-    plotOptions: {
-        bar: {
-            horizontal: true,
-            barHeight: '80%'
-        }
-    },
-    dataLabels: {
-        enabled: false
-    },
-    stroke: {
-        show: true,
-        width: 1,
-        colors: ['#fff']
-    },
-    tooltip: {
-        shared: true,
-        intersect: false,
-        y: {
-            formatter: val => val + ' unit'
-        },
-        theme: document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light'
-    },
-    xaxis: {
-        categories: kategoriObat,
-        labels: { style: { colors: themeColors.bodyColor } },
-        axisBorder: { show: true, color: themeColors.borderColor },
-        axisTicks: { show: true, color: themeColors.borderColor }
-    },
-    yaxis: {
-        labels: { style: { colors: themeColors.bodyColor } },
-        title: { text: undefined }
-    },
-    legend: {
-        labels: { colors: themeColors.bodyColor },
-        markers: { fillColors: ['#F3C623', '#FA812F'] }
-    },
-    colors: ['#F3C623', '#FA812F'],
-    grid: {
-        borderColor: themeColors.borderColor,
-        xaxis: { lines: { show: false } },
-        yaxis: { lines: { show: true } }
+    function getThemeColors() {
+        const style = getComputedStyle(document.documentElement);
+        return {
+            bodyColor: style.getPropertyValue('--bs-body-color').trim() || '#fff',
+            borderColor: style.getPropertyValue('--navbar-border').trim() || '#ccc'
+        };
     }
-};
 
+    function createApexChart(data) {
+        const themeColors = getThemeColors();
+        const dataArray = Array.isArray(data) ? data : Object.values(data || []);
 
-    const chartElement = document.querySelector("#stokChartContainer");
+        const kategoriObat = dataArray.map(item => item?.nama_brng ?? '-');
+        const stokMinimal = dataArray.map(item => item?.stokminimal ?? 0);
+        const totalStok = dataArray.map(item => item?.total_stok ?? 0);
 
-    if (stokApexChart) stokApexChart.destroy();
-
-    stokApexChart = new ApexCharts(chartElement, options);
-    stokApexChart.render();
-        }
-        createApexChart({!! json_encode($data->values()) !!});
-        // --- Dark Mode Chart Update Listener ---
-        const observer = new MutationObserver((mutationsList) => {
-            for (const mutation of mutationsList) {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'data-bs-theme') {
-                    if (stokApexChart && stokApexChart.w && stokApexChart.w.config && stokApexChart.w.config.series.length === 2) {
-    const kategoriObat = stokApexChart.w.globals.labels;
-    const stokMinimal = stokApexChart.w.config.series[0].data;
-    const totalStok = stokApexChart.w.config.series[1].data;
-
-    const combined = kategoriObat.map((nama_brng, i) => ({
-        nama_brng,
-        stokminimal: stokMinimal[i] ?? 0,
-        total_stok: totalStok[i] ?? 0
-    }));
-
-    createApexChart(combined);
-}
-else {
-                        console.warn("Chart not yet initialized or data not available for theme change.");
-                    }
+        const options = {
+            series: [
+                { name: 'Stok Minimal', data: stokMinimal },
+                { name: 'Total Stok', data: totalStok }
+            ],
+            chart: {
+                type: 'bar',
+                height: 930,
+                toolbar: { show: false },
+                foreColor: themeColors.bodyColor
+            },
+            colors: ['#093FB4', '#ED3500'], // Warna dari grafik Ralan
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shade: 'dark',
+                    type: 'horizontal',
+                    gradientToColors: ['#FFFCFB', '#FFD8D8'],
+                    shadeIntensity: 0.5,
+                    opacityFrom: 0.9,
+                    opacityTo: 0.7,
+                    stops: [0, 100]
                 }
+            },
+            plotOptions: {
+                bar: {
+                    horizontal: true,
+                    barHeight: '80%',
+                    borderRadius: 3
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                style: {
+                    colors: ['#fefce8'],
+                    fontSize: '12px'
+                }
+            },
+            xaxis: {
+                categories: kategoriObat,
+                labels: { style: { colors: themeColors.bodyColor } },
+                axisBorder: { color: themeColors.borderColor },
+                axisTicks: { color: themeColors.borderColor }
+            },
+            yaxis: {
+                labels: { style: { colors: themeColors.bodyColor } },
+                axisBorder: { color: themeColors.borderColor },
+                axisTicks: { color: themeColors.borderColor }
+            },
+            grid: {
+                borderColor: themeColors.borderColor
+            },
+            tooltip: {
+                shared: true,
+                intersect: false,
+                y: { formatter: val => val + ' unit' },
+                theme: document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light'
             }
-        });
-        observer.observe(document.documentElement, {
-            attributes: true
-        });
+        };
 
+        const chartElement = document.querySelector("#stokChartContainer");
+        if (stokApexChart) stokApexChart.destroy();
+        stokApexChart = new ApexCharts(chartElement, options);
+        stokApexChart.render();
+    }
 
-        // --- Search/Filter Logic ---
-        // let debounceTimer;
-        // document.getElementById('search').addEventListener('input', function() {
-        //     clearTimeout(debounceTimer);
-        //     const keyword = this.value;
+    createApexChart(@json($data->values()));
 
-        //     debounceTimer = setTimeout(() => {
-        //         if (keyword.length >= 2 || keyword.length === 0) {
-        //             fetch(`{{ route('obat.search-obat') }}?q=${encodeURIComponent(keyword)}&jenis={{ $jenisFilter }}`)
-        //                 .then(res => {
-        //                     if (!res.ok) {
-        //                         throw new Error('Network response was not ok ' + res.statusText);
-        //                     }
-        //                     return res.json();
-        //                 })
-        //                 .then(data => {
-        //                     // PASTIKAN data dari fetch adalah array
-        //                     createApexChart(data);
-        //                 })
-        //                 .catch(error => console.error('Error fetching search data:', error));
-        //         }
-        //     }, 300);
-        // });
+    // Listener untuk dark mode
+    const observer = new MutationObserver(() => {
+        createApexChart(@json($data->values()));
+    });
+    observer.observe(document.documentElement, { attributes: true });
+});
 </script>
 @endsection

@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="container py-4">
-        <h2 class="mb-4 text-center">🏥 Grafik Jumlah Pasien per Poli</h2>
+        <h2 class="mb-4 text-center">Grafik Jumlah Pasien per Poli</h2>
 
         <div class="card mb-4 shadow-sm">
             <div class="card-body">
@@ -58,99 +58,70 @@
             }));
 
             const options = {
-                series: [{
-                    name: 'Jumlah Pasien',
-                    data: chartData
-                }],
-                chart: {
-                    height: 50 * data.length,
-                    type: 'bar',
-                    toolbar: {
-                        show: false
-                    },
-                    background: 'transparent',
-                    foreColor: themeColors.bodyColor
-                },
-                plotOptions: {
-                    bar: {
-                        horizontal: true,
-                        barHeight: '60%',
-                        distributed: true
-                    }
-                },
-                dataLabels: {
-                    enabled: true,
-                    style: {
-                        colors: [themeColors.bodyColor]
-                    }
-                },
-                xaxis: {
-                    title: {
-                        text: 'Jumlah Pasien',
-                        style: {
-                            color: themeColors.bodyColor
-                        }
-                    },
-                    labels: {
-                        style: {
-                            colors: themeColors.bodyColor
-                        }
-                    },
-                    axisBorder: {
-                        color: themeColors.borderColor
-                    },
-                    axisTicks: {
-                        color: themeColors.borderColor
-                    }
-                },
-                yaxis: {
-                    labels: {
-                        style: {
-                            colors: themeColors.bodyColor,
-                            fontSize: '13px'
-                        }
-                    },
-                    axisBorder: {
-                        color: themeColors.borderColor
-                    },
-                    axisTicks: {
-                        color: themeColors.borderColor
-                    }
-                },
-                fill: {
-                    opacity: 1,
-                    colors: ['#FFAF61']
-                },
-                stroke: {
-                    show: true,
-                    width: 1,
-                    colors: ['#fff']
-                },
+    series: [{
+        name: 'Jumlah Pasien',
+        data: chartData
+    }],
+    chart: {
+        height: 50 * data.length,
+        type: 'bar',
+        toolbar: { show: false },
+        foreColor: themeColors.bodyColor
+    },
+    colors: ['#FFAF00'], // dua warna dasar
+    fill: {
+        type: 'gradient',
+        gradient: {
+            shade: 'dark',
+            type: 'horizontal',
+            gradientToColors: ['#FFFCFB'], // gradasi terang
+            shadeIntensity: 0.5,
+            opacityFrom: 0.9,
+            opacityTo: 0.7,
+            stops: [0, 100]
+        }
+    },
+    plotOptions: {
+        bar: {
+            horizontal: true,
+            barHeight: '80%',
+            borderRadius: 3
+        }
+    },
+    dataLabels: {
+        enabled: true,
+        style: {
+            colors: ['#ffffff'], // label putih agar kontras
+            fontSize: '12px',
+            fontWeight: 'bold'
+        }
+    },
+    xaxis: {
+        title: {
+            text: 'Jumlah Pasien',
+            style: { color: themeColors.bodyColor }
+        },
+        labels: { style: { colors: themeColors.bodyColor } },
+        axisBorder: { color: themeColors.borderColor },
+        axisTicks: { color: themeColors.borderColor }
+    },
+    yaxis: {
+        labels: { style: { colors: themeColors.bodyColor, fontSize: '13px' } },
+        axisBorder: { color: themeColors.borderColor },
+        axisTicks: { color: themeColors.borderColor }
+    },
+    grid: {
+        borderColor: themeColors.borderColor
+    },
+    tooltip: {
+        shared: true,
+        intersect: false,
+        y: { formatter: val => `${val} pasien` },
+        theme: document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light'
+    },
+    legend: { show: false }
+};
 
-
-                tooltip: {
-                    y: {
-                        formatter: val => `${val} pasien`
-                    },
-                    theme: document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light'
-                },
-                grid: {
-                    borderColor: themeColors.borderColor,
-                    xaxis: {
-                        lines: {
-                            show: true
-                        }
-                    },
-                    yaxis: {
-                        lines: {
-                            show: false
-                        }
-                    }
-                },
-                legend: {
-                    show: false
-                }
-            };
 
             const chartElement = document.querySelector("#poliChartContainer");
             chartElement.innerHTML = '';

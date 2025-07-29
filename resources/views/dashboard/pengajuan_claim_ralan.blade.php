@@ -29,12 +29,12 @@
     const options = {
         series: [
             {
-                name: 'Jumlah Pengajuan',
+                name: 'Pengajuan',
                 type: 'column',
                 data: @json($seriesColumn)
             },
             {
-                name: 'Tren',
+                name: 'Jumlah',
                 type: 'line',
                 data: @json($seriesColumn) // Gunakan data yang sama, tapi tampil dalam bentuk garis
             }
