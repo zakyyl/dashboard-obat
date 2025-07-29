@@ -215,83 +215,70 @@
     new ApexCharts(document.querySelector("#chart-cara-bayar"), optionsCaraBayar).render();
 
     // Bar Chart Kematian
-    var optionsKematian = {
-        series: [{
-            name: 'Jumlah Pasien Meninggal',
-            type: 'column',
-            data: @json($dataKematian)
-        }, {
-            name: 'Jumlah Kematian',
-            type: 'line',
-            data: @json($dataKematian)
-        }],
-        chart: {
-            type: 'line',
-            height: 350,
-            foreColor: '#e5e7eb',
-            toolbar: { show: false }
-        },
-        colors: ['#ef4444', '#f59e0b'],
-        fill: {
-            type: 'gradient',
-            gradient: {
-                shade: 'dark',
-                type: 'vertical',
-                gradientToColors: ['#f87171', '#facc15'],
-                shadeIntensity: 0.5,
-                opacityFrom: 0.9,
-                opacityTo: 0.7,
-                stops: [0, 100]
-            }
-        },
-        stroke: {
-            width: [0, 3]
-        },
-        title: {
-            text: 'Pasien Meninggal per Bulan',
-            align: 'center',
-            style: {
-                color: '#fef2f2'
-            }
-        },
-        dataLabels: {
-            enabled: true,
-            enabledOnSeries: [0],
-            style: {
-                colors: ['#000000']
-            }
-        },
-        labels: @json($labelsKematian),
-        xaxis: {
-    labels: {
-        rotate: -65, // Miringkan teks label agar tidak tabrakan
-        style: {
-            colors: '#e5e7eb',
-            fontSize: '10px'
-        }
-    },
-    axisBorder: { show: false },
-    axisTicks: { show: false },
-},
-        yaxis: [{
+            var options = {
+            series: [{
+                name: 'Jumlah Pasien Meninggal',
+                type: 'column',
+                data: @json($dataKematian) // data jumlah pasien per bulan
+            }, {
+                name: 'Jumlah Kematian',
+                type: 'line',
+                data: @json($dataKematian) // sama, hanya untuk garis
+            }],
+            chart: {
+                type: 'line',
+                height: 350,
+                width: '100%',
+                toolbar: { show: false },
+                zoom: { enabled: false },
+                foreColor: '#ffffff' // putih di dark mode
+            },
+            stroke: {
+                width: [0, 3]
+            },
             title: {
-                text: 'Jumlah Pasien',
+                text: 'Pasien Meninggal per Bulan',
+                align: 'center',
                 style: {
-                    color: '#f3f4f6'
+                    color: '#fff'
                 }
             },
-            labels: {
-                style: { colors: '#e5e7eb' }
+            dataLabels: {
+                enabled: true,
+                enabledOnSeries: [1], // tampilkan angka di bar & garis
+                style: {
+                    colors: ['#000']
+                },
+                dropShadow: {
+                    enabled: false
+                }
+            },
+            labels: @json($labelsKematian), // nama bulan
+            xaxis: {
+                labels: { style: { colors: '#fff' } },
+                axisBorder: { show: false },
+                axisTicks: { show: false }
+            },
+            yaxis: [{
+                title: {
+                    text: 'Jumlah Pasien',
+                    style: {
+                        color: '#fff'
+                    }
+                },
+                labels: {
+                    style: { colors: '#fff' }
+                }
+            }],
+            tooltip: {
+                theme: 'dark'
+            },
+            grid: {
+                borderColor: '#444'
             }
-        }],
-        tooltip: {
-            theme: 'dark'
-        },
-        grid: {
-            borderColor: '#374151'
-        }
-    };
-    new ApexCharts(document.querySelector("#chart-pasien-mati"), optionsKematian).render();
+        };
+        var chart = new ApexCharts(document.querySelector("#chart-pasien-mati"), options);
+        chart.render();
 });
     </script>
 
@@ -344,10 +331,12 @@
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card text-white h-100 shadow">
                     <div class="card-header border-secondary border-bottom">
-                        <h5 class="mb-0 fw-bold text-warning">Pasien Mati Per Bulan</h5>
+                        <h5 class="mb-0 fw-bold text-warning">Pasien Mati Per {{
+                            \Carbon\Carbon::now()->translatedFormat('F
+                            Y') }}</h5>
                     </div>
                     <div class="card-body">
-                        <div id="chart-pasien-mati" style="height: 350px; width: 100%;"></div>
+                        <div id="chart-pasien-mati" style="height: 350px; width: 100%; overflow: true;"></div>
                     </div>
                 </div>
             </div>
