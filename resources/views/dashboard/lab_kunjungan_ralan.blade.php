@@ -24,7 +24,7 @@
                     </div>
 
                     <div class="col-md-auto">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-warning">
                             <i class="bi bi-search"></i> Tampilkan
                         </button>
                     </div>

@@ -48,4 +48,54 @@ class RawatJalanController extends Controller
 
         return view('dashboard.radiologi_kunjungan_ralan', compact('data', 'tgl_dari', 'tgl_sampai'));
     }
+    public function getRalanPerBulan($bulan_dari = '2025-01', $bulan_sampai = '2025-12')
+    {
+        $results = DB::table('reg_periksa')
+            ->select(
+                DB::raw("DATE_FORMAT(tgl_registrasi, '%Y-%m') AS bulan"),
+                DB::raw('COUNT(*) AS jumlah')
+            )
+            ->where('status_lanjut', 'Ralan')
+            ->whereBetween('tgl_registrasi', [$bulan_dari . '-01', $bulan_sampai . '-31'])
+            ->groupBy(DB::raw("DATE_FORMAT(tgl_registrasi, '%Y-%m')"))
+            ->orderBy(DB::raw("DATE_FORMAT(tgl_registrasi, '%Y-%m')"))
+            ->get();
+        $dataRalan = [];
+        $labelsRalan = [];
+
+        foreach ($results as $item) {
+            $dataRalan[] = $item->jumlah;
+            $carbonDate = Carbon::createFromFormat('Y-m', $item->bulan);
+            $labelsRalan[] = $carbonDate->translatedFormat('F');
+        }
+
+        return compact('dataRalan', 'labelsRalan');
+    }
+
+    public function pasienRalan(Request $request)
+    {
+        $bulan_dari = $request->get('bulan_dari', date('Y-01'));
+        $bulan_sampai = $request->get('bulan_sampai', date('Y-12'));
+
+        $results = DB::table('reg_periksa')
+            ->select(
+                DB::raw("DATE_FORMAT(tgl_registrasi, '%Y-%m') AS bulan"),
+                DB::raw('COUNT(*) AS jumlah')
+            )
+            ->where('status_lanjut', 'Ralan')
+            ->whereBetween('tgl_registrasi', [$bulan_dari . '-01', $bulan_sampai . '-31'])
+            ->groupBy(DB::raw("DATE_FORMAT(tgl_registrasi, '%Y-%m')"))
+            ->orderBy(DB::raw("DATE_FORMAT(tgl_registrasi, '%Y-%m')"))
+            ->get();
+
+        $dataRalan = [];
+        $labelsRalan = [];
+
+        foreach ($results as $item) {
+            $dataRalan[] = $item->jumlah;
+            $labelsRalan[] = Carbon::createFromFormat('Y-m', $item->bulan)->translatedFormat('F');
+        }
+
+        return view('dashboard.pasien_Ralan', compact('dataRalan', 'labelsRalan', 'bulan_dari', 'bulan_sampai'));
+    }
 }

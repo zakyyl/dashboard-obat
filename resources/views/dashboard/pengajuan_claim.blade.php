@@ -26,7 +26,7 @@
                             value="{{ request('end_month', \Carbon\Carbon::parse($endDate)->format('Y-m')) }}">
                     </div>
                     <div class="col-md-auto">
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-warning">
                             <i class="bi bi-search me-1"></i> Tampilkan
                         </button>
                     </div>
@@ -92,8 +92,8 @@
                     dataLabels: {
                         enabled: true,
                         style: {
-                            fontSize: '14px',
-                            fontWeight: '400',
+                            fontSize: '16px',
+                            fontWeight: '500',
                             colors: [themeColors.bodyColor] 
                         },
                         formatter: function(val) {
@@ -121,8 +121,8 @@
                             text: 'Jumlah Pengajuan',
                             style: {
                                 color: themeColors.bodyColor,
-                                fontSize: '12px',   
-                                fontWeight: '500',
+                                fontSize: '15px',   
+                                fontWeight: '600',
                             },
                         },
                         labels: {
@@ -140,7 +140,7 @@
 
                     fill: {
                         opacity: 1,
-                        colors: ['#799EFF', '#EA5B6F']
+                        colors: ['#F3C623', '#FA812F']
                     },
                     stroke: {
                         show: true,

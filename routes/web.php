@@ -12,11 +12,8 @@ use App\Http\Controllers\PengajuanClaimController;
 
 
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
-
-// Rute POST untuk menangani proses login
 Route::post('/login', [LoginController::class, 'authenticate'])->name('login.post');
 
-// Rute Logout
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 
@@ -35,22 +32,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/labor-kunjungan-ranap', [RawatInapController::class, 'index'])->name('dashboard.labor');
     Route::get('/dashboard/radiologi-kunjungan-ranap', [RawatInapController::class, 'indexRadiologi'])->name('radiologi.kunjungan.ranap');
 
-    Route::get('/dashboard/pengajuan-claim', [PengajuanClaimController::class, 'index']);
+    // Route::get('/dashboard/pasien-ranap', [RawatInapController::class, 'index'])->name('dashboard.pasien.ranap');
+    Route::get('/dashboard/pasien-ranap', [RawatInapController::class, 'pasienRanap'])->name('dashboard.pasien.ranap');
+    Route::get('/dashboard/pasien-ralan', [RawatJalanController::class, 'pasienRalan'])->name('dashboard.pasien.ralan');
 
-    // Tambahkan rute dashboard lainnya di sini jika memerlukan autentikasi
-    // Route::get('/poli', function () {
-    //     return "Halaman Poli";
-    // })->name('poli');
-    // Route::get('/ranap', function () {
-    //     return "Halaman Ranap";
-    // })->name('ranap');
-    // Route::get('/labor', function () {
-    //     return "Halaman Labor";
-    // })->name('labor');
-    // Route::get('/radiologi', function () {
-    //     return "Halaman Radiologi";
-    // })->name('radiologi');
-    // Route::get('/pengajuan-klaim', function () {
-    //     return "Halaman Pengajuan Klaim";
-    // })->name('pengajuan-klaim');
+
+    Route::get('/dashboard/pengajuan-claim', [PengajuanClaimController::class, 'index']);
 });
