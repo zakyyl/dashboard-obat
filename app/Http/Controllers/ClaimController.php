@@ -15,6 +15,7 @@ class ClaimController extends Controller
         $results = DB::table('mlite_vedika')
             ->selectRaw("DATE_FORMAT(tanggal, '%m') AS bulan, COUNT(*) AS total")
             ->where('jenis', '2')
+            // ->where('jenis', 'Ralan')
             ->where('status', 'Pengajuan')
             ->whereYear('tanggal', $tahun)
             ->groupBy('bulan')
