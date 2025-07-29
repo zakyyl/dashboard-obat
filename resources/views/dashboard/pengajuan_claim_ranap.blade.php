@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <h2 class="mb-4 text-center">
-        <i class="bi bi-bar-chart-fill me-2"></i>Grafik Pengajuan Klaim Rawat Jalan
+        <i class="bi bi-bar-chart-fill me-2"></i>Grafik Pengajuan Klaim Rawat Inap
         <br>
         <small class="text-muted">{{ \Carbon\Carbon::parse($startDate)->translatedFormat('F Y') }} - {{ \Carbon\Carbon::parse($endDate)->translatedFormat('F Y') }}</small>
     </h2>
@@ -21,7 +21,7 @@
     </div>
 
     <!-- Chart -->
-    <div id="chartRalan" style="height: 350px;"></div>
+    <div id="chartRanap" style="height: 350px;"></div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
@@ -107,6 +107,6 @@
         }
     };
 
-    new ApexCharts(document.querySelector("#chartRalan"), options).render();
+    new ApexCharts(document.querySelector("#chartRanap"), options).render();
 </script>
 @endsection

@@ -8,6 +8,7 @@ use App\Http\Controllers\RawatJalanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RawatInapController;
 use App\Http\Controllers\PengajuanClaimController;
+use App\Http\Controllers\ClaimController;
 
 
 
@@ -37,5 +38,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/pasien-ralan', [RawatJalanController::class, 'pasienRalan'])->name('dashboard.pasien.ralan');
 
 
-    Route::get('/dashboard/pengajuan-claim', [PengajuanClaimController::class, 'index']);
+Route::get('/pengajuan-claim-ralan', [ClaimController::class, 'pengajuanClaimRalan'])->name('pengajuan.claim.ralan');
+Route::get('/pengajuan-claim-ranap', [ClaimController::class, 'pengajuanClaimRanap'])->name('pengajuan.claim.ranap');
+
+
 });

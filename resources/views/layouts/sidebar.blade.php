@@ -112,10 +112,15 @@
         </div>
 
         <!-- Klaim -->
-        <a href="{{ url('/dashboard/pengajuan-claim') }}"
-           class="list-group-item list-group-item-action {{ request()->is('dashboard/pengajuan-claim*') ? 'active' : '' }}">
+        <a href="{{ url('/pengajuan-claim-ralan') }}"
+           class="list-group-item list-group-item-action {{ request()->is('/pengajuan-claim-ralan*') ? 'active' : '' }}">
             <i class="bi bi-file-earmark-check me-3"></i>
-            <span>Pengajuan Klaim</span>
+            <span>Pengajuan Klaim Ralan</span>
+        </a>
+        <a href="{{ url('/pengajuan-claim-ranap') }}"
+           class="list-group-item list-group-item-action {{ request()->is('/pengajuan-claim-ranap*') ? 'active' : '' }}">
+            <i class="bi bi-file-earmark-check me-3"></i>
+            <span>Pengajuan Klaim Ranap</span>
         </a>
 
         <!-- Divider -->
