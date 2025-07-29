@@ -3,7 +3,7 @@
 @section('title', 'Dashboard Utama')
 
 @section('content')
-<div class="container-fluid bg-dark text-white py-4 min-vh-100 overflow-auto">
+<div class="container-fluid text-white py-4 min-vh-100 overflow-auto">
     <!-- Statistik -->
     <div class="row text-center mb-4">
         <div class="col-md-3 mb-3">
@@ -61,7 +61,7 @@
     @endphp
 
     <!-- Card Grafik RAWAT JALAN PERBULAN -->
-    <div class="card bg-dark text-white shadow mb-4">
+    <div class="card  text-white shadow mb-4">
         <div class="card-header border-bottom border-secondary">
             <h5 class="mb-0 fw-bold text-warning">RAWAT JALAN PERBULAN</h5>
         </div>
@@ -72,226 +72,256 @@
 
     <!-- Script ApexCharts -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var options = {
-                series: [{
-                    name: 'Rawat Jalan',
-                    type: 'column',
-                    data: @json($seriesColumn)
-                }, {
-                    name: 'Pembanding',
-                    type: 'line',
-                    data: @json($seriesLine)
-                }],
-                chart: {
-                    height: 350,
-                    type: 'line',
-                    foreColor: '#fff',
-                    toolbar: { show: false }
-                },
-                stroke: {
-                    width: [0, 4]
-                },
-                title: {
-                    text: 'Rawat Jalan per Bulan',
-                    style: {
-                        color: '#fff'
-                    }
-                },
-                dataLabels: {
-                    enabled: true,
-                    enabledOnSeries: [1]
-                },
-                labels: @json($categories),
-                xaxis: {
-                    labels: {
-                        style: {
-                            colors: '#fff'
-                        }
-                    }
-                },
-                yaxis: [{
-                    title: {
-                        text: 'Rawat Jalan',
-                        style: {
-                            color: '#fff'
-                        }
-                    },
-                    labels: {
-                        style: {
-                            colors: '#fff'
-                        }
-                    }
-                }, {
-                    opposite: true,
-                    title: {
-                        text: 'Pembanding',
-                        style: {
-                            color: '#fff'
-                        }
-                    },
-                    labels: {
-                        style: {
-                            colors: '#fff'
-                        }
-                    }
-                }],
-                tooltip: {
-                    theme: 'dark'
-                },
-                grid: {
-                    borderColor: '#444'
-                }
-            };
-            var chart = new ApexCharts(document.querySelector("#chart-rawatjalan"), options);
-            chart.render();
-
-            // Pie Chart Cara Bayar
-            var optionsCaraBayar = {
-                series: @json($caraBayarValues),
-                chart: {
-                    type: 'pie',
-                    width: 380,
-                    foreColor: '#fff'
-                },
-                labels: @json($caraBayarLabels),
-                responsive: [{
-                    breakpoint: 480,
-                    options: {
-                        chart: { width: 250 },
-                        legend: { position: 'bottom' }
-                    }
-                }],
-                legend: {
-                    labels: { colors: ['#fff'] }
-                }
-            };
-            var chartCaraBayar = new ApexCharts(document.querySelector("#chart-cara-bayar"), optionsCaraBayar);
-            chartCaraBayar.render();
-
-            // Bar Chart Ranap - Horizontal
-            var optionsRanap = {
-                series: [{
-                    name: 'Ranap',
-                    data: @json($dataRanap)
-                }],
-                chart: {
-                    type: 'bar',
-                    height: 350,
-                    foreColor: '#fff',
-                    toolbar: { show: false } // opsional, hilangkan menu
-                },
-                plotOptions: {
-                    bar: {
-                        borderRadius: 4,
-                        borderRadiusApplication: 'end',
-                        horizontal: true
-                    }
-                },
-                dataLabels: {
-                    enabled: true,
-                    style: {
-                        colors: ['#fff'], // warna teks di dalam bar
-                        fontSize: '12px'
-                    },
-                    formatter: function (val) {
-                        return val; // menampilkan angka value-nya langsung
-                    }
-                },
-                xaxis: {
-                    categories: @json($labelsRanap),
-                    labels: {
-                        style: {
-                            colors: '#fff'
-                        }
-                    }
-                },
-                grid: {
-                    borderColor: '#444'
-                },
-                tooltip: {
-                    theme: 'dark' // ✅ ini dia tambahan tooltip-nya
-                }
-            };
-            var chartRanap = new ApexCharts(document.querySelector("#chart-ranap"), optionsRanap);
-            chartRanap.render();
-
-            // Bar Chart Kematian
-            var options = {
-            series: [{
-                name: 'Jumlah Pasien Meninggal',
-                type: 'column',
-                data: @json($dataKematian) // data jumlah pasien per bulan
-            }, {
-                name: 'Nilai Kematian',
-                type: 'line',
-                data: @json($dataKematian) // sama, hanya untuk garis
-            }],
-            chart: {
-                type: 'line',
-                height: 350,
-                width: '100%',
-                toolbar: { show: false },
-                zoom: { enabled: false },
-                foreColor: '#ffffff' // putih di dark mode
-            },
-            stroke: {
-                width: [0, 3]
-            },
-            title: {
-                text: 'Pasien Meninggal per Bulan',
-                align: 'center',
-                style: {
-                    color: '#fff'
-                }
-            },
-            dataLabels: {
-                enabled: true,
-                enabledOnSeries: [1], // tampilkan angka di bar & garis
-                style: {
-                    colors: ['#000']
-                },
-                dropShadow: {
-                    enabled: false
-                }
-            },
-            labels: @json($labelsKematian), // nama bulan
-            xaxis: {
-                labels: { style: { colors: '#fff' } },
-                axisBorder: { show: false },
-                axisTicks: { show: false }
-            },
-            yaxis: [{
-                title: {
-                    text: 'Jumlah Pasien',
-                    style: {
-                        color: '#fff'
-                    }
-                },
-                labels: {
-                    style: { colors: '#fff' }
-                }
-            }],
-            tooltip: {
-                theme: 'dark'
-            },
-            grid: {
-                borderColor: '#444'
+document.addEventListener('DOMContentLoaded', function () {
+    // Chart Rawat Jalan
+    var options = {
+        series: [{
+            name: 'Rawat Jalan',
+            type: 'column',
+            data: @json($seriesColumn)
+        }, {
+            name: 'Nilai',
+            type: 'line',
+            data: @json($seriesLine)
+        }],
+        chart: {
+            height: 350,
+            type: 'line',
+            foreColor: '#e5e7eb',
+            toolbar: { show: false }
+        },
+        colors: ['#f59e0b', '#10b981'],
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shade: 'dark',
+                type: 'vertical',
+                gradientToColors: ['#fcd34d', '#34d399'],
+                shadeIntensity: 0.5,
+                opacityFrom: 0.9,
+                opacityTo: 0.7,
+                stops: [0, 100]
             }
-        };
-        var chart = new ApexCharts(document.querySelector("#chart-pasien-mati"), options);
-        chart.render();
-        });
-    </script>
+        },
+        stroke: {
+            width: [0, 4]
+        },
+        title: {
+            text: 'Rawat Jalan per Bulan',
+            style: { color: '#fff' }
+        },
+        dataLabels: {
+    enabled: true,
+    enabledOnSeries: [1],
+    style: {
+        colors: ['#000000'] // warna hitam
+    }
+},
 
-    <!-- Grafik Cara Bayar -->
+        labels: @json($categories),
+        xaxis: {
+            labels: {
+                style: {
+                    colors: '#d1d5db'
+                }
+            }
+        },
+        yaxis: [{
+            title: {
+                text: 'Rawat Jalan',
+                style: {
+                    color: '#f3f4f6'
+                }
+            },
+            labels: {
+                style: {
+                    colors: '#e5e7eb'
+                }
+            }
+        }, {
+            opposite: true,
+            title: {
+                text: 'Pembanding',
+                style: {
+                    color: '#f3f4f6'
+                }
+            },
+            labels: {
+                style: {
+                    colors: '#e5e7eb'
+                }
+            }
+        }],
+        tooltip: {
+            theme: 'dark'
+        },
+        grid: {
+            borderColor: '#374151'
+        }
+    };
+    new ApexCharts(document.querySelector("#chart-rawatjalan"), options).render();
+
+    // Pie Chart Cara Bayar
+    var optionsCaraBayar = {
+        series: @json($caraBayarValues),
+        chart: {
+            type: 'pie',
+            width: 380,
+            foreColor: '#fff'
+        },
+        colors: ['#10b981', '#8b5cf6', '#f59e0b', '#ef4444', '#6366f1'],
+        labels: @json($caraBayarLabels),
+        responsive: [{
+            breakpoint: 480,
+            options: {
+                chart: { width: 250 },
+                legend: { position: 'bottom' }
+            }
+        }],
+        legend: {
+            labels: { colors: ['#e5e7eb'] }
+        }
+    };
+    new ApexCharts(document.querySelector("#chart-cara-bayar"), optionsCaraBayar).render();
+
+    // Bar Chart Ranap - Horizontal
+    var optionsRanap = {
+        series: [{
+            name: 'Ranap',
+            data: @json($dataRanap)
+        }],
+        chart: {
+            type: 'bar',
+            height: 350,
+            foreColor: '#fff',
+            toolbar: { show: false }
+        },
+        colors: ['#8b5cf6'],
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shade: 'dark',
+                type: 'horizontal',
+                gradientToColors: ['#a78bfa'],
+                shadeIntensity: 0.5,
+                opacityFrom: 0.9,
+                opacityTo: 0.7,
+                stops: [0, 100]
+            }
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 6,
+                horizontal: true
+            }
+        },
+        dataLabels: {
+            enabled: true,
+            style: {
+                colors: ['#fefce8'],
+                fontSize: '12px'
+            }
+        },
+        xaxis: {
+            categories: @json($labelsRanap),
+            labels: {
+                style: {
+                    colors: '#e5e7eb'
+                }
+            }
+        },
+        grid: {
+            borderColor: '#444'
+        },
+        tooltip: {
+            theme: 'dark'
+        }
+    };
+    new ApexCharts(document.querySelector("#chart-ranap"), optionsRanap).render();
+
+    // Bar Chart Kematian
+    var optionsKematian = {
+        series: [{
+            name: 'Jumlah Pasien Meninggal',
+            type: 'column',
+            data: @json($dataKematian)
+        }, {
+            name: 'Nilai Kematian',
+            type: 'line',
+            data: @json($dataKematian)
+        }],
+        chart: {
+            type: 'line',
+            height: 350,
+            foreColor: '#e5e7eb',
+            toolbar: { show: false }
+        },
+        colors: ['#ef4444', '#f59e0b'],
+        fill: {
+            type: 'gradient',
+            gradient: {
+                shade: 'dark',
+                type: 'vertical',
+                gradientToColors: ['#f87171', '#facc15'],
+                shadeIntensity: 0.5,
+                opacityFrom: 0.9,
+                opacityTo: 0.7,
+                stops: [0, 100]
+            }
+        },
+        stroke: {
+            width: [0, 3]
+        },
+        title: {
+            text: 'Pasien Meninggal per Bulan',
+            align: 'center',
+            style: {
+                color: '#fef2f2'
+            }
+        },
+        dataLabels: {
+            enabled: true,
+            enabledOnSeries: [1],
+            style: {
+                colors: ['#fefce8']
+            }
+        },
+        labels: @json($labelsKematian),
+        xaxis: {
+            labels: { style: { colors: '#e5e7eb' } },
+            axisBorder: { show: false },
+            axisTicks: { show: false }
+        },
+        yaxis: [{
+            title: {
+                text: 'Jumlah Pasien',
+                style: {
+                    color: '#f3f4f6'
+                }
+            },
+            labels: {
+                style: { colors: '#e5e7eb' }
+            }
+        }],
+        tooltip: {
+            theme: 'dark'
+        },
+        grid: {
+            borderColor: '#374151'
+        }
+    };
+    new ApexCharts(document.querySelector("#chart-pasien-mati"), optionsKematian).render();
+});
+</script>
+
+
     <div class="container-fluid">
         <div class="row">
             <!-- Card 1 -->
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card bg-dark text-white h-100 shadow">
+                <div class="card  text-white h-100 shadow">
                     <div class="card-header border-secondary border-bottom">
-                        <h5 class="mb-0 fw-bold text-primary">Kunjungan Pasien Per Bulan (Ranap)</h5>
+                        <h5 class="mb-0 fw-bold text-warning">Kunjungan Pasien Per Bulan (Ranap)</h5>
                     </div>
                     <div class="card-body">
                         <div id="chart-ranap" style="height: 350px;"></div>
@@ -301,9 +331,9 @@
 
             <!-- Card Pasien Mati Per Bulan -->
             <div class="col-lg-4 col-md-6 mb-4">
-                <div class="card bg-dark text-white h-100 shadow">
+                <div class="card  text-white h-100 shadow">
                     <div class="card-header border-secondary border-bottom">
-                        <h5 class="mb-0 fw-bold text-danger">Pasien Mati Per Bulan</h5>
+                        <h5 class="mb-0 fw-bold text-warning">Pasien Mati Per Bulan</h5>
                     </div>
                     <div class="card-body">
                         <div id="chart-pasien-mati" style="height: 350px; width: 100%;"></div>
@@ -314,7 +344,7 @@
 
             <!-- Card 3 - Cara Bayar Perbulan-->
             <div class="col-lg-4 col-md-12 mb-4">
-                <div class="card bg-dark text-white h-100 shadow">
+                <div class="card  text-white h-100 shadow">
                     <div class="card-header border-secondary border-bottom">
                         <h5 class="mb-0 fw-bold text-warning">Cara Bayar Per Bulan</h5>
                     </div>

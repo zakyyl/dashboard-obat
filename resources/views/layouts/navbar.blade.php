@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg border-bottom" id="mainNavbar"> {{-- Remove bg-light and navbar-light here as theme will manage it --}}
     <div class="container-fluid">
-        <button class="btn btn-primary" id="sidebarToggle">
+        <button class="btn btn-warning" id="sidebarToggle">
             <i class="bi bi-list"></i>
         </button>
 

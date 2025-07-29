@@ -28,7 +28,7 @@
                 </div>
 
                 <div class="col-md-auto">
-                    <button type="submit" class="btn btn-primary">Cari</button>
+                    <button type="submit" class="btn btn-warning">Cari</button>
                 </div>
             </form>
 
@@ -117,9 +117,9 @@
     },
     legend: {
         labels: { colors: themeColors.bodyColor },
-        markers: { fillColors: ['#FF4560', '#00E396'] }
+        markers: { fillColors: ['#F3C623', '#FA812F'] }
     },
-    colors: ['#FF4560', '#00E396'],
+    colors: ['#F3C623', '#FA812F'],
     grid: {
         borderColor: themeColors.borderColor,
         xaxis: { lines: { show: false } },
