@@ -119,7 +119,7 @@ class DashboardController extends Controller
             )
             ->where('kamar_inap.stts_pulang', '-')
             ->whereDate('kamar_inap.tgl_masuk', DB::raw('CURDATE()'))
-            // ->whereDate('kamar_inap.tgl_masuk', '>=', now()->subDays(7)->toDateString()) cuman untuk testing
+            // ->whereDate('kamar_inap.tgl_masuk', '>=', now()->subDays(7)->toDateString())
             ->orderBy('bangsal.nm_bangsal')
             ->orderBy('kamar_inap.tgl_masuk')
             ->orderBy('kamar_inap.jam_masuk')
@@ -128,15 +128,16 @@ class DashboardController extends Controller
 
 
     private function getKematianPerBulan()
-    {
-        return DB::table('pasien_mati')
-            ->select(
-                DB::raw("DATE_FORMAT(tanggal, '%Y-%m') AS bulan"),
-                DB::raw('COUNT(*) AS jumlah')
-            )
-            ->whereYear('tanggal', now()->year)
-            ->groupBy(DB::raw("DATE_FORMAT(tanggal, '%Y-%m')"))
-            ->orderBy(DB::raw("DATE_FORMAT(tanggal, '%Y-%m')"))
-            ->get();
-    }
+{
+    return DB::table('pasien_mati')
+        ->select(
+            DB::raw("MONTH(tanggal) AS bulan"),
+            DB::raw('COUNT(*) AS jumlah')
+        )
+        ->whereYear('tanggal', now()->year)
+        ->groupBy(DB::raw("MONTH(tanggal)"))
+        ->orderBy(DB::raw("MONTH(tanggal)"))
+        ->get();
+}
+
 }

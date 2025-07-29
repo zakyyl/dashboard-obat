@@ -59,10 +59,15 @@
     $caraBayarValues[] = $cb->jumlah;
     }
 
+    $namaBulan = [
+    1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+    5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+    9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+    ];
     $labelsKematian = [];
     $dataKematian = [];
     foreach ($kematianPerBulan as $item) {
-    $labelsKematian[] = $item->bulan;
+    $labelsKematian[] = $namaBulan[$item->bulan];
     $dataKematian[] = $item->jumlah;
     }
     @endphp
@@ -258,10 +263,16 @@
         },
         labels: @json($labelsKematian),
         xaxis: {
-            labels: { style: { colors: '#e5e7eb' } },
-            axisBorder: { show: false },
-            axisTicks: { show: false }
-        },
+    labels: {
+        rotate: -65, // Miringkan teks label agar tidak tabrakan
+        style: {
+            colors: '#e5e7eb',
+            fontSize: '10px'
+        }
+    },
+    axisBorder: { show: false },
+    axisTicks: { show: false },
+},
         yaxis: [{
             title: {
                 text: 'Jumlah Pasien',
@@ -289,13 +300,14 @@
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card text-white h-100 shadow">
                     <div class="card-header border-secondary border-bottom">
-                        <h5 class="mb-0 fw-bold text-warning">Kunjungan Pasien</h5>
+                        <h5 class="mb-0 fw-bold text-warning">Pasien Rawat Inap Hari Ini</h5>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
                             <table class="table table-striped table-sm table-bordered text-white">
                                 <thead class="bg-secondary text-light text-center">
                                     <tr>
+                                        <th>Nomor</th>
                                         <th>No. RM</th>
                                         <th>Nama Pasien</th>
                                         <th>Kamar</th>
@@ -307,6 +319,7 @@
                                 <tbody class="text-white">
                                     @forelse($rawatInapHariIniData as $item)
                                     <tr>
+                                        <td>{{ $loop->iteration }}</td>
                                         <td>{{ $item->no_rkm_medis }}</td>
                                         <td>{{ $item->nm_pasien }}</td>
                                         <td>{{ $item->kamar }}</td>
@@ -316,7 +329,8 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="6" class="text-center text-warning">Tidak ada data rawat inap hari
+                                        <td colspan="7" class="text-center text-warning">Tidak ada data rawat inap
+                                            hari
                                             ini</td>
                                     </tr>
                                     @endforelse
@@ -341,7 +355,8 @@
             <div class="col-lg-4 col-md-12 mb-4">
                 <div class="card text-white h-100 shadow">
                     <div class="card-header border-secondary border-bottom">
-                        <h5 class="mb-0 fw-bold text-warning">Cara Bayar {{ \Carbon\Carbon::now()->translatedFormat('F
+                        <h5 class="mb-0 fw-bold text-warning">Cara Bayar {{
+                            \Carbon\Carbon::now()->translatedFormat('F
                             Y') }}</h5>
                     </div>
                     <div class="card-body">
