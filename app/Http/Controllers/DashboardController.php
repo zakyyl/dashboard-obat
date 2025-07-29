@@ -19,7 +19,6 @@ class DashboardController extends Controller
             'rawatJalanPerBulan' => $this->getRawatJalanPerBulan(),
             'caraBayar' => $this->getCaraBayar(),
             'resepHariIni' => $this->getResepHariIni()->count(),
-            'ranapPerBulan' => $this->getRanapPerBulan(),
             'kematianPerBulan' => $this->getKematianPerBulan(),
         ]);
     }
@@ -51,7 +50,8 @@ class DashboardController extends Controller
         return DB::table('reg_periksa')
             ->join('penjab', 'reg_periksa.kd_pj', '=', 'penjab.kd_pj')
             ->select('penjab.png_jawab', DB::raw('COUNT(*) as jumlah'))
-            ->whereBetween('reg_periksa.tgl_registrasi', [now()->subDays(3)->toDateString(), now()->toDateString()])
+            ->whereMonth('reg_periksa.tgl_registrasi', now()->month)
+            ->whereYear('reg_periksa.tgl_registrasi', now()->year)
             ->groupBy('penjab.png_jawab')
             ->get();
     }
@@ -75,20 +75,6 @@ class DashboardController extends Controller
             ->whereDate('resep_obat.tgl_perawatan', DB::raw('CURDATE()'))
             ->orderBy('resep_obat.tgl_perawatan')
             ->orderBy('resep_obat.jam')
-            ->get();
-    }
-
-    private function getRanapPerBulan()
-    {
-        return DB::table('reg_periksa')
-            ->select(
-                DB::raw("DATE_FORMAT(tgl_registrasi, '%Y-%m') AS bulan"),
-                DB::raw('COUNT(*) AS jumlah')
-            )
-            ->where('status_lanjut', 'Ranap')
-            ->whereBetween('tgl_registrasi', ['2025-01-01', '2025-12-31'])
-            ->groupBy(DB::raw("DATE_FORMAT(tgl_registrasi, '%Y-%m')"))
-            ->orderBy(DB::raw("DATE_FORMAT(tgl_registrasi, '%Y-%m')"))
             ->get();
     }
 
