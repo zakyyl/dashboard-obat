@@ -33,8 +33,8 @@
             <div class="col-md-3 mb-3">
                 <div class="card text-white bg-dark h-100 shadow">
                     <div class="card-body">
-                        <h3 class="text-warning fw-bold">0</h3>
-                        <p class="card-text">Kunjungan Bulan ini</p>
+                        <h3 class="text-warning fw-bold">{{ $pasienMobileJknHariIni }}</h3>
+                        <p class="card-text">Pasien MOBILE JKN</p>
                     </div>
                 </div>
             </div>

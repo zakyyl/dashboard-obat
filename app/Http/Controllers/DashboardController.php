@@ -16,6 +16,7 @@ class DashboardController extends Controller
     {
         return view('home', [
             'pasienHariIni' => $this->getPasienHariIni(),
+            'pasienMobileJknHariIni' => $this->getPasienMobileJknHariIni(),
             'rawatJalanPerBulan' => $this->getRawatJalanPerBulan(),
             'caraBayar' => $this->getCaraBayar(),
             'resepHariIni' => $this->getResepHariIni()->count(),
@@ -139,4 +140,12 @@ class DashboardController extends Controller
             ->orderBy(DB::raw("DATE_FORMAT(tanggal, '%Y-%m')"))
             ->get();
     }
+
+    private function getPasienMobileJknHariIni()
+{
+    return DB::table('referensi_mobilejkn_bpjs')
+        ->whereDate('tanggalperiksa', now()->toDateString())
+        ->count();
+}
+
 }
