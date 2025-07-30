@@ -55,12 +55,12 @@
             <a href="{{ url('/dashboard/labor-kunjungan-ranap') }}"
                 class="list-group-item list-group-item-action {{ request()->is('dashboard/labor-kunjungan-ranap') ? 'active' : '' }}">
                 <i class="bi bi-hospital me-3"></i>
-                <span>Rawat Inap</span>
+                <span>Lab Rawat Inap</span>
             </a>
             <a href="{{ url('/dashboard/labor-kunjungan-ralan') }}"
                 class="list-group-item list-group-item-action {{ request()->is('dashboard/labor-kunjungan-ralan') ? 'active' : '' }}">
                 <i class="bi bi-building me-3"></i>
-                <span>Rawat Jalan</span>
+                <span>Lab Rawat Jalan</span>
             </a>
         </div>
 
@@ -80,12 +80,12 @@
             <a href="{{ url('/dashboard/radiologi-kunjungan-ranap') }}"
                 class="list-group-item list-group-item-action {{ request()->is('dashboard/radiologi-kunjungan-ranap') ? 'active' : '' }}">
                 <i class="bi bi-hospital me-3"></i>
-                <span>Rawat Inap</span>
+                <span>Radiologi Rawat Inap</span>
             </a>
             <a href="{{ url('/dashboard/radiologi-kunjungan-ralan') }}"
                 class="list-group-item list-group-item-action {{ request()->is('dashboard/radiologi-kunjungan-ralan') ? 'active' : '' }}">
                 <i class="bi bi-building me-3"></i>
-                <span>Rawat Jalan</span>
+                <span>Radiologi Rawat Jalan</span>
             </a>
         </div>
 
@@ -105,12 +105,12 @@
             <a href="{{ url('/dashboard/pasien-ranap') }}"
                 class="list-group-item list-group-item-action {{ request()->is('dashboard/pasien-ranap') ? 'active' : '' }}">
                 <i class="bi bi-hospital me-3"></i>
-                <span>Rawat Inap</span>
+                <span>Pasien Rawat Inap</span>
             </a>
             <a href="{{ url('/dashboard/pasien-ralan') }}"
                 class="list-group-item list-group-item-action {{ request()->is('dashboard/pasien-ralan') ? 'active' : '' }}">
                 <i class="bi bi-building me-3"></i>
-                <span>Rawat Jalan</span>
+                <span>Pasien Rawat Jalan</span>
             </a>
         </div>
 
