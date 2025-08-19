@@ -11,11 +11,39 @@
             <span>Beranda</span>
         </a>
 
-        <a href="{{ url('/obat/stok-barang') }}"
-            class="list-group-item list-group-item-action {{ request()->is('obat/stok-barang*') ? 'active' : '' }}">
-            <i class="bi bi-capsule me-3"></i>
-            <span>Manajemen Obat</span>
+        
+        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center 
+    {{ request()->is('obat/*') ? 'active' : '' }}"
+        data-bs-toggle="collapse" href="#submenuObat" role="button"
+            aria-expanded="{{ request()->is('obat/*') ? 'true' : 'false' }}" aria-controls="submenuObat">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-capsule me-3"></i>
+                <span>Manajemen Obat</span>
+            </div>
+            <i class="bi bi-chevron-down transition-transform"></i>
         </a>
+        <div class="collapse {{ request()->is('obat/*') ? 'show' : '' }}" id="submenuObat">
+            <a href="{{ url('/obat/stok-barang') }}"
+                class="list-group-item list-group-item-action {{ request()->is('obat/stok-barang') ? 'active' : '' }}">
+                <i class="bi bi-hospital me-3"></i>
+                <span>Stok Obat Saat Ini</span>
+            </a>
+            <a href="{{ url('/obat/stok-barang-per-depo') }}"
+                class="list-group-item list-group-item-action {{ request()->is('obat/obat/stok-barang-per-depo') ? 'active' : '' }}">
+                <i class="bi bi-building me-3"></i>
+                <span>Stok Obat per Depo</span>
+            </a>
+            <a href="{{ url('/obat/stok-barang-masuk') }}"
+                class="list-group-item list-group-item-action {{ request()->is('obat/stok-barang-masuk') ? 'active' : '' }}">
+                <i class="bi bi-box-arrow-in-down me-3"></i>
+                <span>Obat Masuk</span>
+            </a>
+            <a href="{{ url('/obat/obat-keluar') }}"
+                class="list-group-item list-group-item-action {{ request()->is('obat/obat-keluar') ? 'active' : '' }}">
+                <i class="bi bi-box-arrow-up me-3"></i>
+                <span>Obat Keluar</span>
+            </a>
+        </div>
 
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center {{ request()->is('dashboard/poli*') ? 'active' : '' }}"
             data-bs-toggle="collapse" href="#submenuPoli" role="button"

@@ -35,6 +35,15 @@ class DashboardController extends Controller
             ->count();
     }
 
+//     private function getPasienHariIni()
+// {
+//     return DB::table('reg_periksa')
+//         ->whereDate('tgl_registrasi', now()) 
+//         ->where('no_rkm_medis', 'NOT LIKE', 'APS%')
+//         ->select(DB::raw('COUNT(DISTINCT no_rawat) as total'))
+//         ->value('total'); 
+// }
+
     private function getRawatJalanPerBulan()
     {
         return DB::table('reg_periksa')

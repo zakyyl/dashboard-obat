@@ -23,6 +23,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/obat/stok-barang', [ObatController::class, 'stokBarang'])->name('obat.stok-barang');
     Route::get('/obat/search-obat', [ObatController::class, 'searchObat'])->name('obat.search-obat');
+    
+    Route::get('/obat/stok-barang-per-depo', [ObatController::class, 'stokBarangPerDepo'])
+    ->name('obat.stok-barang-per-depo');
+    Route::get('/obat/stok-barang-masuk', [ObatController::class, 'stokBarangMasuk'])->name('obat.stok-barang-masuk');
+
+
 
     Route::get('/dashboard/poli', [PoliController::class, 'index'])->name('dashboard.poli');
     Route::get('/dashboard/poli-perdokter', [PoliController::class, 'indexPerDokter']);
