@@ -23,6 +23,7 @@ class DashboardController extends Controller
             'kematianPerBulan' => $this->getKematianPerBulan(),
             'rawatInapHariIni' => $this->getRawatInapHariIni()->count(),
             'rawatInapHariIniData' => $this->getRawatInapHariIni(),
+            'rawatIgdHariIni' => $this->getPasienIgdHariIni()
         ]);
     }
 
@@ -34,6 +35,16 @@ class DashboardController extends Controller
             ->distinct('no_rawat')
             ->count();
     }
+
+    private function getPasienIgdHariIni()
+    {
+        return DB::table('reg_periksa')
+            ->whereDate('tgl_registrasi', DB::raw('CURDATE()'))
+            ->where('kd_poli', 'IGDK')
+            ->distinct('no_rawat')
+            ->count();
+    }
+
 
 //     private function getPasienHariIni()
 // {

@@ -1,11 +1,11 @@
 @extends('layouts.app')
 
-@section('title', 'Stok Obat Masuk')
+@section('title', 'Stok Obat Keluar')
 
 @section('content')
 <div class="container py-4 text-white min-vh-100">
     <h2 class="mb-4 text-center">
-        GRAFIK STOK OBAT MASUK
+        GRAFIK STOK OBAT KELUAR
         <br>
         <small class="text-muted">
             {{ \Carbon\Carbon::parse($startDate)->translatedFormat('d F Y') }}
@@ -16,7 +16,7 @@
 
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
-            <form id="searchForm" method="GET" action="{{ route('obat.stok-barang-masuk') }}"
+            <form id="searchForm" method="GET" action="{{ route('obat.stok-barang-keluar') }}"
                 class="row gy-2 gx-3 align-items-end">
 
                 <div class="col-md-auto">
@@ -50,7 +50,7 @@
         <div class="card-body">
             @if ($data->count() === 0)
             <div class="alert alert-info text-center">
-                <i class="bi bi-info-circle-fill me-1"></i> Tidak ada data obat masuk.
+                <i class="bi bi-info-circle-fill me-1"></i> Tidak ada data obat keluar.
             </div>
             @else
             <div style="max-height: 500px; overflow-y: auto;">
@@ -61,13 +61,12 @@
     </div>
 
     @if ($hasMore)
-    <div class="text-center mt-3 mb-3">
-        <button id="loadMoreBtn" class="btn btn-outline-warning">
-            <i class="bi bi-arrow-down-circle"></i> Muat Lebih Banyak
-        </button>
-    </div>
-    @endif
-
+            <div class="text-center mt-3 mb-3">
+                <button id="loadMoreBtn" class="btn btn-outline-warning">
+                    <i class="bi bi-arrow-down-circle"></i> Muat Lebih Banyak
+                </button>
+            </div>
+            @endif
 
     @if ($data->count() > 0)
     <div class="card shadow-sm">
@@ -79,7 +78,7 @@
                         <th>Nama Barang</th>
                         <th>Satuan</th>
                         <th>Jenis</th>
-                        <th class="text-end">Jumlah Masuk</th>
+                        <th class="text-end">Jumlah Keluar</th>
                         {{-- <th class="text-end">Total (Rp)</th> --}}
                     </tr>
                 </thead>
@@ -106,13 +105,14 @@
                 <tfoot class="table-dark">
                     <tr>
                         <th colspan="4" class="text-start">TOTAL</th>
-                        <th class="text-end" data-total="{{ $grandJumlah }}">{{ number_format($grandJumlah, 0, ',', '.')
-                            }}</th>
+                        <th class="text-end" data-total="{{ $grandJumlah }}">
+                            {{ number_format($grandJumlah, 0, ',', '.') }}</th>
                     </tr>
                 </tfoot>
 
             </table>
 
+            
         </div>
     </div>
     @endif
@@ -144,12 +144,12 @@
                 const chartHeight = Math.min(dataArray.length * 45, 1200);
 
                 const kategoriObat = dataArray.map(item => item?.nama_brng ?? '-');
-                const jumlahMasuk = dataArray.map(item => item?.jumlah ?? 0);
+                const jumlahKeluar = dataArray.map(item => item?.jumlah ?? 0);
 
                 // const options = {
                 //     series: [{
-                //         name: 'Jumlah Masuk',
-                //         data: jumlahMasuk
+                //         name: 'Jumlah Keluar',
+                //         data: jumlahKeluar
                 //     }],
                 //     chart: {
                 //         type: 'bar',
@@ -188,8 +188,8 @@
 
                 const options = {
                     series: [{
-                        name: 'Jumlah Masuk',
-                        data: jumlahMasuk
+                        name: 'Jumlah Keluar',
+                        data: jumlahKeluar
                     }],
                     chart: {
                         type: 'bar',
@@ -281,66 +281,68 @@
             }
 
             if (loadMoreBtn) {
-                loadMoreBtn.addEventListener('click', function () {
-    if (isLoading) return;
-    isLoading = true;
-    loadMoreBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Memuat...';
-    loadMoreBtn.disabled = true;
+                loadMoreBtn.addEventListener('click', function() {
+                    if (isLoading) return;
+                    isLoading = true;
+                    loadMoreBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Memuat...';
+                    loadMoreBtn.disabled = true;
 
-    const formData = new FormData(searchForm);
-    formData.append('page', currentPage + 1);
+                    const formData = new FormData(searchForm);
+                    formData.append('page', currentPage + 1);
 
-    fetch(searchForm.action + '?' + new URLSearchParams(formData), {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(res => res.json())
-    .then(data => {
-        currentData = currentData.concat(data.data);
-        createApexChart(currentData);
-        currentPage = data.nextPage - 1;
+                    fetch(searchForm.action + '?' + new URLSearchParams(formData), {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            currentData = currentData.concat(data.data);
+                            createApexChart(currentData);
+                            currentPage = data.nextPage - 1;
 
-        // ====== TABEL: Tambahkan baris baru ======
-        const tbody = document.querySelector('table tbody');
-        const tfoot = document.querySelector('table tfoot');
-        let addedJumlah = 0;
+                            // ====== TABEL: Tambahkan baris baru ======
+                            const tbody = document.querySelector('table tbody');
+                            const tfoot = document.querySelector('table tfoot');
+                            let addedJumlah = 0;
 
-        data.data.forEach(item => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${item.kode_brng}</td>
-                <td>${item.nama_brng}</td>
-                <td>${item.satuan}</td>
-                <td>${item.namajenis}</td>
-                <td class="text-end">${Number(item.jumlah).toLocaleString('id-ID')}</td>
-            `;
-            tbody.appendChild(row);
-            addedJumlah += parseFloat(item.jumlah);
-        });
+                            data.data.forEach(item => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                <td>${item.kode_brng}</td>
+                                <td>${item.nama_brng}</td>
+                                <td>${item.satuan}</td>
+                                <td>${item.namajenis}</td>
+                                <td class="text-end">${Number(item.jumlah).toLocaleString('id-ID')}</td>
+                            `;
+                                tbody.appendChild(row);
+                                addedJumlah += parseFloat(item.jumlah);
+                            });
 
-        // ====== Update total jumlah di tfoot ======
-        const jumlahCell = tfoot.querySelector('th.text-end');
-        if (jumlahCell) {
-            const existingJumlah = parseFloat(jumlahCell.dataset.total || 0);
-            const newJumlah = existingJumlah + addedJumlah;
-            jumlahCell.dataset.total = newJumlah;
-            jumlahCell.innerText = newJumlah.toLocaleString('id-ID');
-        }
+                            // ====== Update total jumlah di tfoot ======
+                            const jumlahCell = tfoot.querySelector('th.text-end');
+                            if (jumlahCell) {
+                                const existingJumlah = parseFloat(jumlahCell.dataset.total || 0);
+                                const newJumlah = existingJumlah + addedJumlah;
+                                jumlahCell.dataset.total = newJumlah;
+                                jumlahCell.innerText = newJumlah.toLocaleString('id-ID');
+                            }
 
-        // ====== Periksa apakah masih ada data ======
-        if (!data.hasMore) loadMoreBtn.style.display = 'none';
+                            // ====== Periksa apakah masih ada data ======
+                            if (!data.hasMore) loadMoreBtn.style.display = 'none';
 
-        loadMoreBtn.innerHTML = '<i class="bi bi-arrow-down-circle"></i> Muat Lebih Banyak';
-        loadMoreBtn.disabled = false;
-        isLoading = false;
-    })
-    .catch(() => {
-        loadMoreBtn.innerHTML = '<i class="bi bi-arrow-down-circle"></i> Muat Lebih Banyak';
-        loadMoreBtn.disabled = false;
-        isLoading = false;
-    });
-});
+                            loadMoreBtn.innerHTML =
+                                '<i class="bi bi-arrow-down-circle"></i> Muat Lebih Banyak';
+                            loadMoreBtn.disabled = false;
+                            isLoading = false;
+                        })
+                        .catch(() => {
+                            loadMoreBtn.innerHTML =
+                                '<i class="bi bi-arrow-down-circle"></i> Muat Lebih Banyak';
+                            loadMoreBtn.disabled = false;
+                            isLoading = false;
+                        });
+                });
 
             }
 

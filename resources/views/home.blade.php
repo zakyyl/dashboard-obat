@@ -3,93 +3,101 @@
 @section('title', 'Dashboard Utama')
 
 @section('content')
-    <div class="container-fluid text-white py-4 min-vh-100 overflow-auto">
-        <div class="row text-center mb-4">
-            <div class="col-md-3 mb-3">
-                <div class="card text-white bg-dark h-100 shadow">
-                    <div class="card-body">
-                        <h3 class="text-warning fw-bold">{{ $pasienHariIni }}</h3>
-                        <p class="card-text">Pasien Hari Ini</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card text-white bg-dark h-100 shadow">
-                    <div class="card-body">
-                        <h3 class="text-warning fw-bold">{{ $resepHariIni }}</h3>
-                        <p class="card-text">Resep Hari Ini</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-3 mb-3">
-                <div class="card text-white bg-dark h-100 shadow">
-                    <div class="card-body">
-                        <h3 class="text-warning fw-bold">{{ $rawatInapHariIni }}</h3>
-                        <p class="card-text">Pasien Rawat Inap Hari Ini</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-3 mb-3">
-                <div class="card text-white bg-dark h-100 shadow">
-                    <div class="card-body">
-                        <h3 class="text-warning fw-bold">{{ $pasienMobileJknHariIni }}</h3>
-                        <p class="card-text">Pasien MOBILE JKN</p>
-                    </div>
+<div class="container-fluid text-white py-4 min-vh-100 overflow-auto">
+    <div class="d-flex flex-wrap text-center mb-4 justify-content-between">
+        <div class="mb-3 px-2" style="width: 20%;">
+            <div class="card text-white bg-dark h-100 shadow">
+                <div class="card-body">
+                    <h3 class="text-warning fw-bold">{{ $pasienHariIni }}</h3>
+                    <p class="card-text">Pasien Hari Ini</p>
                 </div>
             </div>
         </div>
-
-        @php
-            $namaBulan = [
-                1 => 'Januari',
-                'Februari',
-                'Maret',
-                'April',
-                'Mei',
-                'Juni',
-                'Juli',
-                'Agustus',
-                'September',
-                'Oktober',
-                'November',
-                'Desember',
-            ];
-            $categories = [];
-            $seriesColumn = [];
-            $seriesLine = [];
-            foreach ($rawatJalanPerBulan as $item) {
-                $categories[] = $namaBulan[$item->bulan];
-                $seriesColumn[] = $item->jumlah;
-                $seriesLine[] = $item->jumlah;
-            }
-
-            $caraBayarLabels = [];
-            $caraBayarValues = [];
-            foreach ($caraBayar as $cb) {
-                $caraBayarLabels[] = $cb->png_jawab;
-                $caraBayarValues[] = $cb->jumlah;
-            }
-
-            $labelsKematian = [];
-            $dataKematian = [];
-            foreach ($kematianPerBulan as $item) {
-                $labelsKematian[] = $item->bulan;
-                $dataKematian[] = $item->jumlah;
-            }
-        @endphp
-
-        <div class="card text-white shadow mb-4">
-            <div class="card-header border-bottom border-secondary">
-                <h5 class="mb-0 fw-bold text-warning">RAWAT JALAN PERBULAN</h5>
-            </div>
-            <div class="card-body">
-                <div id="chart-rawatjalan"></div>
+        <div class="mb-3 px-2" style="width: 20%;">
+            <div class="card text-white bg-dark h-100 shadow">
+                <div class="card-body">
+                    <h3 class="text-warning fw-bold">{{ $resepHariIni }}</h3>
+                    <p class="card-text">Resep Hari Ini</p>
+                </div>
             </div>
         </div>
+        <div class="mb-3 px-2" style="width: 20%;">
+            <div class="card text-white bg-dark h-100 shadow">
+                <div class="card-body">
+                    <h3 class="text-warning fw-bold">{{ $rawatInapHariIni }}</h3>
+                    <p class="card-text">Pasien Rawat Inap Hari Ini</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3 px-2" style="width: 20%;">
+            <div class="card text-white bg-dark h-100 shadow">
+                <div class="card-body">
+                    <h3 class="text-warning fw-bold">{{ $pasienMobileJknHariIni }}</h3>
+                    <p class="card-text">Pasien MOBILE JKN</p>
+                </div>
+            </div>
+        </div>
+        <div class="mb-3 px-2" style="width: 20%;">
+            <div class="card text-white bg-dark h-100 shadow">
+                <div class="card-body">
+                    <h3 class="text-warning fw-bold">{{ $rawatIgdHariIni }}</h3>
+                    <p class="card-text">Pasien IGD</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
+
+    @php
+    $namaBulan = [
+    1 => 'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember',
+    ];
+    $categories = [];
+    $seriesColumn = [];
+    $seriesLine = [];
+    foreach ($rawatJalanPerBulan as $item) {
+    $categories[] = $namaBulan[$item->bulan];
+    $seriesColumn[] = $item->jumlah;
+    $seriesLine[] = $item->jumlah;
+    }
+
+    $caraBayarLabels = [];
+    $caraBayarValues = [];
+    foreach ($caraBayar as $cb) {
+    $caraBayarLabels[] = $cb->png_jawab;
+    $caraBayarValues[] = $cb->jumlah;
+    }
+
+    $labelsKematian = [];
+    $dataKematian = [];
+    foreach ($kematianPerBulan as $item) {
+    $labelsKematian[] = $item->bulan;
+    $dataKematian[] = $item->jumlah;
+    }
+    @endphp
+
+    <div class="card text-white shadow mb-4">
+        <div class="card-header border-bottom border-secondary">
+            <h5 class="mb-0 fw-bold text-warning">RAWAT JALAN PERBULAN</h5>
+        </div>
+        <div class="card-body">
+            <div id="chart-rawatjalan"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
                 // Chart Rawat Jalan
                 var options = {
                     series: [{
@@ -316,76 +324,76 @@
                 };
                 new ApexCharts(document.querySelector("#chart-pasien-mati"), optionsKematian).render();
             });
-        </script>
+    </script>
 
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card text-white h-100 shadow">
-                        <div class="card-header border-secondary border-bottom">
-                            <h5 class="mb-0 fw-bold text-warning">Kunjungan Pasien</h5>
-                        </div>
-                        <div class="card-body">
-                            <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
-                                <table class="table table-striped table-sm table-bordered text-white">
-                                    <thead class="bg-secondary text-light text-center">
-                                        <tr>
-                                            <th>No. RM</th>
-                                            <th>Nama Pasien</th>
-                                            <th>Kamar</th>
-                                            <th>Tanggal Masuk</th>
-                                            <th>Nama Dokter</th>
-                                            <th>Cara Bayar</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="text-white">
-                                        @forelse($rawatInapHariIniData as $item)
-                                            <tr>
-                                                <td>{{ $item->no_rkm_medis }}</td>
-                                                <td>{{ $item->nm_pasien }}</td>
-                                                <td>{{ $item->kamar }}</td>
-                                                <td>{{ \Carbon\Carbon::parse($item->tgl_masuk)->format('d-m-Y') }}</td>
-                                                <td>{{ $item->nm_dokter }}</td>
-                                                <td>{{ $item->png_jawab }}</td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="6" class="text-center text-warning">Tidak ada data rawat
-                                                    inap hari
-                                                    ini</td>
-                                            </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card text-white h-100 shadow">
+                    <div class="card-header border-secondary border-bottom">
+                        <h5 class="mb-0 fw-bold text-warning">Kunjungan Pasien</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
+                            <table class="table table-striped table-sm table-bordered text-white">
+                                <thead class="bg-secondary text-light text-center">
+                                    <tr>
+                                        <th>No. RM</th>
+                                        <th>Nama Pasien</th>
+                                        <th>Kamar</th>
+                                        <th>Tanggal Masuk</th>
+                                        <th>Nama Dokter</th>
+                                        <th>Cara Bayar</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-white">
+                                    @forelse($rawatInapHariIniData as $item)
+                                    <tr>
+                                        <td>{{ $item->no_rkm_medis }}</td>
+                                        <td>{{ $item->nm_pasien }}</td>
+                                        <td>{{ $item->kamar }}</td>
+                                        <td>{{ \Carbon\Carbon::parse($item->tgl_masuk)->format('d-m-Y') }}</td>
+                                        <td>{{ $item->nm_dokter }}</td>
+                                        <td>{{ $item->png_jawab }}</td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="6" class="text-center text-warning">Tidak ada data rawat
+                                            inap hari
+                                            ini</td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="card text-white h-100 shadow">
-                        <div class="card-header border-secondary border-bottom">
-                            <h5 class="mb-0 fw-bold text-warning">Pasien Mati Per Bulan</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="chart-pasien-mati" style="height: 350px; width: 100%;"></div>
-                        </div>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card text-white h-100 shadow">
+                    <div class="card-header border-secondary border-bottom">
+                        <h5 class="mb-0 fw-bold text-warning">Pasien Mati Per Bulan</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="chart-pasien-mati" style="height: 350px; width: 100%;"></div>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-lg-4 col-md-12 mb-4">
-                    <div class="card text-white h-100 shadow">
-                        <div class="card-header border-secondary border-bottom">
-                            <h5 class="mb-0 fw-bold text-warning">Cara Bayar
-                                {{ \Carbon\Carbon::now()->translatedFormat('F
-                                                            Y') }}</h5>
-                        </div>
-                        <div class="card-body">
-                            <div id="chart-cara-bayar" style="height: 250px; max-width: 100%; overflow: true;"></div>
-                        </div>
+            <div class="col-lg-4 col-md-12 mb-4">
+                <div class="card text-white h-100 shadow">
+                    <div class="card-header border-secondary border-bottom">
+                        <h5 class="mb-0 fw-bold text-warning">Cara Bayar
+                            {{ \Carbon\Carbon::now()->translatedFormat('F
+                            Y') }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="chart-cara-bayar" style="height: 250px; max-width: 100%; overflow: true;"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 @endsection

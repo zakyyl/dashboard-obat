@@ -278,7 +278,9 @@ public function stokBarangMasuk(Request $request)
             'jenis.nama'
         );
 
-    $totalItems = $query->count();
+    // $totalItems = $query->count();
+    $totalItems = $query->get()->count();
+
     $data = $query->orderBy('jumlah', 'desc')
         ->offset(($page - 1) * $perPage)
         ->limit($perPage)
@@ -308,5 +310,79 @@ public function stokBarangMasuk(Request $request)
     ));
 }
 
+public function stokBarangKeluar(Request $request)
+{
+    // Ambil tanggal dari request atau default awal dan akhir bulan
+    $startDate = $request->get('start_date', Carbon::now()->startOfMonth()->toDateString());
+    $endDate = $request->get('end_date', Carbon::now()->endOfMonth()->toDateString());
+
+    $kodeBrng = $request->get('kode_brng');
+    $page = $request->get('page', 1);
+    $perPage = 20;
+
+    // Query baru dari input kamu
+    $query = DB::table('detail_pemberian_obat')
+        ->join('reg_periksa', 'detail_pemberian_obat.no_rawat', '=', 'reg_periksa.no_rawat')
+        ->join('penjab', 'reg_periksa.kd_pj', '=', 'penjab.kd_pj')
+        ->join('databarang', 'detail_pemberian_obat.kode_brng', '=', 'databarang.kode_brng')
+        ->join('bangsal', 'detail_pemberian_obat.kd_bangsal', '=', 'bangsal.kd_bangsal')
+        ->join('jenis', 'databarang.kdjns', '=', 'jenis.kdjns')
+        ->join('kodesatuan', 'databarang.kode_sat', '=', 'kodesatuan.kode_sat')
+        ->select(
+            'detail_pemberian_obat.kode_brng',
+            'databarang.nama_brng',
+            'databarang.kode_sat',
+            'kodesatuan.satuan',
+            'jenis.nama AS namajenis',
+            DB::raw('SUM(detail_pemberian_obat.jml) AS jumlah'),
+            DB::raw('SUM(detail_pemberian_obat.total) AS total')
+        )
+        ->whereBetween('detail_pemberian_obat.tgl_perawatan', [$startDate, $endDate])
+        ->when($kodeBrng, function ($q) use ($kodeBrng) {
+            $q->where(function ($sub) use ($kodeBrng) {
+                $sub->where('detail_pemberian_obat.kode_brng', 'like', "%$kodeBrng%")
+                    ->orWhere('databarang.nama_brng', 'like', "%$kodeBrng%");
+            });
+        })
+        ->groupBy(
+            'detail_pemberian_obat.kode_brng',
+            'databarang.nama_brng',
+            'databarang.kode_sat',
+            'kodesatuan.satuan',
+            'jenis.nama'
+        );
+
+    // Hitung total item dan paginasi
+    $totalItems = $query->get()->count(); // Pakai get()->count() karena query pakai groupBy
+    $data = $query->orderBy('databarang.nama_brng')
+        ->offset(($page - 1) * $perPage)
+        ->limit($perPage)
+        ->get();
+
+    $hasMore = $totalItems > ($page * $perPage);
+    $currentCount = ($page - 1) * $perPage + $data->count();
+
+    // Response JSON untuk AJAX
+    if ($request->ajax()) {
+        return response()->json([
+            'data' => $data,
+            'hasMore' => $hasMore,
+            'currentCount' => $currentCount,
+            'totalItems' => $totalItems,
+            'nextPage' => $page + 1
+        ]);
+    }
+
+    // Jika bukan AJAX, kembalikan ke view
+    return view('dashboard.stok_barang_keluar', compact(
+        'data',
+        'startDate',
+        'endDate',
+        'kodeBrng',
+        'hasMore',
+        'currentCount',
+        'totalItems'
+    ));
+}
 
 }

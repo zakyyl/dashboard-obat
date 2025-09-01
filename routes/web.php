@@ -9,6 +9,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RawatInapController;
 use App\Http\Controllers\PengajuanClaimController;
 use App\Http\Controllers\ClaimController;
+use App\Http\Controllers\KamarController;
+use App\Http\Controllers\DokterController;
 
 
 
@@ -16,6 +18,8 @@ Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'authenticate'])->name('login.post');
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+
 
 
 Route::middleware('auth')->group(function () {
@@ -26,7 +30,9 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/obat/stok-barang-per-depo', [ObatController::class, 'stokBarangPerDepo'])
     ->name('obat.stok-barang-per-depo');
+
     Route::get('/obat/stok-barang-masuk', [ObatController::class, 'stokBarangMasuk'])->name('obat.stok-barang-masuk');
+    Route::get('/obat/stok-barang-keluar', [ObatController::class, 'stokBarangKeluar'])->name('obat.stok-barang-keluar');
 
 
 
@@ -39,13 +45,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard/labor-kunjungan-ranap', [RawatInapController::class, 'index'])->name('dashboard.labor');
     Route::get('/dashboard/radiologi-kunjungan-ranap', [RawatInapController::class, 'indexRadiologi'])->name('radiologi.kunjungan.ranap');
 
-    // Route::get('/dashboard/pasien-ranap', [RawatInapController::class, 'index'])->name('dashboard.pasien.ranap');
     Route::get('/dashboard/pasien-ranap', [RawatInapController::class, 'pasienRanap'])->name('dashboard.pasien.ranap');
     Route::get('/dashboard/pasien-ralan', [RawatJalanController::class, 'pasienRalan'])->name('dashboard.pasien.ralan');
 
 
-Route::get('/pengajuan-claim-ralan', [ClaimController::class, 'pengajuanClaimRalan'])->name('pengajuan.claim.ralan');
-Route::get('/pengajuan-claim-ranap', [ClaimController::class, 'pengajuanClaimRanap'])->name('pengajuan.claim.ranap');
+    Route::get('/pengajuan-claim-ralan', [ClaimController::class, 'pengajuanClaimRalan'])->name('pengajuan.claim.ralan');
+    Route::get('/pengajuan-claim-ranap', [ClaimController::class, 'pengajuanClaimRanap'])->name('pengajuan.claim.ranap');
+
+    Route::get('/kamar', [KamarController::class, 'index'])->name('kamar.index');
+    Route::get('/dashboard/dokter', [DokterController::class, 'index'])->name('dokter.index');
 
 
 });

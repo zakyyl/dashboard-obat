@@ -33,18 +33,19 @@
 </head>
 <body class="font-sans bg-gray-100 antialiased">
     <div class="flex flex-col lg:flex-row min-h-screen">
-        <div class="flex-1 flex justify-center items-center p-8 lg:p-12 bg-white shadow-md order-2 lg:order-1">
+        {{-- <div class="flex-1 flex justify-center items-center p-8 lg:p-12 bg-white shadow-md order-2 lg:order-1"> --}}
+            <div class="flex-1 flex justify-center items-center p-8 lg:p-12" style="background-color: #f0f4f8;">
             <div class="text-center w-full max-w-lg">
                 <img src="{{ asset('images/news.png') }}" alt="Transformasi Polri Presisi" class="max-w-full h-auto mx-auto mb-4">
             </div>
         </div>
 
-        <div class="flex-1 flex justify-center items-center p-8 lg:p-12 order-1 lg:order-2 min-h-screen lg:min-h-0">
+        <div class="flex-1 flex justify-center items-center p-8 lg:p-12 order-1 lg:order-2 min-h-screen lg:min-h-0" style="background-color: #0f5386;">
             <div class="w-full max-w-md">
                 <div class="text-center mb-8">
                    
-                    <h1 class="block text-2xl font-bold text-black-800 dark:text-dark">LOGIN</h1>
-                    <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">
+                    <h1 class="block text-2xl font-bold text-yellow-500 dark:text-yellow-400">LOGIN</h1>
+                    <p class="mt-2 text-center text-gray-200 text-sm">
                         Silakan masukkan email dan password untuk login
                     </p>
                 </div>
@@ -53,7 +54,7 @@
                     @csrf {{-- Laravel CSRF token --}}
                     <div class="grid gap-y-4">
                         <div>
-                            <label for="email" class="block text-sm mb-2 text-dark-700 dark:text-dark-200">Email</label>
+                            <label for="email" class="block text-sm mb-2 text-yellow-500 dark:text-yellow-400">Email</label>
                             <div class="relative">
                                 <input type="email" id="email" name="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="nama@email.com" required aria-describedby="email-error">
                                 @error('email')
@@ -62,7 +63,7 @@
                             </div>
                         </div>
                         <div>
-                            <label for="password" class="block text-sm mb-2 text-dark-700 dark:text-dark-200">Password</label>
+                            <label for="password" class="block text-sm mb-2 text-yellow-500 dark:text-yellow-400">Password</label>
                             <div class="relative password-toggle-wrapper"> {{-- Tambahkan wrapper relative --}}
                                 <input type="password" id="password" name="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="••••••••" required aria-describedby="password-error">
                                 <i class="bi bi-eye-slash-fill password-toggle-icon" id="togglePassword"></i> {{-- Ikon mata --}}
@@ -76,7 +77,7 @@
                         </button>
                     </div>
                 </form>
-                <div class="mt-2 text-center text-gray-500 text-sm">
+                <div class="mt-2 text-center text-gray-200 text-xs">
                     Copyright &copy; RS BHAYANGKARA JAMBI 2025
                 </div>
             </div>

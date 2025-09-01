@@ -20,11 +20,6 @@
                             {{ Auth::user()->name ?? 'Pengguna' }}
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownUser">
-                            <h6 class="dropdown-header">{{ Auth::user()->email ?? 'Email Pengguna' }}</h6>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="#">
-                                <i class="bi bi-person-fill me-2"></i> Profil
-                            </a>
                             <div class="dropdown-divider"></div>
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf

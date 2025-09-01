@@ -26,7 +26,7 @@ class RawatInapController extends Controller
             ->orderBy('tgl')
             ->get();
 
-        return view('dashboard.lab_kunjungan_Ranap', compact('data', 'tgl_dari', 'tgl_sampai'));
+        return view('dashboard.lab_kunjungan_ranap', compact('data', 'tgl_dari', 'tgl_sampai'));
     }
 
     public function indexRadiologi(Request $request)
@@ -46,7 +46,7 @@ class RawatInapController extends Controller
             ->orderBy('tgl')
             ->get();
 
-        return view('dashboard.radiologi_kunjungan_Ranap', compact('data', 'tgl_dari', 'tgl_sampai'));
+        return view('dashboard.radiologi_kunjungan_ranap', compact('data', 'tgl_dari', 'tgl_sampai'));
     }
 
 
