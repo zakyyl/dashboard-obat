@@ -16,12 +16,14 @@ class DashboardController extends Controller
     {
         return view('home', [
             'pasienHariIni' => $this->getPasienHariIni(),
+            'pasienMobileJknHariIni' => $this->getPasienMobileJknHariIni(),
             'rawatJalanPerBulan' => $this->getRawatJalanPerBulan(),
             'caraBayar' => $this->getCaraBayar(),
             'resepHariIni' => $this->getResepHariIni()->count(),
             'kematianPerBulan' => $this->getKematianPerBulan(),
             'rawatInapHariIni' => $this->getRawatInapHariIni()->count(),
             'rawatInapHariIniData' => $this->getRawatInapHariIni(),
+            'rawatIgdHariIni' => $this->getPasienIgdHariIni()
         ]);
     }
 
@@ -33,6 +35,25 @@ class DashboardController extends Controller
             ->distinct('no_rawat')
             ->count();
     }
+
+    private function getPasienIgdHariIni()
+    {
+        return DB::table('reg_periksa')
+            ->whereDate('tgl_registrasi', DB::raw('CURDATE()'))
+            ->where('kd_poli', 'IGDK')
+            ->distinct('no_rawat')
+            ->count();
+    }
+
+
+//     private function getPasienHariIni()
+// {
+//     return DB::table('reg_periksa')
+//         ->whereDate('tgl_registrasi', now()) 
+//         ->where('no_rkm_medis', 'NOT LIKE', 'APS%')
+//         ->select(DB::raw('COUNT(DISTINCT no_rawat) as total'))
+//         ->value('total'); 
+// }
 
     private function getRawatJalanPerBulan()
     {
@@ -119,7 +140,7 @@ class DashboardController extends Controller
             )
             ->where('kamar_inap.stts_pulang', '-')
             ->whereDate('kamar_inap.tgl_masuk', DB::raw('CURDATE()'))
-            // ->whereDate('kamar_inap.tgl_masuk', '>=', now()->subDays(7)->toDateString())
+            // ->whereDate('kamar_inap.tgl_masuk', '>=', now()->subDays(7)->toDateString()) cuman untuk testing
             ->orderBy('bangsal.nm_bangsal')
             ->orderBy('kamar_inap.tgl_masuk')
             ->orderBy('kamar_inap.jam_masuk')
@@ -128,16 +149,23 @@ class DashboardController extends Controller
 
 
     private function getKematianPerBulan()
+    {
+        return DB::table('pasien_mati')
+            ->select(
+                DB::raw("DATE_FORMAT(tanggal, '%Y-%m') AS bulan"),
+                DB::raw('COUNT(*) AS jumlah')
+            )
+            ->whereYear('tanggal', now()->year)
+            ->groupBy(DB::raw("DATE_FORMAT(tanggal, '%Y-%m')"))
+            ->orderBy(DB::raw("DATE_FORMAT(tanggal, '%Y-%m')"))
+            ->get();
+    }
+
+    private function getPasienMobileJknHariIni()
 {
-    return DB::table('pasien_mati')
-        ->select(
-            DB::raw("MONTH(tanggal) AS bulan"),
-            DB::raw('COUNT(*) AS jumlah')
-        )
-        ->whereYear('tanggal', now()->year)
-        ->groupBy(DB::raw("MONTH(tanggal)"))
-        ->orderBy(DB::raw("MONTH(tanggal)"))
-        ->get();
+    return DB::table('referensi_mobilejkn_bpjs')
+        ->whereDate('tanggalperiksa', now()->toDateString())
+        ->count();
 }
 
 }
