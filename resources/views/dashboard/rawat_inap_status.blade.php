@@ -18,6 +18,19 @@
                 value="{{ $tanggal_akhir }}">
         </div>
         <div class="col-md-4">
+    <label for="ns_group" class="form-label">Nurse Station</label>
+    {{-- Ubah 'name' menjadi 'ns_group' --}}
+    <select name="ns_group" id="ns_group" class="form-select">
+        <option value="">Semua Nurse Station</option>
+        @foreach($nurse_stations as $ns)
+            {{-- Gunakan 'ket' untuk value dan teks, dan variabel baru untuk 'selected' --}}
+            <option value="{{ $ns->ket }}" {{ ($ns_group_selected ?? '') == $ns->ket ? 'selected' : '' }}>
+                {{ $ns->ket }}
+            </option>
+        @endforeach
+    </select>
+</div>
+        {{--  <div class="col-md-4">
             <label for="kd_bangsal" class="form-label">Nurse Station</label>
             <select name="kd_bangsal" id="kd_bangsal" class="form-select">
                 <option value="">Semua Nurse Station</option>
@@ -27,7 +40,7 @@
                 </option>
                 @endforeach
             </select>
-        </div>
+        </div>  --}}
         <div class="col-md-4">
             <label for="no_rawat" class="form-label">Nomor Rawat</label>
             <input type="text" name="no_rawat" id="no_rawat" class="form-control" value="{{ $no_rawat ?? '' }}"
