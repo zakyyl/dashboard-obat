@@ -75,55 +75,71 @@ class RawatInapStatusController extends Controller
     public function getKelengkapan($no_rawat)
     {
         // Fungsi helper untuk memeriksa keberadaan berkas di tabel
-        $cekBerkas = function ($table, $no_rawat_param) {
-            // Gunakan try-catch untuk menangani jika tabel tidak ditemukan
+        $cekBerkas = function ($table, $no_rawat_param) { // <--- TANDA $ SUDAH DIPERBAIKI DI SINI
             try {
-                return DB::table($table)->where('no_rawat', $no_rawat_param)->exists() ? 'Ada' : 'Tidak Ada';
+                return DB::table($table)->where('no_rawat', $no_rawat_param)->exists();
             } catch (\Illuminate\Database\QueryException $e) {
-                // Jika tabel tidak ada, kembalikan status 'Tabel Error'
-                // Ini membantu debugging jika ada nama tabel yang salah
-                return 'Tabel Error';
+                return false; // Anggap tidak ada jika tabel error
             }
         };
 
+        // Cek keberadaan SOAP/CPPT
+        $soapExists = $cekBerkas('pemeriksaan_ranap', $no_rawat);
+        $soapSubmenu = []; // Siapkan array kosong untuk detail
+
+        // Jika data SOAP ditemukan, ambil detailnya
+        if ($soapExists) {
+            try {
+                $soapSubmenu = DB::table('pemeriksaan_ranap')
+                    ->join('pegawai', 'pemeriksaan_ranap.nip', '=', 'pegawai.nik')
+                    ->where('pemeriksaan_ranap.no_rawat', $no_rawat)
+                    ->select('pemeriksaan_ranap.tgl_perawatan', 'pemeriksaan_ranap.jam_rawat', 'pegawai.nama as nm_dokter')
+                    ->orderBy('pemeriksaan_ranap.tgl_perawatan', 'desc')
+                    ->orderBy('pemeriksaan_ranap.jam_rawat', 'desc') // Urutkan berdasarkan jam terbaru dulu
+                    ->get()
+                    ->unique('tgl_perawatan') // Ambil hanya 1 entri unik per tanggal (yang paling baru)
+                    ->map(function ($item) {
+                        // Format tanggal saja, tanpa jam
+                        $item->tanggal = Carbon::parse($item->tgl_perawatan)->format('d-m-Y');
+                        return $item;
+                    })
+                    ->values() // Re-index array setelah proses unique
+                    ->toArray();
+            } catch (\Illuminate\Database\QueryException $e) {
+                $soapSubmenu = [];
+            }
+        }
+
         // Daftar lengkap pengecekan berkas rekam medis
         $data = [
-            // Kategori: Pemeriksaan & Diagnosa Inti
-            ['nama' => 'Pemeriksaan (SOAP/CPPT)', 'status' => $cekBerkas('pemeriksaan_ranap', $no_rawat)],
-            ['nama' => 'Diagnosa (ICD 10)', 'status' => $cekBerkas('diagnosa_pasien', $no_rawat)],
-            ['nama' => 'Tindakan (ICD 9)', 'status' => $cekBerkas('prosedur_pasien', $no_rawat)],
-
-            // Kategori: Penilaian Awal
-            ['nama' => 'Penilaian Awal Keperawatan', 'status' => $cekBerkas('penilaian_awal_keperawatan_ranap', $no_rawat)],
-            ['nama' => 'Penilaian Awal Medis', 'status' => $cekBerkas('penilaian_medis_ranap', $no_rawat)],
-
-            // Kategori: Khusus Pasien Operasi
-            ['nama' => 'Checklist Pra Operasi', 'status' => $cekBerkas('checklist_pre_operasi', $no_rawat)],
-            ['nama' => 'Penilaian Pra Anestesi', 'status' => $cekBerkas('penilaian_pre_anestesi', $no_rawat)],
-            ['nama' => 'Laporan Operasi', 'status' => $cekBerkas('laporan_operasi', $no_rawat)],
-
-            // Kategori: Monitoring Pasien
-            ['nama' => 'Pemantauan PEWS Dewasa', 'status' => $cekBerkas('pemantauan_pews_dewasa', $no_rawat)],
-            ['nama' => 'Penilaian Ulang Nyeri', 'status' => $cekBerkas('penilaian_ulang_nyeri', $no_rawat)],
-            ['nama' => 'Monitoring Keseimbangan Cairan', 'status' => $cekBerkas('catatan_keseimbangan_cairan', $no_rawat)],
-            ['nama' => 'Monitoring Cek GDS', 'status' => $cekBerkas('catatan_cek_gds', $no_rawat)],
-
-            // Kategori: Catatan & Dokumentasi Tindakan
-            ['nama' => 'Catatan Keperawatan', 'status' => $cekBerkas('catatan_keperawatan_ranap', $no_rawat)],
-            ['nama' => 'Pemberian Transfusi Darah', 'status' => $cekBerkas('pemberian_transfusi_darah', $no_rawat)],
-            ['nama' => 'Monitoring Transfusi Darah', 'status' => $cekBerkas('monitoring_reaksi_tranfusi', $no_rawat)],
-            ['nama' => 'Dokumentasi ESWL', 'status' => $cekBerkas('hasil_tindakan_eswl', $no_rawat)],
-
-            // Kategori: Pemulangan & Transfer
-            ['nama' => 'Transfer Antar Ruang', 'status' => $cekBerkas('transfer_pasien_antar_ruang', $no_rawat)],
-            ['nama' => 'Perencanaan Pemulangan (Discharge Planning)', 'status' => $cekBerkas('perencanaan_pemulangan', $no_rawat)],
-            ['nama' => 'Resume Dokter', 'status' => $cekBerkas('resume_pasien_ranap', $no_rawat)],
-            ['nama' => 'Resume Keperawatan', 'status' => $cekBerkas('resume_keperawatan', $no_rawat)],
-            ['nama' => 'Informasi & Edukasi', 'status' => $cekBerkas('edukasi_pasien_keluarga', $no_rawat)],
-            ['nama' => 'Edukasi Pasien & Keluarga', 'status' => $cekBerkas('edukasi_pasien_keluarga', $no_rawat)],
+            [
+                'nama' => 'Pemeriksaan (SOAP/CPPT)',
+                'status' => $soapExists ? 'Ada' : 'Tidak Ada',
+                'submenu' => $soapSubmenu
+            ],
+            // Daftar item lainnya
+            ['nama' => 'Diagnosa (ICD 10)', 'status' => $cekBerkas('diagnosa_pasien', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Tindakan (ICD 9)', 'status' => $cekBerkas('prosedur_pasien', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Penilaian Awal Keperawatan', 'status' => $cekBerkas('penilaian_awal_keperawatan_ranap', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Penilaian Awal Medis', 'status' => $cekBerkas('penilaian_medis_ranap', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Checklist Pra Operasi', 'status' => $cekBerkas('checklist_pre_operasi', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Penilaian Pra Anestesi', 'status' => $cekBerkas('penilaian_pre_anestesi', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Laporan Operasi', 'status' => $cekBerkas('laporan_operasi', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Pemantauan PEWS Dewasa', 'status' => $cekBerkas('pemantauan_pews_dewasa', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Penilaian Ulang Nyeri', 'status' => $cekBerkas('penilaian_ulang_nyeri', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Monitoring Keseimbangan Cairan', 'status' => $cekBerkas('catatan_keseimbangan_cairan', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Monitoring Cek GDS', 'status' => $cekBerkas('catatan_cek_gds', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Catatan Keperawatan', 'status' => $cekBerkas('catatan_keperawatan_ranap', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Pemberian Transfusi Darah', 'status' => $cekBerkas('pemberian_transfusi_darah', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Monitoring Transfusi Darah', 'status' => $cekBerkas('monitoring_reaksi_tranfusi', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Dokumentasi ESWL', 'status' => $cekBerkas('hasil_tindakan_eswl', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Transfer Antar Ruang', 'status' => $cekBerkas('transfer_pasien_antar_ruang', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Perencanaan Pemulangan (Discharge Planning)', 'status' => $cekBerkas('perencanaan_pemulangan', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Resume Dokter', 'status' => $cekBerkas('resume_pasien_ranap', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Resume Keperawatan', 'status' => $cekBerkas('resume_keperawatan', $no_rawat) ? 'Ada' : 'Tidak Ada'],
+            ['nama' => 'Informasi & Edukasi', 'status' => $cekBerkas('edukasi_pasien_keluarga', $no_rawat) ? 'Ada' : 'Tidak Ada'],
         ];
 
-        // Kembalikan sebagai JSON Array, sesuai dengan kode JavaScript Anda yang sudah berjalan
         return response()->json($data);
     }
 }
