@@ -137,13 +137,11 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    function encodeNoRawat(noRawat) {
-        return encodeURIComponent(noRawat);
-    }
+    // FUNGSI encodeNoRawat DIHAPUS
 
     document.querySelectorAll('.btn-kelengkapan').forEach(button => {
         button.addEventListener('click', function() {
-            const noRawat = this.dataset.norawat;
+            const noRawat = this.dataset.norawat; // Menggunakan noRawat langsung
             const namaPasien = this.dataset.namapasien;
 
             document.getElementById('namaPasienModal').innerText = namaPasien;
@@ -152,39 +150,31 @@ document.addEventListener('DOMContentLoaded', function() {
             const tbody = document.getElementById('isiKelengkapan');
             tbody.innerHTML = `<tr><td colspan="2" class="text-center py-4">Memuat data... <i class="fa fa-spinner fa-spin ms-2"></i></td></tr>`;
 
-            const encodedNoRawat = encodeNoRawat(noRawat);
-            fetch(`{{ url('/dashboard/status-rm-ranap/kelengkapan') }}/${encodedNoRawat}`)
+            // PERUBAHAN UTAMA: noRawat digunakan langsung tanpa encode
+            fetch(`{{ url('/dashboard/status-rm-ranap/kelengkapan') }}/${noRawat}`)
                 .then(response => {
                     if (!response.ok) throw new Error('Network response was not ok');
                     return response.json();
                 })
-                .then(data => {
-                    if (Array.isArray(data) && data.length) {
+                .then(result => { // Ganti nama variabel 'data' menjadi 'result' untuk menghindari kebingungan
+                    // Mengikuti struktur baru dari jawaban sebelumnya (data dibungkus)
+                    if (Array.isArray(result.data) && result.data.length) {
                         let htmlRows = '';
                         const selectedNS = document.getElementById('ns_group').value;
 
-                        // --- AWAL PERUBAHAN LOGIKA ---
-                        // Daftar item khusus untuk setiap NS
                         const icuItems = ['Kriteria Masuk ICU', 'Kriteria Keluar ICU'];
-                        const kebidananItems = ['Catatan Persalinan']; // Item baru
-                        // --- AKHIR PERUBAHAN LOGIKA ---
+                        const kebidananItems = ['Catatan Persalinan'];
 
-
-                        data.forEach((item, index) => {
-
-                            // --- AWAL PERUBAHAN LOGIKA TAMPILAN ---
-                            let showItem = true; // Tampilkan item secara default
+                        result.data.forEach((item, index) => { // Menggunakan result.data
+                            let showItem = true;
                             const isIcuItem = icuItems.includes(item.nama);
                             const isKebidananItem = kebidananItems.includes(item.nama);
 
                             if (isIcuItem) {
-                                // Jika ini item ICU, hanya tampilkan jika NS ICU dipilih
                                 showItem = (selectedNS === 'NS ICU');
                             } else if (isKebidananItem) {
-                                // Jika ini item Kebidanan, hanya tampilkan jika NS Kebidanan dipilih
                                 showItem = (selectedNS === 'NS Kebidanan');
                             }
-                            // --- AKHIR PERUBAHAN LOGIKA TAMPILAN ---
                             
                             if (showItem) {
                                 let badgeClass = item.status === 'Ada' ? 'bg-success' :
@@ -192,13 +182,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                                  item.status === 'Tabel Error' ? 'bg-dark' : 'bg-secondary';
 
                                 if (item.hasOwnProperty('submenu')) {
-                                    let submenuContent = '<p class="mb-0 text-muted"><em>Tidak ada detail untuk ditampilkan.</em></p>';
+                                    let submenuContent = '<p class="mb-0 text-muted"><em>Tidak ada detail.</em></p>';
 
                                     if (Array.isArray(item.submenu) && item.submenu.length > 0) {
                                         submenuContent = ''; 
                                         item.submenu.forEach((subItem, subIndex) => {
                                             let profesiBadgeClass = 'bg-secondary';
-                                            const namaPetugas = subItem.nm_dokter.toLowerCase();
+                                            const namaPetugas = subItem.nm_dokter ? subItem.nm_dokter.toLowerCase() : '';
                                             if (namaPetugas.includes('dr.') || namaPetugas.includes(', sp.')) {
                                                 profesiBadgeClass = 'bg-success';
                                             } else if (namaPetugas.includes('am.kep') || namaPetugas.includes('s.kep')) {
@@ -206,9 +196,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             } else if (namaPetugas.includes('apt.') || namaPetugas.includes('s.farm')) {
                                                 profesiBadgeClass = 'bg-warning text-dark';
                                             }
-
-                                            const borderClass = (subIndex < item.submenu.length - 1) ? 'border-bottom border-secondary' : '';
-
+                                            const borderClass = (subIndex < item.submenu.length - 1) ? 'border-bottom' : '';
                                             submenuContent += `
                                                 <div class="d-flex justify-content-between align-items-center py-2 ${borderClass}">
                                                     <span><i class="fa-regular fa-calendar-alt me-2"></i>${subItem.tanggal}</span>
@@ -218,25 +206,17 @@ document.addEventListener('DOMContentLoaded', function() {
                                     }
 
                                     htmlRows += `
-                                        <tr data-bs-toggle="collapse" href="#submenu-${index}" role="button" class="accordion-toggle">
+                                        <tr data-bs-toggle="collapse" href="#submenu-${index}" role="button">
                                             <td>${item.nama} <i class="fa fa-caret-down ms-2"></i></td>
                                             <td><span class="badge ${badgeClass}">${item.status}</span></td>
                                         </tr>
                                         <tr>
                                             <td colspan="2" class="p-0" style="border: none;">
-                                                <div class="collapse" id="submenu-${index}">
-                                                    <div class="p-3">
-                                                        ${submenuContent}
-                                                    </div>
-                                                </div>
+                                                <div class="collapse" id="submenu-${index}"><div class="p-3">${submenuContent}</div></div>
                                             </td>
                                         </tr>`;
                                 } else {
-                                    htmlRows += `
-                                        <tr>
-                                            <td>${item.nama}</td>
-                                            <td><span class="badge ${badgeClass}">${item.status}</span></td>
-                                        </tr>`;
+                                    htmlRows += `<tr><td>${item.nama}</td><td><span class="badge ${badgeClass}">${item.status}</span></td></tr>`;
                                 }
                             }
                         });

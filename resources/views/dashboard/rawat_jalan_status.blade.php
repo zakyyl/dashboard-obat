@@ -16,39 +16,38 @@
 
     {{-- Filter Box --}}
     {{-- --- PERUBAHAN DIMULAI --- --}}
-    <form method="GET" action="{{ route('statusrm-ralan.index') }}" class="row mb-4 g-3" autocomplete="off">
-        <div class="col-md-3">
-            <label for="tanggal_awal" class="form-label">Tanggal Awal</label>
-            <input type="date" name="tanggal_awal" id="tanggal_awal" class="form-control" value="{{ $tanggal_awal }}">
-        </div>
-        <div class="col-md-3">
-            <label for="tanggal_akhir" class="form-label">Tanggal Akhir</label>
-            <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control"
-                value="{{ $tanggal_akhir }}">
-        </div>
-        <div class="col-md-3">
-            <label for="no_rawat" class="form-label">Nomor Rawat</label>
-            <input type="text" name="no_rawat" id="no_rawat" class="form-control" value="{{ $no_rawat ?? '' }}"
-                placeholder="Masukkan No. Rawat">
-        </div>
-        {{-- 1. Tambah dropdown poliklinik --}}
-        <div class="col-md-3">
-            <label for="kd_poli" class="form-label">Poliklinik</label>
-            <select name="kd_poli" id="kd_poli" class="form-select">
-                <option value="">-- Semua Poliklinik --</option>
-                @foreach ($poliklinik as $poli)
-                <option value="{{ $poli->kd_poli }}" {{ $kd_poli_selected==$poli->kd_poli ? 'selected' : '' }}>
-                    {{ $poli->nm_poli }}
-                </option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-md-12">
-            <button type="submit" class="btn btn-warning">
-                <i class="fa-solid fa-search me-1"></i> Filter
-            </button>
-        </div>
-    </form>
+    {{-- Ganti seluruh blok form Anda dengan ini --}}
+<form method="GET" action="{{ route('statusrm-ralan.index') }}" class="row mb-4 g-3 align-items-end" autocomplete="off">
+    <div class="col-md-3">
+        <label for="tanggal_awal" class="form-label">Tanggal Awal</label>
+        <input type="date" name="tanggal_awal" id="tanggal_awal" class="form-control" value="{{ $tanggal_awal }}">
+    </div>
+    <div class="col-md-3">
+        <label for="tanggal_akhir" class="form-label">Tanggal Akhir</label>
+        <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control" value="{{ $tanggal_akhir }}">
+    </div>
+    <div class="col-md-2"> {{-- Diubah dari col-md-3 --}}
+        <label for="no_rawat" class="form-label">Nomor Rawat</label>
+        <input type="text" name="no_rawat" id="no_rawat" class="form-control" value="{{ $no_rawat ?? '' }}"
+            placeholder="Masukkan No. Rawat">
+    </div>
+    <div class="col-md-2"> {{-- Diubah dari col-md-3 --}}
+        <label for="kd_poli" class="form-label">Poliklinik</label>
+        <select name="kd_poli" id="kd_poli" class="form-select">
+            <option value="">-- Semua Poliklinik --</option>
+            @foreach ($poliklinik as $poli)
+            <option value="{{ $poli->kd_poli }}" {{ $kd_poli_selected==$poli->kd_poli ? 'selected' : '' }}>
+                {{ $poli->nm_poli }}
+            </option>
+            @endforeach
+        </select>
+    </div>
+    <div class="col-md-2"> {{-- Diubah dari col-md-12 --}}
+        <button type="submit" class="btn btn-warning w-100">
+            <i class="fa-solid fa-search me-1"></i> Filter
+        </button>
+    </div>
+</form>
     {{-- --- PERUBAHAN SELESAI --- --}}
 
 
