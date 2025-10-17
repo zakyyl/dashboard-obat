@@ -13,7 +13,6 @@ class RawatJalanStatusController extends Controller
         $tanggal_awal = $request->input('tanggal_awal', Carbon::today()->toDateString());
         $tanggal_akhir = $request->input('tanggal_akhir', Carbon::today()->toDateString());
         $no_rawat = $request->input('no_rawat');
-        // Asumsi kita tetap menggunakan filter poliklinik dari permintaan sebelumnya
         $kd_poli = $request->input('kd_poli');
 
         $poliklinik = DB::table('poliklinik')
@@ -48,10 +47,6 @@ class RawatJalanStatusController extends Controller
             })
             ->whereNotIn('reg_periksa.kd_poli', ['IGDK', 'POL08', 'U0081', 'U0035'])
             ->orderBy('reg_periksa.tgl_registrasi', 'asc')
-            // --- PERUBAHAN DISINI ---
-            // Ubah ->get() menjadi ->paginate()
-            // Angka 15 berarti 15 data per halaman, bisa diubah sesuai kebutuhan.
-            // ->appends($request->all()) penting agar filter tetap aktif saat pindah halaman.
             ->paginate(15)->appends($request->all());
 
         return view('dashboard.rawat_jalan_status', [
@@ -66,36 +61,73 @@ class RawatJalanStatusController extends Controller
 
     public function getKelengkapan($no_rawat)
     {
-        $cekBerkas = function ($table, $no_rawat_param) {
-            return DB::table($table)->where('no_rawat', $no_rawat_param)->exists() ? 'Ada' : 'Tidak Ada';
-        };
-
-        $data = [
-            ['nama' => 'SOAP / CPPT Rajal', 'status' => $cekBerkas('pemeriksaan_ralan', $no_rawat)],
-            ['nama' => 'Resume Medis Rawat Jalan', 'status' => $cekBerkas('resume_pasien', $no_rawat)],
-            ['nama' => 'ICD 10', 'status' => $cekBerkas('diagnosa_pasien', $no_rawat)],
-            ['nama' => 'ICD 9', 'status' => $cekBerkas('prosedur_pasien', $no_rawat)],
-            ['nama' => 'Pemeriksaan Laboratorium', 'status' => $cekBerkas('periksa_lab', $no_rawat)],
-            ['nama' => 'Resep Obat', 'status' => $cekBerkas('resep_obat', $no_rawat)],
-            ['nama' => 'SEP', 'status' => $cekBerkas('bridging_sep', $no_rawat)],
-            ['nama' => 'Hasil Pemeriksaan USG', 'status' => $cekBerkas('hasil_pemeriksaan_usg', $no_rawat)],
-            ['nama' => 'Pemeriksaan Radiologi', 'status' => $cekBerkas('periksa_radiologi', $no_rawat)],
-            ['nama' => 'Gambar Radiologi', 'status' => $cekBerkas('gambar_radiologi', $no_rawat)],
-            ['nama' => 'Penilaian Awal Keperawatan Ralan', 'status' => $cekBerkas('penilaian_awal_keperawatan_ralan', $no_rawat)],
-            ['nama' => 'Penilaian Medis Ralan', 'status' => $cekBerkas('penilaian_medis_ralan', $no_rawat)],
-            ['nama' => 'Penilaian Awal Keperawatan Kebidanan', 'status' => $cekBerkas('penilaian_awal_keperawatan_kebidanan', $no_rawat)],
-            ['nama' => 'Penilaian Medis Ralan Kandungan', 'status' => $cekBerkas('penilaian_medis_ralan_kandungan', $no_rawat)],
-            ['nama' => 'Penilaian Awal Keperawatan Ralan Bayi', 'status' => $cekBerkas('penilaian_awal_keperawatan_ralan_bayi', $no_rawat)],
-            ['nama' => 'Penilaian Medis Ralan Anak', 'status' => $cekBerkas('penilaian_medis_ralan_anak', $no_rawat)],
-            ['nama' => 'Penilaian Awal Keperawatan Mata', 'status' => $cekBerkas('penilaian_awal_keperawatan_mata', $no_rawat)],
-            ['nama' => 'Penilaian Medis Ralan Mata', 'status' => $cekBerkas('penilaian_medis_ralan_mata', $no_rawat)],
+        // 1. Definisikan semua item yang akan dicek dalam satu array
+        $checklistItems = [
+            'pemeriksaan_ralan' => 'SOAP / CPPT Rajal',
+            'resume_pasien' => 'Resume Medis Rawat Jalan',
+            'diagnosa_pasien' => 'ICD 10',
+            'prosedur_pasien' => 'ICD 9',
+            'periksa_lab' => 'Pemeriksaan Laboratorium',
+            'resep_obat' => 'Resep Obat',
+            'bridging_sep' => 'SEP',
+            'hasil_pemeriksaan_usg' => 'Hasil Pemeriksaan USG',
+            'periksa_radiologi' => 'Pemeriksaan Radiologi',
+            'gambar_radiologi' => 'Gambar Radiologi',
+            'penilaian_awal_keperawatan_ralan' => 'Penilaian Awal Keperawatan Ralan',
+            'penilaian_medis_ralan' => 'Penilaian Medis Ralan',
+            'penilaian_awal_keperawatan_kebidanan' => 'Penilaian Awal Keperawatan Kebidanan',
+            'penilaian_medis_ralan_kandungan' => 'Penilaian Medis Ralan Kandungan',
+            'penilaian_awal_keperawatan_ralan_bayi' => 'Penilaian Awal Keperawatan Ralan Bayi',
+            'penilaian_medis_ralan_anak' => 'Penilaian Medis Ralan Anak',
+            'penilaian_awal_keperawatan_mata' => 'Penilaian Awal Keperawatan Mata',
+            'penilaian_medis_ralan_mata' => 'Penilaian Medis Ralan Mata',
         ];
 
-        return response()->json([
-            'no_rawat_diterima' => $no_rawat,
-            'data' => $data,
-        ]);
+        // 2. Bangun satu query besar untuk mengecek semua tabel sekaligus dengan UNION ALL
+        $unionQueries = [];
+        $bindings = [];
+        $errorTables = [];
 
-        // return response()->json($data);
+        foreach ($checklistItems as $table => $displayName) {
+            try {
+                if (\Illuminate\Support\Facades\Schema::hasTable($table)) {
+                    $unionQueries[] = "(SELECT '$table' as table_name FROM `$table` WHERE no_rawat = ? LIMIT 1)";
+                    $bindings[] = $no_rawat;
+                } else {
+                     $errorTables[$table] = true;
+                }
+            } catch (\Exception $e) {
+                $errorTables[$table] = true;
+            }
+        }
+
+        // 3. Eksekusi query gabungan HANYA SEKALI
+        $foundTables = [];
+        if (!empty($unionQueries)) {
+            $query_str = implode(" UNION ALL ", $unionQueries);
+            $results = DB::select($query_str, $bindings);
+            foreach ($results as $result) {
+                $foundTables[$result->table_name] = true;
+            }
+        }
+
+        // 4. Susun hasil akhir TANPA query tambahan lagi ke database
+        $data = [];
+        foreach ($checklistItems as $table => $displayName) {
+             if (isset($errorTables[$table])) {
+                $status = 'Tabel Error';
+            } else {
+                $status = isset($foundTables[$table]) ? 'Ada' : 'Tidak Ada';
+            }
+            $data[] = [
+                'nama' => $displayName,
+                'status' => $status
+            ];
+        }
+
+        // --- PERBAIKAN DI SINI ---
+        return response()->json([
+            'data' => $data
+        ]);
     }
 }

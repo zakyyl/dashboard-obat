@@ -15,6 +15,7 @@ class RawatInapStatusController extends Controller
         $tanggal_akhir = $request->input('tanggal_akhir', Carbon::now()->endOfMonth()->toDateString());
         $no_rawat = $request->input('no_rawat');
 
+        // --- OPTIMASI: MENGUBAH SUBQUERY MENJADI JOIN UNTUK PERFORMA LEBIH BAIK ---
         $query = DB::table('kamar_inap')
             ->join('reg_periksa', 'kamar_inap.no_rawat', '=', 'reg_periksa.no_rawat')
             ->join('pasien', 'reg_periksa.no_rkm_medis', '=', 'pasien.no_rkm_medis')
@@ -22,6 +23,7 @@ class RawatInapStatusController extends Controller
             ->join('bangsal', 'kamar.kd_bangsal', '=', 'bangsal.kd_bangsal')
             ->join('penjab', 'reg_periksa.kd_pj', '=', 'penjab.kd_pj')
             ->leftJoin('dpjp_ranap', 'reg_periksa.no_rawat', '=', 'dpjp_ranap.no_rawat')
+            ->leftJoin('dokter', 'dpjp_ranap.kd_dokter', '=', 'dokter.kd_dokter') // <-- JOIN ini lebih efisien
             ->select(
                 'kamar_inap.no_rawat',
                 'reg_periksa.no_rkm_medis',
@@ -30,7 +32,7 @@ class RawatInapStatusController extends Controller
                 'kamar_inap.kd_kamar',
                 DB::raw("concat(bangsal.nm_bangsal, ' (', kamar.kelas, ')') as kamar"),
                 DB::raw("if(kamar_inap.tgl_keluar = '0000-00-00', '', kamar_inap.tgl_keluar) as tgl_keluar"),
-                DB::raw("(SELECT nm_dokter FROM dokter WHERE kd_dokter = dpjp_ranap.kd_dokter) as nm_dokter_dpjp"),
+                'dokter.nm_dokter as nm_dokter_dpjp', // <-- Mengambil nama dokter dari JOIN
                 'reg_periksa.status_lanjut'
             )
             ->where('reg_periksa.status_bayar', 'Sudah Bayar')
@@ -72,87 +74,115 @@ class RawatInapStatusController extends Controller
 
     public function getKelengkapan($no_rawat)
     {
-        $cekBerkas = function ($table, $no_rawat_param) {
+        // --- AWAL OPTIMASI N+1 QUERY ---
+
+        // 1. Definisikan semua item yang akan dicek dalam satu array
+        $checklistItems = [
+            'diagnosa_pasien' => 'Diagnosa (ICD 10)',
+            'prosedur_pasien' => 'Tindakan (ICD 9)',
+            'penilaian_awal_keperawatan_ranap' => 'Penilaian Awal Keperawatan',
+            'catatan_persalinan' => 'Catatan Persalinan',
+            'penilaian_medis_ranap' => 'Penilaian Awal Medis',
+            'checklist_kriteria_masuk_icu' => 'Kriteria Masuk ICU',
+            'checklist_kriteria_keluar_icu' => 'Kriteria Keluar ICU',
+            'checklist_pre_operasi' => 'Checklist Pra Operasi',
+            'penilaian_pre_anestesi' => 'Penilaian Pra Anestesi',
+            'laporan_operasi' => 'Laporan Operasi',
+            'pemantauan_pews_dewasa' => 'Pemantauan PEWS Dewasa',
+            'pemantauan_pews_anak' => 'Pemantauan PEWS Anak',
+            'penilaian_ulang_nyeri' => 'Penilaian Ulang Nyeri',
+            'catatan_keseimbangan_cairan' => 'Monitoring Keseimbangan Cairan',
+            'catatan_cek_gds' => 'Monitoring Cek GDS',
+            'catatan_keperawatan_ranap' => 'Catatan Keperawatan',
+            'pemberian_transfusi_darah' => 'Pemberian Transfusi Darah',
+            'monitoring_reaksi_tranfusi' => 'Monitoring Transfusi Darah',
+            'hasil_tindakan_eswl' => 'Dokumentasi ESWL',
+            'transfer_pasien_antar_ruang' => 'Transfer Antar Ruang',
+            'perencanaan_pemulangan' => 'Perencanaan Pemulangan (Discharge Planning)',
+            'resume_pasien_ranap' => 'Resume Dokter',
+            'resume_keperawatan' => 'Resume Keperawatan',
+            'edukasi_pasien_keluarga' => 'Informasi & Edukasi',
+            'penilaian_medis_hemodialisa' => 'Penilaian Medis Hemodialisa',
+            'catatan_observasi_hemodialisa' => 'Observasi Hemodialisa',
+            'laporan_tindakan' => 'Laporan Tindakan',
+            'pemberian_obat' => 'Pemberian Obat',
+            'surat_pulang_atas_permintaan_sendiri' => 'Surat Pulang Atas Permintaan Sendiri',
+            'surat_pernyataan_pasien_umum' => 'Surat Pernyataan Pasien Umum',
+            'bridging_sep' => 'Data SEP',
+        ];
+
+        // 2. Bangun satu query besar untuk mengecek semua tabel sekaligus dengan UNION ALL
+        $unionQueries = [];
+        $bindings = [];
+        $errorTables = [];
+
+        foreach ($checklistItems as $table => $displayName) {
+            // Kita gunakan try-catch untuk menangani jika ada nama tabel yang salah/tidak ada
             try {
-                return DB::table($table)->where('no_rawat', $no_rawat_param)->exists();
-            } catch (\Illuminate\Database\QueryException $e) {
-                return 'error';
+                if (\Illuminate\Support\Facades\Schema::hasTable($table)) {
+                    $unionQueries[] = "(SELECT '$table' as table_name FROM `$table` WHERE no_rawat = ? LIMIT 1)";
+                    $bindings[] = $no_rawat;
+                } else {
+                     $errorTables[$table] = true;
+                }
+            } catch (\Exception $e) {
+                $errorTables[$table] = true;
             }
-        };
+        }
 
-        $getStatus = function($result) {
-            if ($result === 'error') {
-                return 'Tabel Error';
+        // 3. Eksekusi query gabungan HANYA SEKALI
+        $foundTables = [];
+        if (!empty($unionQueries)) {
+            $query_str = implode(" UNION ALL ", $unionQueries);
+            $results = DB::select($query_str, $bindings);
+            foreach ($results as $result) {
+                $foundTables[$result->table_name] = true;
             }
-            return $result ? 'Ada' : 'Tidak Ada';
-        };
-
-        $soapResult = $cekBerkas('pemeriksaan_ranap', $no_rawat);
-        $soapExists = ($soapResult === true);
-        $soapStatus = $getStatus($soapResult);
+        }
+        
+        // 4. Siapkan data SOAP/CPPT (ini tetap butuh query sendiri karena ada submenu)
+        $data = [];
         $soapSubmenu = [];
-
-        if ($soapExists) {
-            try {
+        $soapStatus = 'Tidak Ada';
+        try {
+            if (DB::table('pemeriksaan_ranap')->where('no_rawat', $no_rawat)->exists()) {
+                $soapStatus = 'Ada';
                 $soapSubmenu = DB::table('pemeriksaan_ranap')
                     ->join('pegawai', 'pemeriksaan_ranap.nip', '=', 'pegawai.nik')
                     ->where('pemeriksaan_ranap.no_rawat', $no_rawat)
-                    ->select('pemeriksaan_ranap.tgl_perawatan', 'pemeriksaan_ranap.jam_rawat', 'pegawai.nama as nm_dokter')
+                    ->select('pemeriksaan_ranap.tgl_perawatan', 'pegawai.nama as nm_dokter')
                     ->orderBy('pemeriksaan_ranap.tgl_perawatan', 'desc')
-                    ->orderBy('pemeriksaan_ranap.jam_rawat', 'desc')
                     ->get()
                     ->unique('tgl_perawatan')
                     ->map(function ($item) {
                         $item->tanggal = Carbon::parse($item->tgl_perawatan)->format('d-m-Y');
                         return $item;
-                    })
-                    ->values()
-                    ->toArray();
-            } catch (\Illuminate\Database\QueryException $e) {
-                $soapSubmenu = [];
+                    })->values()->toArray();
             }
+        } catch (\Exception $e) {
+            $soapStatus = 'Tabel Error';
         }
 
-        $data = [
-            [
-                'nama' => 'Pemeriksaan (SOAP/CPPT)',
-                'status' => $soapStatus,
-                'submenu' => $soapSubmenu
-            ],
-            ['nama' => 'Diagnosa (ICD 10)', 'status' => $getStatus($cekBerkas('diagnosa_pasien', $no_rawat))],
-            ['nama' => 'Tindakan (ICD 9)', 'status' => $getStatus($cekBerkas('prosedur_pasien', $no_rawat))],
-            ['nama' => 'Penilaian Awal Keperawatan', 'status' => $getStatus($cekBerkas('penilaian_awal_keperawatan_ranap', $no_rawat))],
-            // --- PENAMBAHAN BARU (KHUSUS KEBIDANAN) ---
-            ['nama' => 'Catatan Persalinan', 'status' => $getStatus($cekBerkas('catatan_persalinan', $no_rawat))],
-            ['nama' => 'Penilaian Awal Medis', 'status' => $getStatus($cekBerkas('penilaian_medis_ranap', $no_rawat))],
-            ['nama' => 'Kriteria Masuk ICU', 'status' => $getStatus($cekBerkas('checklist_kriteria_masuk_icu', $no_rawat))],
-            ['nama' => 'Kriteria Keluar ICU', 'status' => $getStatus($cekBerkas('checklist_kriteria_keluar_icu', $no_rawat))],
-            ['nama' => 'Checklist Pra Operasi', 'status' => $getStatus($cekBerkas('checklist_pre_operasi', $no_rawat))],
-            ['nama' => 'Penilaian Pra Anestesi', 'status' => $getStatus($cekBerkas('penilaian_pre_anestesi', $no_rawat))],
-            ['nama' => 'Laporan Operasi', 'status' => $getStatus($cekBerkas('laporan_operasi', $no_rawat))],
-            ['nama' => 'Pemantauan PEWS Dewasa', 'status' => $getStatus($cekBerkas('pemantauan_pews_dewasa', $no_rawat))],
-            ['nama' => 'Pemantauan PEWS Anak', 'status' => $getStatus($cekBerkas('pemantauan_pews_anak', $no_rawat))],
-            ['nama' => 'Penilaian Ulang Nyeri', 'status' => $getStatus($cekBerkas('penilaian_ulang_nyeri', $no_rawat))],
-            ['nama' => 'Monitoring Keseimbangan Cairan', 'status' => $getStatus($cekBerkas('catatan_keseimbangan_cairan', $no_rawat))],
-            ['nama' => 'Monitoring Cek GDS', 'status' => $getStatus($cekBerkas('catatan_cek_gds', $no_rawat))],
-            ['nama' => 'Catatan Keperawatan', 'status' => $getStatus($cekBerkas('catatan_keperawatan_ranap', $no_rawat))],
-            ['nama' => 'Pemberian Transfusi Darah', 'status' => $getStatus($cekBerkas('pemberian_transfusi_darah', $no_rawat))],
-            ['nama' => 'Monitoring Transfusi Darah', 'status' => $getStatus($cekBerkas('monitoring_reaksi_tranfusi', $no_rawat))],
-            ['nama' => 'Dokumentasi ESWL', 'status' => $getStatus($cekBerkas('hasil_tindakan_eswl', $no_rawat))],
-            ['nama' => 'Transfer Antar Ruang', 'status' => $getStatus($cekBerkas('transfer_pasien_antar_ruang', $no_rawat))],
-            ['nama' => 'Perencanaan Pemulangan (Discharge Planning)', 'status' => $getStatus($cekBerkas('perencanaan_pemulangan', $no_rawat))],
-            ['nama' => 'Resume Dokter', 'status' => $getStatus($cekBerkas('resume_pasien_ranap', $no_rawat))],
-            ['nama' => 'Resume Keperawatan', 'status' => $getStatus($cekBerkas('resume_keperawatan', $no_rawat))],
-            ['nama' => 'Informasi & Edukasi', 'status' => $getStatus($cekBerkas('edukasi_pasien_keluarga', $no_rawat))],
-            ['nama' => 'Penilaian Medis Hemodialisa', 'status' => $getStatus($cekBerkas('penilaian_medis_hemodialisa', $no_rawat))],
-            ['nama' => 'Observasi Hemodialisa', 'status' => $getStatus($cekBerkas('catatan_observasi_hemodialisa', $no_rawat))],
-            ['nama' => 'Laporan Tindakan', 'status' => $getStatus($cekBerkas('laporan_tindakan', $no_rawat))],
-            ['nama' => 'Pemberian Obat', 'status' => $getStatus($cekBerkas('pemberian_obat', $no_rawat))],
-            ['nama' => 'Surat Pulang Atas Permintaan Sendiri', 'status' => $getStatus($cekBerkas('surat_pulang_atas_permintaan_sendiri', $no_rawat))],
-            ['nama' => 'Surat Pernyataan Pasien Umum', 'status' => $getStatus($cekBerkas('surat_pernyataan_pasien_umum', $no_rawat))],
-            ['nama' => 'Data SEP', 'status' => $getStatus($cekBerkas('bridging_sep', $no_rawat))],
+        $data[] = [
+            'nama' => 'Pemeriksaan (SOAP/CPPT)',
+            'status' => $soapStatus,
+            'submenu' => $soapSubmenu
         ];
 
-        return response()->json($data);
+        // 5. Susun hasil akhir TANPA query tambahan lagi ke database
+        foreach ($checklistItems as $table => $displayName) {
+             if (isset($errorTables[$table])) {
+                $status = 'Tabel Error';
+            } else {
+                $status = isset($foundTables[$table]) ? 'Ada' : 'Tidak Ada';
+            }
+            $data[] = [
+                'nama' => $displayName,
+                'status' => $status
+            ];
+        }
+
+        // --- KODE BARU ---
+        return response()->json(['data' => $data]);
     }
 }

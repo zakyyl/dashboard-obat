@@ -14,6 +14,9 @@ use App\Http\Controllers\DokterController;
 use App\Http\Controllers\RawatJalanStatusController;
 use App\Http\Controllers\RawatInapStatusController;
 use App\Http\Controllers\IGDStatusController;
+use App\Http\Controllers\PemasukanController;
+use App\Http\Controllers\PengeluaranController;
+use App\Http\Controllers\KeuanganController;
 
 Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'authenticate'])->name('login.post');
@@ -65,5 +68,21 @@ Route::middleware('auth')->group(function () {
         ->name('status-rm-igd.get-kelengkapan')
         ->where('no_rawat', '.*');
 
+
+Route::get('/pemasukan', [PemasukanController::class, 'index'])->name('pemasukan.index');
+Route::post('/pemasukan/store', [PemasukanController::class, 'store'])->name('pemasukan.store');
+Route::get('/pemasukan/{id}/edit', [PemasukanController::class, 'edit'])->name('pemasukan.edit');
+Route::post('/pemasukan/{id}/update', [PemasukanController::class, 'update'])->name('pemasukan.update');
+Route::delete('/pemasukan/{id}', [PemasukanController::class, 'destroy'])->name('pemasukan.destroy');
+
+
+Route::get('/pengeluaran', [PengeluaranController::class, 'index'])->name('pengeluaran.index');
+Route::post('/pengeluaran/store', [PengeluaranController::class, 'store'])->name('pengeluaran.store');
+Route::get('/pengeluaran/{id}/edit', [PengeluaranController::class, 'edit'])->name('pengeluaran.edit');
+Route::post('/pengeluaran/{id}/update', [PengeluaranController::class, 'update'])->name('pengeluaran.update');
+Route::delete('/pengeluaran/{id}', [PengeluaranController::class, 'destroy'])->name('pengeluaran.destroy');
+
+Route::get('/keuangan/rekap', [KeuanganController::class, 'rekap'])->name('keuangan.rekap');
+// Route::get('/rekap', [KeuanganController::class, 'rekap'])->name('rekap');
 });
 

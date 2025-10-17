@@ -233,6 +233,37 @@
             </a>
         </div>
 
+                {{-- Keuangan --}}
+        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center
+           {{ request()->is('keuangan/*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#submenuKeuangan"
+            role="button" aria-expanded="{{ request()->is('keuangan/*') ? 'true' : 'false' }}"
+            aria-controls="submenuKeuangan">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-wallet2 me-3"></i>
+                <span>Keuangan</span>
+            </div>
+            <i class="bi bi-chevron-down transition-transform"></i>
+        </a>
+        {{-- keuangan --}}
+        <div class="collapse {{ request()->is('keuangan/*') ? 'show' : '' }}" id="submenuKeuangan">
+            <a href="{{ route('pemasukan.index') }}"
+                class="list-group-item list-group-item-action {{ request()->routeIs('pemasukan.*') ? 'active' : '' }}">
+                <i class="bi bi-cash-stack me-3"></i>
+                <span>Pemasukan</span>
+            </a>
+            <a href="{{ route('pengeluaran.index') }}"
+                class="list-group-item list-group-item-action {{ request()->routeIs('pengeluaran.*') ? 'active' : '' }}">
+                <i class="bi bi-cash-coin me-3"></i>
+                <span>Pengeluaran</span>
+            </a>
+            <a href="{{ route('keuangan.rekap') }}"
+                class="list-group-item list-group-item-action {{ request()->routeIs('keuangan.rekap') ? 'active' : '' }}">
+                <i class="bi bi-bar-chart-line me-3"></i>
+                <span>Rekap Keuangan</span>
+            </a>
+        </div>
+
+
         <div class="my-3 mx-3">
             <hr class="border-top" style="opacity: 0.1;">
         </div>
