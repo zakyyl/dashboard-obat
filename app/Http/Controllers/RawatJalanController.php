@@ -96,6 +96,6 @@ class RawatJalanController extends Controller
             $labelsRalan[] = Carbon::createFromFormat('Y-m', $item->bulan)->translatedFormat('F');
         }
 
-        return view('dashboard.pasien_Ralan', compact('dataRalan', 'labelsRalan', 'bulan_dari', 'bulan_sampai'));
+        return view('dashboard.pasien_ralan', compact('dataRalan', 'labelsRalan', 'bulan_dari', 'bulan_sampai'));
     }
 }

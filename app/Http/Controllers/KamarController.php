@@ -21,27 +21,23 @@ class KamarController extends Controller
         $data = [];
 
         foreach ($nsList as $ns) {
-            // total jumlah bed
             $jumlahBed = DB::table('kamar')
                 ->where('statusdata', '1')
                 ->where('ns', $ns)
                 ->count();
 
-            // bed terisi
             $bedTerisi = DB::table('kamar')
                 ->where('statusdata', '1')
                 ->where('ns', $ns)
                 ->where('status', 'ISI')
                 ->count();
 
-            // bed kosong
             $bedKosong = DB::table('kamar')
                 ->where('statusdata', '1')
                 ->where('ns', $ns)
                 ->where('status', 'KOSONG')
                 ->count();
 
-            // detail per bangsal & kelas
             $detail = DB::table('bangsal')
                 ->join('kamar', 'bangsal.kd_bangsal', '=', 'kamar.kd_bangsal')
                 ->select(

@@ -4,7 +4,6 @@
 <div class="container">
     <h2 class="mb-4 text-center">Jadwal Dokter</h2>
 
-    <!-- Filter Form -->
     <form method="GET" action="{{ route('dokter.index') }}" class="row mb-4 g-3">
         <div class="col-md-4">
             <label for="kd_dokter" class="form-label">Pilih Dokter</label>
@@ -37,7 +36,10 @@
         </div>
     </form>
 
+<<<<<<< HEAD
     <!-- Tabel Jadwal -->
+=======
+>>>>>>> keuangan
     <div class="card shadow-sm">
         <div class="card-body">
             <table class="table table-bordered table-striped">

@@ -24,29 +24,69 @@ class LoginController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    // public function authenticate(Request $request)
+    // {
+    //     // 1. Validasi Input
+    //     $credentials = $request->validate([
+    //         'email' => ['required'],
+    //         'password' => ['required'],
+    //     ]);
+
+    //     // 2. Coba Autentikasi
+    //     if (Auth::attempt($credentials)) {
+    //         // Regenerate session untuk mencegah session fixation attacks
+    //         $request->session()->regenerate();
+    //         $user = Auth::user();
+    //         // // Redirect ke halaman yang dituju setelah login sukses
+    //         // return redirect()->intended('/home'); // 'intended' akan mengarahkan kembali ke URL yang ingin diakses sebelum login
+    //         switch ($user->role) {
+    //             case 'admin':
+    //                 return redirect()->intended('/home');
+    //             case 'keuangan':
+    //                 return redirect()->intended('/keuangan/rekap');
+    //             case 'erm':
+    //                 return redirect()->intended('/dashboard/status-rm-ralan');
+    //             default:
+    //                 return redirect()->intended('/home');
+    //         }
+    //     }
+
+    //     // 3. Jika Autentikasi Gagal
+    //     // Redirect kembali ke form login dengan pesan error
+    //     return back()->withErrors([
+    //         'email' => 'Email atau password yang Anda masukkan salah.',
+    //     ])->onlyInput('email'); // Hanya simpan input email agar tidak perlu mengetik ulang password
+    // }
+
     public function authenticate(Request $request)
-    {
-        // 1. Validasi Input
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+{
+    $credentials = $request->validate([
+        'name' => ['required', 'string'],
+        'password' => ['required', 'string'],
+    ]);
 
-        // 2. Coba Autentikasi
-        if (Auth::attempt($credentials)) {
-            // Regenerate session untuk mencegah session fixation attacks
-            $request->session()->regenerate();
+    if (Auth::attempt(['name' => $request->name, 'password' => $request->password])) {
+        $request->session()->regenerate();
+        $user = Auth::user();
 
-            // Redirect ke halaman yang dituju setelah login sukses
-            return redirect()->intended('/home'); // 'intended' akan mengarahkan kembali ke URL yang ingin diakses sebelum login
+        switch ($user->role) {
+            case 'admin':
+                return redirect()->intended('/home');
+            case 'keuangan':
+                return redirect()->intended('/keuangan/rekap');
+            case 'erm':
+                return redirect()->intended('/dashboard/status-rm-ralan');
+            case 'obat':
+                return redirect()->intended('/obat/stok-barang');
+            default:
+                return redirect()->intended('/home');
         }
-
-        // 3. Jika Autentikasi Gagal
-        // Redirect kembali ke form login dengan pesan error
-        return back()->withErrors([
-            'email' => 'Email atau password yang Anda masukkan salah.',
-        ])->onlyInput('email'); // Hanya simpan input email agar tidak perlu mengetik ulang password
     }
+
+    return back()->withErrors([
+        'name' => 'Nama atau password yang Anda masukkan salah.',
+    ])->onlyInput('name');
+}
 
     /**
      * Menangani permintaan logout.

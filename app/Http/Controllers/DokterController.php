@@ -9,7 +9,6 @@ class DokterController extends Controller
 {
     public function index(Request $request)
     {
-        // Ambil list untuk filter
         $dokterList = DB::table('dokter')
             ->select('kd_dokter', 'nm_dokter')
             ->get();
@@ -18,13 +17,11 @@ class DokterController extends Controller
             ->select('kd_poli', 'nm_poli')
             ->get();
 
-        // Query jadwal
         $jadwal = DB::table('jadwal as j')
             ->join('dokter as d', 'j.kd_dokter', '=', 'd.kd_dokter')
             ->join('poliklinik as p', 'j.kd_poli', '=', 'p.kd_poli')
             ->select('j.hari_kerja', 'j.jam_mulai', 'j.jam_selesai', 'p.nm_poli', 'd.nm_dokter');
 
-        // Filter berdasarkan request
         if ($request->filled('kd_dokter')) {
             $jadwal->where('j.kd_dokter', $request->kd_dokter);
         }

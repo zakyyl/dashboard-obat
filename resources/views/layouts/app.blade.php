@@ -8,6 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -335,6 +336,44 @@
         #sidebar-wrapper::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(180deg, #f59e0b, #d97706);
         }
+
+        /* CSS for Dark Theme Pagination */
+        .dark-theme-pagination .page-item .page-link {
+            background-color: #343a40;
+            /* Dark gray background */
+            border: 1px solid #495057;
+            /* Slightly lighter border */
+            color: #ffffff;
+            /* White text color */
+            margin: 0 2px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .dark-theme-pagination .page-item.active .page-link {
+            background-color: #ffc107;
+            /* Yellow background for active page */
+            border-color: #ffc107;
+            /* Yellow border */
+            color: #212529;
+            /* Dark text for contrast */
+        }
+
+        .dark-theme-pagination .page-item .page-link:hover {
+            background-color: #495057;
+            /* Hover effect */
+            border-color: #6c757d;
+        }
+
+        .dark-theme-pagination .page-item.disabled .page-link {
+            background-color: #212529;
+            /* Darker background for disabled links */
+            border-color: #343a40;
+            color: #6c757d;
+            /* Gray text color */
+        }
+        /* END CSS for Dark Theme Pagination */
+
     </style>
 </head>
 

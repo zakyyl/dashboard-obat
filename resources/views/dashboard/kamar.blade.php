@@ -28,7 +28,8 @@
             <h5 class="mb-0">Ruang {{ $item['nurse_station'] }}</h5>
         </div>
         <div class="card-body">
-            <p>Total: <b>{{ $item['jumlah_bed'] }}</b> | Terpakai: <b>{{ $item['bed_terisi'] }}</b> | Kosong: <b>{{ $item['bed_kosong'] }}</b></p>
+            <p>Total: <b>{{ $item['jumlah_bed'] }}</b> | Terpakai: <b>{{ $item['bed_terisi'] }}</b> | Kosong: <b>{{
+                    $item['bed_kosong'] }}</b></p>
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr>
@@ -60,17 +61,14 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // simpan semua data dari PHP ke JS
     const allData = @json($data);
 
     const ctx = document.getElementById('bedChart').getContext('2d');
 
-    // Gradient untuk Terpakai (emas → kuning muda)
     const gradientTerpakai = ctx.createLinearGradient(0, 0, 0, 400);
     gradientTerpakai.addColorStop(0, '#f59e0b'); // gold tua
     gradientTerpakai.addColorStop(1, '#fcd34d'); // gold muda
 
-    // Gradient untuk Kosong (abu → silver)
     const gradientKosong = ctx.createLinearGradient(0, 0, 0, 400);
     gradientKosong.addColorStop(0, '#6b7280');
     gradientKosong.addColorStop(1, '#d1d5db'); // abu muda
@@ -141,12 +139,9 @@
     }
 });
 
-
-    // Filter tabel & chart by NS
     document.getElementById('nsFilter').addEventListener('change', function () {
         let val = this.value;
 
-        // filter tabel
         document.querySelectorAll('.ns-table').forEach(el => {
             if (val === 'all' || el.dataset.ns === val) {
                 el.style.display = 'block';
@@ -155,7 +150,6 @@
             }
         });
 
-        // filter chart
         let filtered = (val === 'all') ? allData : allData.filter(item => item.nurse_station === val);
 
         bedChart.data.labels = filtered.map(item => item.nurse_station);
