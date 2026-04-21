@@ -23,7 +23,14 @@ class DashboardController extends Controller
             'kematianPerBulan' => $this->getKematianPerBulan(),
             'rawatInapHariIni' => $this->getRawatInapHariIni()->count(),
             'rawatInapHariIniData' => $this->getRawatInapHariIni(),
-            'rawatIgdHariIni' => $this->getPasienIgdHariIni()
+            'rawatIgdHariIni' => $this->getPasienIgdHariIni(),
+            'rawatpolri'=> $this->getPasienPolriHariIni(),
+            'totalPemasukanHariIni' => $this->getPemasukanHariIni(),
+            'totalPengeluaranHariIni' => $this->getPengeluaranHariIni(),
+            'saldoHariIni' => $this->getSaldoHariIni(),
+            'totalPemasukanBulanIni' => $this->getPemasukanBulanIni(),
+            'totalPengeluaranBulanIni' => $this->getPengeluaranBulanIni(),
+            'saldoBulanIni' => $this->getSaldoBulanIni(),
         ]);
     }
 
@@ -44,6 +51,21 @@ class DashboardController extends Controller
             ->distinct('no_rawat')
             ->count();
     }
+
+    private function getPasienPolriHariIni()
+{
+    return DB::table('reg_periksa')
+        ->join('pasien', 'pasien.no_rkm_medis', '=', 'reg_periksa.no_rkm_medis')
+        ->join('pasien_polri', 'pasien_polri.no_rkm_medis', '=', 'pasien.no_rkm_medis')
+        ->join('pangkat_polri', 'pasien_polri.pangkat_polri', '=', 'pangkat_polri.id')
+        ->join('satuan_polri', 'pasien_polri.satuan_polri', '=', 'satuan_polri.id')
+        ->join('golongan_polri', 'pasien_polri.golongan_polri', '=', 'golongan_polri.id')
+        ->join('jabatan_polri', 'pasien_polri.jabatan_polri', '=', 'jabatan_polri.id')
+        ->whereDate('reg_periksa.tgl_registrasi', DB::raw('CURDATE()'))
+        ->distinct('reg_periksa.no_rawat')
+        ->count('reg_periksa.no_rawat');
+}
+
 
 
 //     private function getPasienHariIni()
@@ -167,5 +189,48 @@ class DashboardController extends Controller
         ->whereDate('tanggalperiksa', now()->toDateString())
         ->count();
 }
+private function getPemasukanHariIni()
+    {
+        return DB::table('pemasukan_viz')
+            ->whereDate('tanggal', now()->toDateString())
+            ->sum('jumlah');
+    }
 
+    private function getPengeluaranHariIni()
+    {
+        return DB::table('pengeluaran_viz')
+            ->whereDate('tanggal', now()->toDateString())
+            ->sum('jumlah');
+    }
+
+    private function getSaldoHariIni()
+    {
+        $pemasukan = $this->getPemasukanHariIni();
+        $pengeluaran = $this->getPengeluaranHariIni();
+        return $pemasukan - $pengeluaran;
+    }
+
+    private function getPemasukanBulanIni()
+    {
+        return DB::table('pemasukan_viz')
+            ->whereYear('tanggal', now()->year)
+            ->whereMonth('tanggal', now()->month)
+            ->sum('jumlah');
+    }
+
+    private function getPengeluaranBulanIni()
+    {
+        return DB::table('pengeluaran_viz')
+            ->whereYear('tanggal', now()->year)
+            ->whereMonth('tanggal', now()->month)
+            ->sum('jumlah');
+    }
+
+    private function getSaldoBulanIni()
+    {
+        $pemasukan = $this->getPemasukanBulanIni();
+        $pengeluaran = $this->getPengeluaranBulanIni();
+        return $pemasukan - $pengeluaran;
+    }
 }
+

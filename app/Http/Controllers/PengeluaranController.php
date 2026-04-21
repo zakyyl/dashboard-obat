@@ -10,44 +10,43 @@ class PengeluaranController extends Controller
 {
     public function index(Request $request)
     {
-        // Query dasar
-        $query = DB::table('pengeluaran_viz');
-        
-        // Filter berdasarkan range tanggal untuk chart
+        $query = DB::table('pengeluaran_viz')
+            ->leftJoin('master_kode_pengeluaran', 'pengeluaran_viz.kode_pengeluaran_id', '=', 'master_kode_pengeluaran.id')
+            ->select('pengeluaran_viz.*', 'master_kode_pengeluaran.nama_pengeluaran');
+
         if ($request->has('start_date') && $request->start_date != '') {
-            $query->where('tanggal', '>=', $request->start_date);
+            $query->where('pengeluaran_viz.tanggal', '>=', $request->start_date);
         }
-        
         if ($request->has('end_date') && $request->end_date != '') {
-            $query->where('tanggal', '<=', $request->end_date);
+            $query->where('pengeluaran_viz.tanggal', '<=', $request->end_date);
         }
-        
-        // Clone query untuk tabel dengan filter terpisah
+
+        if ($request->has('kode_pengeluaran_filter') && $request->kode_pengeluaran_filter != '') {
+            $query->where('pengeluaran_viz.kode_pengeluaran_id', $request->kode_pengeluaran_filter);
+        }
+
         $tableQuery = clone $query;
-        
-        // Filter dari/sampai untuk tabel
+
         if ($request->has('dari') && $request->dari != '') {
-            $tableQuery->where('tanggal', '>=', $request->dari);
+            $tableQuery->where('pengeluaran_viz.tanggal', '>=', $request->dari);
         }
-        
         if ($request->has('sampai') && $request->sampai != '') {
-            $tableQuery->where('tanggal', '<=', $request->sampai);
+            $tableQuery->where('pengeluaran_viz.tanggal', '<=', $request->sampai);
         }
-        
-        // Get data untuk chart (gunakan query dengan filter start_date/end_date)
-        $chartData = $query->orderBy('tanggal')->get();
-        
-        // Get data untuk tabel (gunakan query dengan filter dari/sampai)
-        $data = $tableQuery->orderByDesc('tanggal')->get();
-        
-        // List tahun untuk dropdown (dari data yang ada)
+
+        $chartData = $query->orderBy('pengeluaran_viz.tanggal')->get();
+        $totalKeseluruhan = $tableQuery->sum('pengeluaran_viz.jumlah');
+        $data = $tableQuery->orderByDesc('pengeluaran_viz.tanggal')->paginate(50)->withQueryString();
+
         $tahunList = DB::table('pengeluaran_viz')
             ->selectRaw('YEAR(tanggal) as tahun')
             ->distinct()
             ->orderBy('tahun', 'desc')
             ->pluck('tahun');
-        
-        return view('dashboard.pengeluaran', compact('data', 'chartData', 'tahunList'));
+
+        $masterPengeluaran = DB::table('master_kode_pengeluaran')->orderBy('nama_pengeluaran')->get();
+
+        return view('dashboard.pengeluaran', compact('data', 'chartData', 'tahunList', 'masterPengeluaran',  'totalKeseluruhan'));
     }
 
     public function store(Request $request)
@@ -55,12 +54,14 @@ class PengeluaranController extends Controller
         $request->validate([
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric',
+            'kode_pengeluaran_id' => 'required|exists:master_kode_pengeluaran,id',
             'keterangan' => 'nullable|string',
         ]);
 
         DB::table('pengeluaran_viz')->insert([
             'tanggal' => $request->tanggal,
             'jumlah' => $request->jumlah,
+            'kode_pengeluaran_id' => $request->kode_pengeluaran_id,
             'keterangan' => $request->keterangan,
             'created_at' => now(),
         ]);
@@ -71,7 +72,8 @@ class PengeluaranController extends Controller
     public function edit($id)
     {
         $item = DB::table('pengeluaran_viz')->where('id', $id)->first();
-        return view('dashboard.pengeluaran.edit', compact('item'));
+        $masterPengeluaran = DB::table('master_kode_pengeluaran')->orderBy('nama_pengeluaran')->get();
+        return view('dashboard.pengeluaran.edit', compact('item', 'masterPengeluaran'));
     }
 
     public function update(Request $request, $id)
@@ -79,12 +81,14 @@ class PengeluaranController extends Controller
         $request->validate([
             'tanggal' => 'required|date',
             'jumlah' => 'required|numeric',
+            'kode_pengeluaran_id' => 'required|exists:master_kode_pengeluaran,id',
             'keterangan' => 'nullable|string',
         ]);
 
         DB::table('pengeluaran_viz')->where('id', $id)->update([
             'tanggal' => $request->tanggal,
             'jumlah' => $request->jumlah,
+            'kode_pengeluaran_id' => $request->kode_pengeluaran_id,
             'keterangan' => $request->keterangan,
             'updated_at' => now(),
         ]);
