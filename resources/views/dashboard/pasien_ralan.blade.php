@@ -5,34 +5,36 @@
 @section('content')
 <div class="container py-4 text-white min-vh-100">
     <h2 class="mb-4 text-center">
-    <i class="bi bi-bar-chart-fill me-2"></i>Grafik Pasien Rawat Jalan
-    <br>
-    <small class="text-muted">
-        {{ \Carbon\Carbon::parse($bulan_dari)->translatedFormat('F Y') }} -
-        {{ \Carbon\Carbon::parse($bulan_sampai)->translatedFormat('F Y') }}
-    </small>
-</h2>
+        <i class="bi bi-bar-chart-fill me-2"></i>Grafik Pasien Rawat Jalan
+        <br>
+        <small class="text-muted">
+            {{ \Carbon\Carbon::parse($bulan_dari)->translatedFormat('F Y') }} -
+            {{ \Carbon\Carbon::parse($bulan_sampai)->translatedFormat('F Y') }}
+        </small>
+    </h2>
 
 
     <div class="card mb-4 shadow-sm">
         <div class="card-body">
             <form method="GET" class="row gy-2 gx-3 align-items-end">
-    <div class="col-md-auto">
-        <label for="bulan_dari" class="form-label mb-0">Dari Bulan:</label>
-        <input type="month" name="bulan_dari" id="bulan_dari" value="{{ $bulan_dari }}" class="form-control">
-    </div>
+                <div class="col-md-auto">
+                    <label for="bulan_dari" class="form-label mb-0">Dari Bulan:</label>
+                    <input type="month" name="bulan_dari" id="bulan_dari" value="{{ $bulan_dari }}"
+                        class="form-control">
+                </div>
 
-    <div class="col-md-auto">
-        <label for="bulan_sampai" class="form-label mb-0">Sampai Bulan:</label>
-        <input type="month" name="bulan_sampai" id="bulan_sampai" value="{{ $bulan_sampai }}" class="form-control">
-    </div>
+                <div class="col-md-auto">
+                    <label for="bulan_sampai" class="form-label mb-0">Sampai Bulan:</label>
+                    <input type="month" name="bulan_sampai" id="bulan_sampai" value="{{ $bulan_sampai }}"
+                        class="form-control">
+                </div>
 
-    <div class="col-md-auto">
-        <button type="submit" class="btn btn-warning">
-            <i class="bi bi-search"></i> Tampilkan
-        </button>
-    </div>
-</form>
+                <div class="col-md-auto">
+                    <button type="submit" class="btn btn-warning">
+                        <i class="bi bi-search"></i> Tampilkan
+                    </button>
+                </div>
+            </form>
 
         </div>
     </div>
@@ -41,11 +43,11 @@
         <div class="card-body">
             @if (empty($dataRalan) || count($dataRalan) === 0)
 
-                <div class="alert alert-info text-center">
-                    <i class="bi bi-info-circle-fill me-1"></i> Tidak ada data untuk rentang tanggal tersebut.
-                </div>
+            <div class="alert alert-info text-center">
+                <i class="bi bi-info-circle-fill me-1"></i> Tidak ada data untuk rentang tanggal tersebut.
+            </div>
             @else
-                <div id="chart-ralan" style="height: 400px;"></div>
+            <div id="chart-ralan" style="height: 400px;"></div>
             @endif
         </div>
     </div>

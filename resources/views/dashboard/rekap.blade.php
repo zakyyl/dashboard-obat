@@ -346,7 +346,7 @@ document.addEventListener('DOMContentLoaded', function() {
       background: '#1a1a1a',
       foreColor: '#e5e7eb',
       toolbar: {
-        show: true,
+        show: false,
         tools: {
           download: true,
           selection: false,

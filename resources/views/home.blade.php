@@ -4,8 +4,8 @@
 
 @section('content')
 <div class="container-fluid text-white py-4 min-vh-100 overflow-auto">
-    <div class="d-flex flex-wrap text-center mb-4 justify-content-between">
-        <div class="mb-3 px-2" style="width: 20%;">
+    <div class="row text-center mb-4 g-3">
+        <div class="col-6 col-md-4 col-lg-2">
             <div class="card text-white bg-dark h-100 shadow">
                 <div class="card-body">
                     <h3 class="text-warning fw-bold">{{ $pasienHariIni }}</h3>
@@ -13,7 +13,7 @@
                 </div>
             </div>
         </div>
-        <div class="mb-3 px-2" style="width: 20%;">
+        <div class="col-6 col-md-4 col-lg-2">
             <div class="card text-white bg-dark h-100 shadow">
                 <div class="card-body">
                     <h3 class="text-warning fw-bold">{{ $resepHariIni }}</h3>
@@ -21,7 +21,7 @@
                 </div>
             </div>
         </div>
-        <div class="mb-3 px-2" style="width: 20%;">
+        <div class="col-6 col-md-4 col-lg-2">
             <div class="card text-white bg-dark h-100 shadow">
                 <div class="card-body">
                     <h3 class="text-warning fw-bold">{{ $rawatInapHariIni }}</h3>
@@ -29,7 +29,7 @@
                 </div>
             </div>
         </div>
-        <div class="mb-3 px-2" style="width: 20%;">
+        <div class="col-6 col-md-4 col-lg-2">
             <div class="card text-white bg-dark h-100 shadow">
                 <div class="card-body">
                     <h3 class="text-warning fw-bold">{{ $pasienMobileJknHariIni }}</h3>
@@ -37,7 +37,7 @@
                 </div>
             </div>
         </div>
-        <div class="mb-3 px-2" style="width: 20%;">
+        <div class="col-6 col-md-4 col-lg-2">
             <div class="card text-white bg-dark h-100 shadow">
                 <div class="card-body">
                     <h3 class="text-warning fw-bold">{{ $rawatIgdHariIni }}</h3>
@@ -45,7 +45,16 @@
                 </div>
             </div>
         </div>
+        <div class="col-6 col-md-4 col-lg-2">
+            <div class="card text-white bg-dark h-100 shadow">
+                <div class="card-body">
+                    <h3 class="text-warning fw-bold">{{ $rawatpolri }}</h3>
+                    <p class="card-text">Pasien Anggota Polri</p>
+                </div>
+            </div>
+        </div>
     </div>
+
 
 
     @php
@@ -331,40 +340,61 @@
             <div class="col-lg-4 col-md-6 mb-4">
                 <div class="card text-white h-100 shadow">
                     <div class="card-header border-secondary border-bottom">
-                        <h5 class="mb-0 fw-bold text-warning">Kunjungan Pasien</h5>
+                        <h5 class="mb-0 fw-bold text-warning">📅 Rekap Keuangan Bulan {{ now()->format('F Y') }}</h5>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
-                            <table class="table table-striped table-sm table-bordered text-white">
-                                <thead class="bg-secondary text-light text-center">
-                                    <tr>
-                                        <th>No. RM</th>
-                                        <th>Nama Pasien</th>
-                                        <th>Kamar</th>
-                                        <th>Tanggal Masuk</th>
-                                        <th>Nama Dokter</th>
-                                        <th>Cara Bayar</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="text-white">
-                                    @forelse($rawatInapHariIniData as $item)
-                                    <tr>
-                                        <td>{{ $item->no_rkm_medis }}</td>
-                                        <td>{{ $item->nm_pasien }}</td>
-                                        <td>{{ $item->kamar }}</td>
-                                        <td>{{ \Carbon\Carbon::parse($item->tgl_masuk)->format('d-m-Y') }}</td>
-                                        <td>{{ $item->nm_dokter }}</td>
-                                        <td>{{ $item->png_jawab }}</td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="6" class="text-center text-warning">Tidak ada data rawat
-                                            inap hari
-                                            ini</td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
+                        <div class="card bg-success bg-opacity-25 border-success mb-3"
+                            style="border-left: 4px solid #28a745;">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="text-success mb-0 small">💰 PEMASUKAN BULAN INI</h6>
+                                    <span class="badge bg-success" style="font-size: 0.7rem;">Masuk</span>
+                                </div>
+                                <h4 class="fw-bold text-success mb-1">
+                                    Rp {{ number_format($totalPemasukanBulanIni, 0, ',', '.') }}
+                                </h4>
+                                <small class="text-muted" style="font-size: 0.75rem;">
+                                    Total pemasukan bulan {{ now()->format('F Y') }}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="card bg-danger bg-opacity-25 border-danger mb-3"
+                            style="border-left: 4px solid #dc3545;">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="text-danger mb-0 small">💸 PENGELUARAN BULAN INI</h6>
+                                    <span class="badge bg-danger" style="font-size: 0.7rem;">Keluar</span>
+                                </div>
+                                <h4 class="fw-bold text-danger mb-1">
+                                    Rp {{ number_format($totalPengeluaranBulanIni, 0, ',', '.') }}
+                                </h4>
+                                <small class="text-muted" style="font-size: 0.75rem;">
+                                    Total pengeluaran bulan {{ now()->format('F Y') }}
+                                </small>
+                            </div>
+                        </div>
+                        <div class="card {{ $saldoBulanIni >= 0 ? 'bg-primary bg-opacity-25 border-primary' : 'bg-warning bg-opacity-25 border-warning' }}"
+                            style="border-left: 4px solid {{ $saldoBulanIni >= 0 ? '#007bff' : '#ffc107' }};">
+                            <div class="card-body p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="{{ $saldoBulanIni >= 0 ? 'text-primary' : 'text-warning' }} mb-0 small">
+                                        💵 SALDO BULAN INI
+                                    </h6>
+                                    <span
+                                        class="badge {{ $saldoBulanIni >= 0 ? 'bg-primary' : 'bg-warning text-dark' }}"
+                                        style="font-size: 0.7rem;">
+                                        {{ $saldoBulanIni >= 0 ? '▲ Untung' : '▼ Rugi' }}
+                                    </span>
+                                </div>
+                                <h4 class="fw-bold {{ $saldoBulanIni >= 0 ? 'text-primary' : 'text-warning' }} mb-1">
+                                    Rp {{ number_format($saldoBulanIni, 0, ',', '.') }}
+                                </h4>
+                                <small class="text-muted" style="font-size: 0.75rem;">
+                                    {{ $saldoBulanIni >= 0 ? 'Surplus' : 'Defisit' }}
+                                    ({{ $totalPemasukanBulanIni > 0 ?
+                                    number_format(($saldoBulanIni/$totalPemasukanBulanIni)*100, 1) : 0 }}%)
+                                </small>
+                            </div>
                         </div>
                     </div>
                 </div>

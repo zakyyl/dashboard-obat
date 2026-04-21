@@ -1,3 +1,8 @@
+@php
+use Illuminate\Support\Facades\Auth;
+$role = Auth::user()->role ?? null;
+@endphp
+
 <div id="sidebar-wrapper">
     <div class="sidebar-heading">
         <i class="bi bi-bezier"></i>
@@ -5,46 +10,51 @@
     </div>
 
     <div class="list-group list-group-flush">
+        @if ($role === 'admin')
         {{-- Beranda --}}
         <a href="{{ route('home') }}"
             class="list-group-item list-group-item-action {{ request()->routeIs('home') ? 'active' : '' }}">
             <i class="bi bi-house-fill me-3"></i>
             <span>Beranda</span>
         </a>
+        @endif
 
         {{-- Manajemen Obat --}}
-        <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center
-           {{ request()->is('obat/*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#submenuObat" role="button"
-            aria-expanded="{{ request()->is('obat/*') ? 'true' : 'false' }}" aria-controls="submenuObat">
-            <div class="d-flex align-items-center">
-                <i class="bi bi-capsule me-3"></i>
-                <span>Manajemen Obat</span>
-            </div>
-            <i class="bi bi-chevron-down transition-transform"></i>
-        </a>
-        <div class="collapse {{ request()->is('obat/*') ? 'show' : '' }}" id="submenuObat">
-            <a href="{{ url('/obat/stok-barang') }}"
-                class="list-group-item list-group-item-action {{ request()->is('obat/stok-barang') ? 'active' : '' }}">
-                <i class="bi bi-hospital me-3"></i>
-                <span>Stok Obat Saat Ini</span>
-            </a>
-            <a href="{{ url('/obat/stok-barang-per-depo') }}"
-                class="list-group-item list-group-item-action {{ request()->is('obat/stok-barang-per-depo') ? 'active' : '' }}">
-                <i class="bi bi-building me-3"></i>
-                <span>Stok Obat per Depo</span>
-            </a>
-            <a href="{{ url('/obat/stok-barang-masuk') }}"
-                class="list-group-item list-group-item-action {{ request()->is('obat/stok-barang-masuk') ? 'active' : '' }}">
-                <i class="bi bi-box-arrow-in-down me-3"></i>
-                <span>Obat Masuk</span>
-            </a>
-            <a href="{{ url('/obat/stok-barang-keluar') }}"
-                class="list-group-item list-group-item-action {{ request()->is('obat/stok-barang-keluar') ? 'active' : '' }}">
-                <i class="bi bi-box-arrow-up me-3"></i>
-                <span>Obat Keluar</span>
-            </a>
-        </div>
+@if ($role === 'admin' || $role === 'obat')
+<a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center
+   {{ request()->is('obat/*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#submenuObat" role="button"
+    aria-expanded="{{ request()->is('obat/*') ? 'true' : 'false' }}" aria-controls="submenuObat">
+    <div class="d-flex align-items-center">
+        <i class="bi bi-capsule me-3"></i>
+        <span>Manajemen Obat</span>
+    </div>
+    <i class="bi bi-chevron-down transition-transform"></i>
+</a>
+<div class="collapse {{ request()->is('obat/*') ? 'show' : '' }}" id="submenuObat">
+    <a href="{{ url('/obat/stok-barang') }}"
+        class="list-group-item list-group-item-action {{ request()->is('obat/stok-barang') ? 'active' : '' }}">
+        <i class="bi bi-hospital me-3"></i>
+        <span>Stok Obat Saat Ini</span>
+    </a>
+    <a href="{{ url('/obat/stok-barang-per-depo') }}"
+        class="list-group-item list-group-item-action {{ request()->is('obat/stok-barang-per-depo') ? 'active' : '' }}">
+        <i class="bi bi-building me-3"></i>
+        <span>Stok Obat per Depo</span>
+    </a>
+    <a href="{{ url('/obat/stok-barang-masuk') }}"
+        class="list-group-item list-group-item-action {{ request()->is('obat/stok-barang-masuk') ? 'active' : '' }}">
+        <i class="bi bi-box-arrow-in-down me-3"></i>
+        <span>Obat Masuk</span>
+    </a>
+    <a href="{{ url('/obat/stok-barang-keluar') }}"
+        class="list-group-item list-group-item-action {{ request()->is('obat/stok-barang-keluar') ? 'active' : '' }}">
+        <i class="bi bi-box-arrow-up me-3"></i>
+        <span>Obat Keluar</span>
+    </a>
+</div>
+@endif
 
+@if ($role === 'admin')
         {{-- Poliklinik --}}
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center
            {{ request()->is('dashboard/poli*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#submenuPoli"
@@ -140,6 +150,11 @@
                 <i class="bi bi-building me-3"></i>
                 <span>Pasien Rawat Jalan</span>
             </a>
+            <a href="{{ url('/dashboard/pasien-polri') }}"
+                class="list-group-item list-group-item-action {{ request()->is('dashboard/pasien-ralan') ? 'active' : '' }}">
+                <i class="bi bi-building me-3"></i>
+                <span>Pasien Polri</span>
+            </a>
         </div>
 
         {{-- Klaim --}}
@@ -204,10 +219,15 @@
             </a>
         </div>
 
-        <!-- Data Rekam Medis -->
+        
+    @endif
+
+    <!-- Data Rekam Medis -->
+        @if ($role === 'admin' || $role === 'erm')
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center
-           {{ request()->is('dashboard/status-rm-*') || request()->routeIs('igd.*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#submenuDataRM"
-            role="button" aria-expanded="{{ request()->is('dashboard/status-rm-*') || request()->routeIs('igd.*') ? 'true' : 'false' }}"
+           {{ request()->is('dashboard/status-rm-*') || request()->routeIs('igd.*') ? 'active' : '' }}"
+            data-bs-toggle="collapse" href="#submenuDataRM" role="button"
+            aria-expanded="{{ request()->is('dashboard/status-rm-*') || request()->routeIs('igd.*') ? 'true' : 'false' }}"
             aria-controls="submenuDataRM">
             <div class="d-flex align-items-center">
                 <i class="bi bi-clipboard2-pulse me-3"></i>
@@ -215,7 +235,8 @@
             </div>
             <i class="bi bi-chevron-down transition-transform"></i>
         </a>
-        <div class="collapse {{ request()->is('dashboard/status-rm-*') || request()->routeIs('igd.*') ? 'show' : '' }}" id="submenuDataRM">
+        <div class="collapse {{ request()->is('dashboard/status-rm-*') || request()->routeIs('igd.*') ? 'show' : '' }}"
+            id="submenuDataRM">
             <a href="{{ route('statusrm-ralan.index') }}"
                 class="list-group-item list-group-item-action {{ request()->routeIs('statusrm-ralan.index') ? 'active' : '' }}">
                 <i class="bi bi-hospital me-3"></i>
@@ -232,8 +253,12 @@
                 <span>Status Data IGD</span>
             </a>
         </div>
+        @endif
 
-                {{-- Keuangan --}}
+                
+        
+        @if ($role === 'admin' || $role === 'keuangan')
+        {{-- Keuangan --}}
         <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center
            {{ request()->is('keuangan/*') ? 'active' : '' }}" data-bs-toggle="collapse" href="#submenuKeuangan"
             role="button" aria-expanded="{{ request()->is('keuangan/*') ? 'true' : 'false' }}"
@@ -244,7 +269,6 @@
             </div>
             <i class="bi bi-chevron-down transition-transform"></i>
         </a>
-        {{-- keuangan --}}
         <div class="collapse {{ request()->is('keuangan/*') ? 'show' : '' }}" id="submenuKeuangan">
             <a href="{{ route('pemasukan.index') }}"
                 class="list-group-item list-group-item-action {{ request()->routeIs('pemasukan.*') ? 'active' : '' }}">
@@ -263,7 +287,7 @@
             </a>
         </div>
 
-
+        @endif
         <div class="my-3 mx-3">
             <hr class="border-top" style="opacity: 0.1;">
         </div>

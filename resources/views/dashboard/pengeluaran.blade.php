@@ -5,33 +5,45 @@
 @section('content')
 <section class="content">
   <div class="container-fluid">
-
     <h2 class="mb-4 text-center">
       <i class="bi bi-bar-chart-fill me-2"></i>Grafik Pengeluaran
       <br>
     </h2>
-
-    {{-- Card Grafik Pengeluaran --}}
     <div class="card card-danger card-outline mb-4">
       <div class="card-header border-bottom">
         <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
           <h5 class="mb-0 fw-bold text-danger">GRAFIK PENGELUARAN</h5>
-          {{-- Filter Range Tanggal untuk Chart --}}
           <form method="GET" action="{{ route('pengeluaran.index') }}" class="d-flex gap-2 flex-wrap align-items-end">
             <div>
               <label for="start_date" class="form-label mb-1 small">Dari Tanggal:</label>
-              <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}" class="form-control form-control-sm" style="width: 160px;">
+              <input type="date" name="start_date" id="start_date" value="{{ request('start_date') }}"
+                class="form-control form-control-sm" style="width: 160px;">
             </div>
             <div>
               <label for="end_date" class="form-label mb-1 small">Sampai Tanggal:</label>
-              <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}" class="form-control form-control-sm" style="width: 160px;">
+              <input type="date" name="end_date" id="end_date" value="{{ request('end_date') }}"
+                class="form-control form-control-sm" style="width: 160px;">
+            </div>
+
+            <!-- ✅ TAMBAHAN BARU: Filter Jenis Pengeluaran -->
+            <div>
+              <label for="kode_pengeluaran_filter" class="form-label mb-1 small">Jenis:</label>
+              <select name="kode_pengeluaran_filter" id="kode_pengeluaran_filter" class="form-select form-select-sm"
+                style="width: 180px;">
+                <option value="">Semua Jenis</option>
+                @foreach($masterPengeluaran as $kode)
+                <option value="{{ $kode->id }}" {{ request('kode_pengeluaran_filter')==$kode->id ? 'selected' : '' }}>
+                  {{ $kode->nama_pengeluaran }}
+                </option>
+                @endforeach
+              </select>
             </div>
             <div>
               <label for="group_by" class="form-label mb-1 small">Tampilkan:</label>
               <select name="group_by" id="group_by" class="form-select form-select-sm" style="width: 130px;">
-                <option value="day" {{ request('group_by', 'month') == 'day' ? 'selected' : '' }}>Per Hari</option>
-                <option value="month" {{ request('group_by', 'month') == 'month' ? 'selected' : '' }}>Per Bulan</option>
-                <option value="year" {{ request('group_by', 'month') == 'year' ? 'selected' : '' }}>Per Tahun</option>
+                <option value="day" {{ request('group_by', 'month' )=='day' ? 'selected' : '' }}>Per Hari</option>
+                <option value="month" {{ request('group_by', 'month' )=='month' ? 'selected' : '' }}>Per Bulan</option>
+                <option value="year" {{ request('group_by', 'month' )=='year' ? 'selected' : '' }}>Per Tahun</option>
               </select>
             </div>
             <button type="submit" class="btn btn-sm btn-danger">
@@ -60,60 +72,81 @@
       <div class="card-body">
         {{-- Notifikasi --}}
         @if(session('success'))
-          <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-          </div>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+          {{ session('success') }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
         @endif
 
-        {{-- Filter Tabel --}}
         <form method="GET" action="{{ route('pengeluaran.index') }}" class="row mb-3">
           <input type="hidden" name="start_date" value="{{ request('start_date') }}">
           <input type="hidden" name="end_date" value="{{ request('end_date') }}">
           <input type="hidden" name="group_by" value="{{ request('group_by') }}">
+          <input type="hidden" name="kode_pengeluaran_filter" value="{{ request('kode_pengeluaran_filter') }}">
         </form>
 
-        {{-- Tabel Pengeluaran --}}
         <div class="table-responsive">
           <table class="table table-bordered table-striped table-hover">
-            <thead class="table-danger text-center">
+            <thead class="table-warning text-center">
               <tr>
                 <th width="5%">No</th>
                 <th>Tanggal</th>
+                <th>Jenis Pengeluaran</th>
                 <th>Keterangan</th>
                 <th>Jumlah (Rp)</th>
               </tr>
             </thead>
             <tbody>
               @forelse($data as $key => $item)
-                <tr>
-                  <td class="text-center">{{ $key + 1 }}</td>
-                  <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}</td>
-                  <td>{{ $item->keterangan ?? '-' }}</td>
-                  <td class="text-end fw-bold text-danger">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</td>
-                </tr>
+              <tr>
+                <td class="text-center">{{ $data->firstItem() + $key }}</td>
+                <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}</td>
+                <td>{{ $item->nama_pengeluaran ?? '-' }}</td>
+                <td>{{ $item->keterangan ?? '-' }}</td>
+                <td class="text-end fw-bold text-success">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</td>
+              </tr>
               @empty
-                <tr>
-                  <td colspan="4" class="text-center text-muted">Belum ada data pengeluaran.</td>
-                </tr>
+              <tr>
+                <td colspan="5" class="text-center text-muted">Belum ada data pengeluaran.</td>
+              </tr>
               @endforelse
             </tbody>
-            <tfoot class="table-danger">
+            <tfoot class="table-warning">
               <tr>
-                <th colspan="2" class="text-end">TOTAL:</th>
+                <th colspan="3" class="text-end">TOTAL KESELURUHAN:</th>
                 <th></th>
-                <th class="text-end fw-bold">Rp {{ number_format($data->sum('jumlah'), 0, ',', '.') }}</th>
+                <th class="text-end fw-bold text-success">Rp {{ number_format($totalKeseluruhan, 0, ',', '.') }}</th>
               </tr>
             </tfoot>
           </table>
+          <div class="d-flex justify-content-center align-items-center mt-3">
+            <div class="d-flex gap-2">
+              @if ($data->onFirstPage())
+              <button class="btn btn-sm btn-warning disabled" disabled>
+                <i class="fas fa-chevron-left"></i> Previous
+              </button>
+              @else
+              <a href="{{ $data->previousPageUrl() }}" class="btn btn-sm btn-warning">
+                <i class="fas fa-chevron-left"></i> Previous
+              </a>
+              @endif
+              @if ($data->hasMorePages())
+              <a href="{{ $data->nextPageUrl() }}" class="btn btn-sm btn-warning">
+                Next <i class="fas fa-chevron-right"></i>
+              </a>
+              @else
+              <button class="btn btn-sm btn-warning disabled" disabled>
+                Next <i class="fas fa-chevron-right"></i>
+              </button>
+              @endif
+            </div>
+          </div>
         </div>
       </div>
     </div>
-
   </div>
 </section>
 
-{{-- Modal Tambah Data --}}
 <div class="modal fade" id="modalTambah" tabindex="-1" aria-labelledby="modalTambahLabel" aria-hidden="true">
   <div class="modal-dialog">
     <form action="{{ route('pengeluaran.store') }}" method="POST" class="modal-content">
@@ -122,18 +155,30 @@
         <h5 class="modal-title" id="modalTambahLabel">Tambah Data Pengeluaran</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
       </div>
+
       <div class="modal-body">
+        <div class="form-group mb-3">
+          <label for="kode_pengeluaran_id">Jenis Pengeluaran</label>
+          <select name="kode_pengeluaran_id" id="kode_pengeluaran_id" class="form-control select2" required>
+            <option value="">-- Pilih atau Ketik Jenis Pengeluaran --</option>
+            @foreach($masterPengeluaran as $kode)
+            <option value="{{ $kode->id }}">{{ $kode->nama_pengeluaran }}</option>
+            @endforeach
+          </select>
+        </div>
         <div class="form-group mb-3">
           <label for="tanggal">Tanggal</label>
           <input type="date" name="tanggal" id="tanggal" class="form-control" required>
         </div>
         <div class="form-group mb-3">
           <label for="jumlah">Jumlah (Rp)</label>
-          <input type="number" step="0.01" name="jumlah" id="jumlah" class="form-control" placeholder="Masukkan jumlah" required>
+          <input type="number" step="0.01" name="jumlah" id="jumlah" class="form-control" placeholder="Masukkan jumlah"
+            required>
         </div>
         <div class="form-group mb-3">
           <label for="keterangan">Keterangan</label>
-          <textarea name="keterangan" id="keterangan" class="form-control" placeholder="Contoh: Pembelian alat medis"></textarea>
+          <textarea name="keterangan" id="keterangan" class="form-control"
+            placeholder="Contoh: Pembelian alat medis"></textarea>
         </div>
       </div>
       <div class="modal-footer">
@@ -144,6 +189,7 @@
   </div>
 </div>
 
+
 @php
 use Carbon\Carbon;
 
@@ -153,49 +199,49 @@ $groupBy = request('group_by', 'month');
 
 // Grouping berdasarkan pilihan user
 if ($groupBy == 'day') {
-    // Per Hari
-    $grouped = $chartData->groupBy(function($item) {
-        return Carbon::parse($item->tanggal)->format('Y-m-d');
-    })->map(function($items) {
-        return $items->sum('jumlah');
-    })->sortKeys();
-    
-    foreach ($grouped as $tanggal => $jumlah) {
-        $date = Carbon::parse($tanggal);
-        $categories[] = $date->format('d M Y');
-        $seriesData[] = $jumlah;
-    }
+// Per Hari
+$grouped = $chartData->groupBy(function($item) {
+return Carbon::parse($item->tanggal)->format('Y-m-d');
+})->map(function($items) {
+return $items->sum('jumlah');
+})->sortKeys();
+
+foreach ($grouped as $tanggal => $jumlah) {
+$date = Carbon::parse($tanggal);
+$categories[] = $date->format('d M Y');
+$seriesData[] = $jumlah;
+}
 } elseif ($groupBy == 'year') {
-    // Per Tahun
-    $grouped = $chartData->groupBy(function($item) {
-        return Carbon::parse($item->tanggal)->format('Y');
-    })->map(function($items) {
-        return $items->sum('jumlah');
-    })->sortKeys();
-    
-    foreach ($grouped as $tahun => $jumlah) {
-        $categories[] = $tahun;
-        $seriesData[] = $jumlah;
-    }
+// Per Tahun
+$grouped = $chartData->groupBy(function($item) {
+return Carbon::parse($item->tanggal)->format('Y');
+})->map(function($items) {
+return $items->sum('jumlah');
+})->sortKeys();
+
+foreach ($grouped as $tahun => $jumlah) {
+$categories[] = $tahun;
+$seriesData[] = $jumlah;
+}
 } else {
-    // Per Bulan (default)
-    $grouped = $chartData->groupBy(function($item) {
-        return Carbon::parse($item->tanggal)->format('Y-m');
-    })->map(function($items) {
-        return $items->sum('jumlah');
-    })->sortKeys();
-    
-    foreach ($grouped as $bulan => $jumlah) {
-        $date = Carbon::parse($bulan . '-01');
-        $categories[] = $date->translatedFormat('M Y');
-        $seriesData[] = $jumlah;
-    }
+// Per Bulan (default)
+$grouped = $chartData->groupBy(function($item) {
+return Carbon::parse($item->tanggal)->format('Y-m');
+})->map(function($items) {
+return $items->sum('jumlah');
+})->sortKeys();
+
+foreach ($grouped as $bulan => $jumlah) {
+$date = Carbon::parse($bulan . '-01');
+$categories[] = $date->translatedFormat('M Y');
+$seriesData[] = $jumlah;
+}
 }
 @endphp
 
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener('DOMContentLoaded', function() {
   var groupBy = '{{ $groupBy }}';
   var categoriesCount = {{ count($categories) }};
   
@@ -334,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       }
     },
-    tooltip: {
+   tooltip: {
       enabled: true,
       y: {
         formatter: function(val) {
@@ -342,8 +388,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
       },
       style: {
-        fontSize: '13px'
-      }
+        fontSize: '13px',
+        colors: ['#000']
+      },
+      theme: 'dark'
     },
     markers: {
       size: 5,
@@ -360,4 +408,18 @@ document.addEventListener('DOMContentLoaded', function() {
   chart.render();
 });
 </script>
+@push('scripts')
+<script>
+  $(function() {
+  $('#kode_pengeluaran_id').select2({
+    dropdownParent: $('#modalTambah'),
+    placeholder: '-- Pilih atau Ketik Jenis Pengeluaran --',
+    allowClear: true,
+    tags: true,
+    width: '100%'
+  });
+});
+</script>
+@endpush
+
 @endsection
