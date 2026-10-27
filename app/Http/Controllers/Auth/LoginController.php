@@ -59,34 +59,36 @@ class LoginController extends Controller
     // }
 
     public function authenticate(Request $request)
-{
-    $credentials = $request->validate([
-        'name' => ['required', 'string'],
-        'password' => ['required', 'string'],
-    ]);
+    {
+        $credentials = $request->validate([
+            'email' => ['required', 'string'],
+            'password' => ['required', 'string'],
+        ]);
 
-    if (Auth::attempt(['name' => $request->name, 'password' => $request->password])) {
-        $request->session()->regenerate();
-        $user = Auth::user();
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            $request->session()->regenerate();
+            $user = Auth::user();
 
-        switch ($user->role) {
-            case 'admin':
-                return redirect()->intended('/home');
-            case 'keuangan':
-                return redirect()->intended('/keuangan/rekap');
-            case 'erm':
-                return redirect()->intended('/dashboard/status-rm-ralan');
-            case 'obat':
-                return redirect()->intended('/obat/stok-barang');
-            default:
-                return redirect()->intended('/home');
+            switch ($user->role) {
+                case 'admin':
+                    return redirect()->intended('/home');
+                case 'keuangan':
+                case 'keuanganin':
+                case 'keuanganout':
+                    return redirect()->intended('/keuangan/rekap');
+                case 'erm':
+                    return redirect()->intended('/dashboard/status-rm-ralan');
+                case 'obat':
+                    return redirect()->intended('/obat/stok-barang');
+                default:
+                    return redirect()->intended('/home');
+            }
         }
-    }
 
-    return back()->withErrors([
-        'name' => 'Nama atau password yang Anda masukkan salah.',
-    ])->onlyInput('name');
-}
+        return back()->withErrors([
+            'email' => 'Email atau password yang Anda masukkan salah.',
+        ])->onlyInput('email');
+    }
 
     /**
      * Menangani permintaan logout.
