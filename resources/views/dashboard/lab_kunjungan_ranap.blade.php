@@ -3,47 +3,55 @@
 @section('title', 'Grafik Kunjungan Lab Rawat Inap')
 
 @section('content')
-<div class="container py-4">
-    <h2 class="mb-4 text-center">
-        <i class="bi bi-bar-chart-line-fill me-2"></i>Grafik Kunjungan Lab Rawat Inap
+<div class="container-fluid px-2 px-md-4 mt-3 mt-md-4">
+    <h2 class="mb-3 mb-md-4 text-center text-warning fs-4 fs-md-2">
+        <i class="bi bi-clipboard2-pulse me-2"></i>Grafik Kunjungan Lab Rawat Inap
+        <br>
+        <small class="text-muted fs-6">
+            {{ \Carbon\Carbon::parse($tgl_dari)->translatedFormat('d F Y') }} -
+            {{ \Carbon\Carbon::parse($tgl_sampai)->translatedFormat('d F Y') }}
+        </small>
     </h2>
 
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <form method="GET" class="row gy-2 gx-3 align-items-end">
-                <div class="col-md-auto">
-                    <label for="tgl_dari" class="form-label mb-0">Dari Tanggal:</label>
-                    <input type="date" name="tgl_dari" id="tgl_dari" value="{{ $tgl_dari }}" class="form-control">
-                </div>
-                <div class="col-md-auto">
-                    <label for="tgl_sampai" class="form-label mb-0">Sampai Tanggal:</label>
-                    <input type="date" name="tgl_sampai" id="tgl_sampai" value="{{ $tgl_sampai }}" class="form-control">
-                </div>
-                <div class="col-md-auto">
-                    <button type="submit" class="btn btn-warning">
-                        <i class="bi bi-search"></i> Tampilkan
-                    </button>
+    <div class="card mb-3 mb-md-4 shadow-sm bg-dark border-0">
+        <div class="card-body p-3">
+            <form method="GET" action="{{ url('/dashboard/labor-kunjungan-ranap') }}">
+                <div class="row g-2 align-items-end">
+                    <div class="col-12 col-sm-5 col-md-4">
+                        <label for="tgl_dari" class="form-label text-light small mb-1">Dari Tanggal:</label>
+                        <input type="date" name="tgl_dari" id="tgl_dari" value="{{ $tgl_dari }}"
+                            class="form-control form-control-sm bg-dark text-light border-secondary">
+                    </div>
+                    <div class="col-12 col-sm-5 col-md-4">
+                        <label for="tgl_sampai" class="form-label text-light small mb-1">Sampai Tanggal:</label>
+                        <input type="date" name="tgl_sampai" id="tgl_sampai" value="{{ $tgl_sampai }}"
+                            class="form-control form-control-sm bg-dark text-light border-secondary">
+                    </div>
+                    <div class="col-12 col-sm-2 col-md-4 d-grid">
+                        <button type="submit" class="btn btn-warning btn-sm">
+                            <i class="bi bi-funnel me-1"></i> Filter
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-body">
+    <div class="card shadow-sm bg-dark border-0">
+        <div class="card-body p-2 p-md-3">
             @if ($data->isEmpty())
-                <div class="alert alert-info text-center">
+                <div class="alert alert-warning text-center my-3 bg-dark border-secondary text-warning">
                     <i class="bi bi-info-circle-fill me-1"></i> Tidak ada data kunjungan untuk rentang tanggal tersebut.
                 </div>
             @else
-                <div style="max-height: 500px; overflow-y: auto;">
-                    <div id="labChartContainer" style="min-height: 400px;"></div>
+                <div style="max-height: 550px; overflow-y: auto;">
+                    <div id="labChartContainer" style="min-height: 380px; width: 100%;"></div>
                 </div>
             @endif
         </div>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
 let labChart;
 const labData = @json($data);
@@ -51,8 +59,8 @@ const labData = @json($data);
 function getComputedThemeColors() {
     const style = getComputedStyle(document.documentElement);
     return {
-        bodyColor: style.getPropertyValue('--bs-body-color').trim() || '#fff',
-        borderColor: style.getPropertyValue('--navbar-border')?.trim() || '#ccc'
+        bodyColor: style.getPropertyValue('--bs-body-color').trim() || '#e5e7eb',
+        borderColor: style.getPropertyValue('--navbar-border')?.trim() || '#374151'
     };
 }
 
@@ -70,17 +78,17 @@ function createApexChart(data) {
         }],
         chart: {
             type: 'bar',
-            height: 400,
+            height: 380,
             toolbar: { show: false },
             foreColor: themeColors.bodyColor
         },
-        colors: ['#FF9D23'], // base warna biru
+        colors: ['#3b82f6'],
         fill: {
             type: 'gradient',
             gradient: {
                 shade: 'dark',
-                type: 'vertical', // tetap vertikal
-                gradientToColors: ['#F3C623'], // gradasi ke putih
+                type: 'vertical',
+                gradientToColors: ['#60a5fa'],
                 shadeIntensity: 0.5,
                 opacityFrom: 0.9,
                 opacityTo: 0.7,
@@ -91,21 +99,21 @@ function createApexChart(data) {
             bar: {
                 horizontal: false,
                 columnWidth: '50%',
-                borderRadius: 3 // sudut membulat
+                borderRadius: 3
             }
         },
         dataLabels: {
             enabled: true,
             style: {
-                colors: ['#fefce8'], // teks kontras
-                fontSize: '12px'
+                colors: ['#ffffff'],
+                fontSize: '11px'
             }
         },
         xaxis: {
             categories: chartData.map(item => item.x),
             labels: {
                 rotate: -45,
-                style: { colors: themeColors.bodyColor, fontSize: '12px' }
+                style: { colors: themeColors.bodyColor, fontSize: '11px' }
             },
             axisBorder: { color: themeColors.borderColor },
             axisTicks: { color: themeColors.borderColor }
@@ -113,7 +121,7 @@ function createApexChart(data) {
         yaxis: {
             title: {
                 text: 'Jumlah Kunjungan',
-                style: { color: themeColors.bodyColor, fontSize: '12px' }
+                style: { color: themeColors.bodyColor, fontSize: '11px' }
             },
             labels: { style: { colors: themeColors.bodyColor } },
             axisBorder: { color: themeColors.borderColor },
@@ -122,15 +130,25 @@ function createApexChart(data) {
         grid: { borderColor: themeColors.borderColor },
         tooltip: {
             y: { formatter: val => `${val} kunjungan` },
-            theme: document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'light'
+            theme: 'dark'
         },
-        legend: { show: false }
+        legend: { show: false },
+        responsive: [{
+            breakpoint: 576,
+            options: {
+                chart: { height: 300 },
+                plotOptions: { bar: { columnWidth: '70%' } },
+                xaxis: { labels: { rotate: -45, style: { fontSize: '10px' } } }
+            }
+        }]
     };
 
     const chartElement = document.querySelector("#labChartContainer");
-    if (labChart) labChart.destroy();
-    labChart = new ApexCharts(chartElement, options);
-    labChart.render();
+    if (chartElement) {
+        if (labChart) labChart.destroy();
+        labChart = new ApexCharts(chartElement, options);
+        labChart.render();
+    }
 }
 
 if (labData.length > 0) {
@@ -138,7 +156,7 @@ if (labData.length > 0) {
 }
 
 const observer = new MutationObserver(() => {
-    createApexChart(labData);
+    if (labData.length > 0) createApexChart(labData);
 });
 observer.observe(document.documentElement, { attributes: true });
 </script>
