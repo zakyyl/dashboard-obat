@@ -94,6 +94,7 @@
         #wrapper {
             overflow-x: hidden;
             min-height: 100vh;
+            width: 100%;
         }
 
         #sidebar-wrapper {
@@ -238,7 +239,9 @@
         }
 
         #page-content-wrapper {
-            min-width: 100vw;
+            width: 100%;
+            min-width: 0;
+            flex-grow: 1;
             padding: 0;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -247,21 +250,14 @@
             padding: 1.5rem;
         }
 
-        body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
-            margin-left: 0;
-        }
-
-        body.sb-sidenav-toggled #wrapper #page-content-wrapper {
-            min-width: calc(100vw - 280px);
-        }
-
         @media (min-width: 768px) {
             #sidebar-wrapper {
                 margin-left: 0;
             }
 
             #page-content-wrapper {
-                min-width: calc(100vw - 280px);
+                width: calc(100% - 280px);
+                min-width: 0;
             }
 
             body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
@@ -269,41 +265,46 @@
             }
 
             body.sb-sidenav-toggled #wrapper #page-content-wrapper {
-                min-width: 100vw;
+                width: 100%;
             }
         }
 
         @media (max-width: 767.98px) {
-
             #sidebar-wrapper {
                 position: fixed;
                 top: 0;
                 left: 0;
                 bottom: 0;
-                z-index: 1040;
-                box-shadow: var(--shadow-medium);
+                height: 100vh;
+                z-index: 1050;
+                box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
                 margin-left: -280px;
+                overflow-y: auto;
+            }
+
+            body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
+                margin-left: 0 !important;
+            }
+
+            body.sb-sidenav-toggled #wrapper #page-content-wrapper {
+                width: 100% !important;
+                min-width: 0 !important;
             }
 
             body.sb-sidenav-toggled::before {
                 content: '';
                 position: fixed;
                 top: 0;
-                left: 280px;
+                left: 0;
                 right: 0;
                 bottom: 0;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 1030;
+                background: rgba(0, 0, 0, 0.65);
+                z-index: 1040;
                 backdrop-filter: blur(2px);
             }
 
-            body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
-                margin-left: 0;
-            }
-
-
             .container-fluid {
-                padding: 1rem;
+                padding: 0.75rem !important;
             }
         }
 
