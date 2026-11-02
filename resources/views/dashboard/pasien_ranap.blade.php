@@ -3,37 +3,56 @@
 @section('title', 'Grafik Ranap Per Bulan')
 
 @section('content')
-<div class="container py-4 text-white min-vh-100">
-    <h2 class="mb-4 text-center">
-    <i class="bi bi-bar-chart-fill me-2"></i>Grafik Pasien Rawat Inap
-    <br>
-    <small class="text-muted">
-        {{ \Carbon\Carbon::parse($bulan_dari)->translatedFormat('F Y') }} -
-        {{ \Carbon\Carbon::parse($bulan_sampai)->translatedFormat('F Y') }}
-    </small>
-</h2>
+@php
+    $selectedPenjabName = 'Semua Pasien';
+    if (($kd_pj ?? 'all') !== 'all') {
+        $found = $penjabList->firstWhere('kd_pj', $kd_pj);
+        $selectedPenjabName = $found ? $found->png_jawab : $kd_pj;
+    }
+@endphp
 
+<div class="container-fluid py-3 px-2 px-md-3 text-white min-vh-100">
+    <h2 class="mb-3 fs-4 fs-md-2 text-center text-warning fw-bold">
+        <i class="bi bi-bar-chart-fill me-2"></i>Grafik Pasien Rawat Inap
+        <div class="fs-6 text-light mt-1">{{ $selectedPenjabName }}</div>
+        <small class="text-muted fs-6 fw-normal d-block mt-1">
+            {{ \Carbon\Carbon::parse($bulan_dari)->translatedFormat('F Y') }} -
+            {{ \Carbon\Carbon::parse($bulan_sampai)->translatedFormat('F Y') }}
+        </small>
+    </h2>
 
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <form method="GET" class="row gy-2 gx-3 align-items-end">
-    <div class="col-md-auto">
-        <label for="bulan_dari" class="form-label mb-0">Dari Bulan:</label>
-        <input type="month" name="bulan_dari" id="bulan_dari" value="{{ $bulan_dari }}" class="form-control">
-    </div>
+    <div class="card mb-4 shadow-sm bg-dark border-secondary">
+        <div class="card-body p-3">
+            <form method="GET" class="row g-2 g-md-3 align-items-end">
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <label for="bulan_dari" class="form-label small mb-1">Dari Bulan:</label>
+                    <input type="month" name="bulan_dari" id="bulan_dari" value="{{ $bulan_dari }}" class="form-control form-control-sm bg-dark text-white border-secondary">
+                </div>
 
-    <div class="col-md-auto">
-        <label for="bulan_sampai" class="form-label mb-0">Sampai Bulan:</label>
-        <input type="month" name="bulan_sampai" id="bulan_sampai" value="{{ $bulan_sampai }}" class="form-control">
-    </div>
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <label for="bulan_sampai" class="form-label small mb-1">Sampai Bulan:</label>
+                    <input type="month" name="bulan_sampai" id="bulan_sampai" value="{{ $bulan_sampai }}" class="form-control form-control-sm bg-dark text-white border-secondary">
+                </div>
 
-    <div class="col-md-auto">
-        <button type="submit" class="btn btn-warning">
-            <i class="bi bi-search"></i> Tampilkan
-        </button>
-    </div>
-</form>
+                <div class="col-12 col-sm-12 col-lg-4">
+                    <label for="kd_pj" class="form-label small mb-1">Cara Bayar / Status:</label>
+                    <select name="kd_pj" id="kd_pj" class="form-select form-select-sm bg-dark text-white border-secondary">
+                        <option value="all" {{ ($kd_pj ?? 'all') == 'all' ? 'selected' : '' }}>Semua Cara Bayar (Semua Pasien)</option>
+                        <option value="U01" {{ ($kd_pj ?? '') == 'U01' ? 'selected' : '' }}>Umum</option>
+                        @foreach($penjabList as $pj)
+                            @if($pj->kd_pj !== 'U01')
+                                <option value="{{ $pj->kd_pj }}" {{ ($kd_pj ?? '') == $pj->kd_pj ? 'selected' : '' }}>{{ $pj->png_jawab }}</option>
+                            @endif
+                        @endforeach
+                    </select>
+                </div>
 
+                <div class="col-12 col-lg-2">
+                    <button type="submit" class="btn btn-warning btn-sm w-100">
+                        <i class="bi bi-search me-1"></i> Tampilkan
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -59,7 +78,7 @@
 
         const optionsRanap = {
             series: [{
-                name: 'Ranap',
+                name: 'Ranap ({{ $selectedPenjabName }})',
                 data: @json($dataRanap)
             }],
             chart: {
