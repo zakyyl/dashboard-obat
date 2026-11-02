@@ -1,30 +1,41 @@
 @extends('layouts.app')
 
+@section('title', 'Pengajuan Klaim Rawat Inap')
+
 @section('content')
-<div class="container">
-    <h2 class="mb-4 text-center">
-        <i class="bi bi-bar-chart-fill me-2"></i>Grafik Pengajuan Klaim Rawat Inap
+<div class="container-fluid px-2 px-md-4 mt-3 mt-md-4">
+    <h2 class="mb-3 mb-md-4 text-center text-warning fs-4 fs-md-2">
+        <i class="bi bi-file-earmark-medical me-2"></i>Grafik Pengajuan Klaim Rawat Inap
         <br>
-        <small class="text-muted">{{ \Carbon\Carbon::parse($startDate)->translatedFormat('F Y') }} - {{ \Carbon\Carbon::parse($endDate)->translatedFormat('F Y') }}</small>
+        <small class="text-muted fs-6">
+            {{ \Carbon\Carbon::parse($startDate)->translatedFormat('F Y') }} - {{ \Carbon\Carbon::parse($endDate)->translatedFormat('F Y') }}
+        </small>
     </h2>
 
-    <!-- Form Filter Tahun -->
-    <div class="mb-3 text-center">
-        <form method="GET" action="{{ url()->current() }}" class="d-inline-flex align-items-center gap-2">
-            <label for="tahun" class="form-label mb-0">Tahun:</label>
-            <select name="tahun" id="tahun" class="form-select" style="width: auto;" onchange="this.form.submit()">
-                @for($i = date('Y'); $i >= 2020; $i--)
-                    <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
-                @endfor
-            </select>
-        </form>
+    <div class="card mb-3 mb-md-4 shadow-sm bg-dark border-0">
+        <div class="card-body p-3">
+            <form method="GET" action="{{ url()->current() }}" class="row g-2 justify-content-center align-items-center">
+                <div class="col-auto">
+                    <label for="tahun" class="form-label text-light small mb-0 fw-semibold">Pilih Tahun:</label>
+                </div>
+                <div class="col-auto">
+                    <select name="tahun" id="tahun" class="form-select form-select-sm bg-dark text-light border-secondary" onchange="this.form.submit()">
+                        @for($i = date('Y'); $i >= 2020; $i--)
+                            <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
+                        @endfor
+                    </select>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- Chart -->
-    <div id="chartRanap" style="height: 350px;"></div>
+    <div class="card shadow-sm bg-dark border-0">
+        <div class="card-body p-2 p-md-3">
+            <div id="chartRanap" style="min-height: 350px; width: 100%;"></div>
+        </div>
+    </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     const options = {
         series: [
@@ -34,9 +45,9 @@
                 data: @json($seriesColumn)
             },
             {
-                name: 'Jumlah',
+                name: 'Tren',
                 type: 'line',
-                data: @json($seriesColumn) // Gunakan data yang sama, tapi tampil dalam bentuk garis
+                data: @json($seriesColumn)
             }
         ],
         chart: {
@@ -45,13 +56,13 @@
             foreColor: '#e5e7eb',
             toolbar: { show: false }
         },
-        colors: ['#f59e0b', '#3b82f6'], // Bar: kuning, Line: biru
+        colors: ['#10b981', '#6366f1'],
         fill: {
             type: 'gradient',
             gradient: {
                 shade: 'dark',
                 type: 'vertical',
-                gradientToColors: ['#fcd34d', '#60a5fa'],
+                gradientToColors: ['#34d399', '#818cf8'],
                 shadeIntensity: 0.5,
                 opacityFrom: 0.9,
                 opacityTo: 0.7,
@@ -59,37 +70,34 @@
             }
         },
         stroke: {
-            width: [0, 3], // Bar tanpa garis tepi, line dengan ketebalan 3px
+            width: [0, 3],
             curve: 'smooth'
         },
-        
         dataLabels: {
-    enabled: true,
-    enabledOnSeries: [0], // Hanya tampilkan data label di bar (index 0)
-    style: {
-        colors: ['#000']
-    }
-},
-
+            enabled: true,
+            enabledOnSeries: [0],
+            style: {
+                colors: ['#000000'],
+                fontSize: '11px'
+            }
+        },
         labels: @json($categories),
         xaxis: {
             labels: {
+                rotate: -45,
                 style: {
-                    colors: '#d1d5db'
+                    colors: '#d1d5db',
+                    fontSize: '11px'
                 }
             }
         },
         yaxis: [{
             title: {
                 text: 'Jumlah Pengajuan',
-                style: {
-                    color: '#f3f4f6'
-                }
+                style: { color: '#f3f4f6', fontSize: '11px' }
             },
             labels: {
-                style: {
-                    colors: '#e5e7eb'
-                }
+                style: { colors: '#e5e7eb' }
             }
         }],
         tooltip: {
@@ -101,10 +109,19 @@
             borderColor: '#374151'
         },
         legend: {
+            position: 'bottom',
             labels: {
                 colors: '#f3f4f6'
             }
-        }
+        },
+        responsive: [{
+            breakpoint: 576,
+            options: {
+                chart: { height: 280 },
+                xaxis: { labels: { rotate: -45, style: { fontSize: '10px' } } },
+                dataLabels: { style: { fontSize: '9px' } }
+            }
+        }]
     };
 
     new ApexCharts(document.querySelector("#chartRanap"), options).render();
