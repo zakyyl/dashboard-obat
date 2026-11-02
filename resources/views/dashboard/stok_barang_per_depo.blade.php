@@ -3,32 +3,32 @@
 @section('title', 'Stok Obat Per Depo')
 
 @section('content')
-<div class="container py-4 text-white min-vh-100">
-    <h2 class="mb-4 text-center">
-        GRAFIK STOK OBAT PER DEPO
+<div class="container-fluid px-2 px-md-4 mt-3 mt-md-4 text-white min-vh-100">
+    <h2 class="mb-3 mb-md-4 text-center text-warning fs-4 fs-md-2">
+        <i class="bi bi-building me-2"></i>GRAFIK STOK OBAT PER DEPO
         <br>
-        <small class="text-muted">
+        <small class="text-muted fs-6">
             {{ now()->translatedFormat('F Y') }}
         </small>
     </h2>
 
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
+    <div class="card mb-3 mb-md-4 shadow-sm bg-dark border-0">
+        <div class="card-body p-3">
             <!-- Modal Warning -->
             <div class="modal fade" id="loadingWarningModal" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content bg-dark text-white">
-                        <div class="modal-header">
-                            <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill me-2"></i>Peringatan</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <div class="modal-content bg-dark text-white border-secondary">
+                        <div class="modal-header border-secondary">
+                            <h5 class="modal-title fs-6 text-warning"><i class="bi bi-exclamation-triangle-fill me-2"></i>Peringatan</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body">
                             <p>Data yang akan ditampilkan cukup banyak dan mungkin memerlukan waktu untuk memuat.</p>
                             <p class="mb-0">Apakah Anda yakin ingin menampilkan semua data yang sesuai pencarian?</p>
                         </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="button" id="confirmSearchBtn" class="btn btn-danger">Ya, Tampilkan</button>
+                        <div class="modal-footer border-secondary">
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
+                            <button type="button" id="confirmSearchBtn" class="btn btn-danger btn-sm">Ya, Tampilkan</button>
                         </div>
                     </div>
                 </div>
@@ -37,66 +37,67 @@
             <!-- Loading Modal -->
             <div class="modal fade" id="loadingModal" tabindex="-1" aria-hidden="true" data-bs-backdrop="static">
                 <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
+                    <div class="modal-content bg-dark text-white border-secondary">
                         <div class="modal-body text-center p-4">
-                            <div class="spinner-border text-primary mb-3" role="status">
+                            <div class="spinner-border text-warning mb-3" role="status">
                                 <span class="visually-hidden">Loading...</span>
                             </div>
-                            <p class="mb-0">Sedang memuat data...</p>
+                            <p class="mb-0 text-muted">Sedang memuat data...</p>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Form Filter -->
-            <form id="searchForm" method="GET" action="{{ route('obat.stok-barang-per-depo') }}" class="row gy-2 gx-3 align-items-end">
+            <form id="searchForm" method="GET" action="{{ route('obat.stok-barang-per-depo') }}">
+                <div class="row g-2 align-items-end">
+                    {{-- Filter Depo --}}
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <label for="kd_bangsal" class="form-label text-light small mb-1">Pilih Depo:</label>
+                        <select name="kd_bangsal" id="kd_bangsal" class="form-select form-select-sm bg-dark text-light border-secondary">
+                            <option value="">Semua Depo</option>
+                            @foreach ($listDepo as $depo)
+                                <option value="{{ $depo->kd_bangsal }}" {{ ($kdBangsal ?? '') == $depo->kd_bangsal ? 'selected' : '' }}>
+                                    {{ $depo->nm_bangsal }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                {{-- Filter Depo --}}
-                <div class="col-md-auto">
-                    <label for="kd_bangsal" class="form-label mb-0">Pilih Depo:</label>
-                    <select name="kd_bangsal" id="kd_bangsal" class="form-select">
-                        <option value="">Semua Depo</option>
-                        @foreach ($listDepo as $depo)
-                            <option value="{{ $depo->kd_bangsal }}" {{ ($kdBangsal ?? '') == $depo->kd_bangsal ? 'selected' : '' }}>
-                                {{ $depo->nm_bangsal }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                    {{-- Filter Jenis Barang --}}
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <label for="jenis" class="form-label text-light small mb-1">Filter Jenis:</label>
+                        <select name="jenis" id="jenis" class="form-select form-select-sm bg-dark text-light border-secondary">
+                            <option value="">Semua Jenis</option>
+                            @foreach ($listJenis as $j)
+                                <option value="{{ $j->nama }}" {{ ($jenisFilter ?? '') == $j->nama ? 'selected' : '' }}>
+                                    {{ $j->nama }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                {{-- Filter Jenis Barang --}}
-                <div class="col-md-auto">
-                    <label for="jenis" class="form-label mb-0">Filter Jenis Barang:</label>
-                    <select name="jenis" id="jenis" class="form-select">
-                        <option value="">Semua Jenis</option>
-                        @foreach ($listJenis as $j)
-                            <option value="{{ $j->nama }}" {{ ($jenisFilter ?? '') == $j->nama ? 'selected' : '' }}>
-                                {{ $j->nama }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+                    {{-- Cari Nama Obat --}}
+                    <div class="col-12 col-sm-8 col-md-4">
+                        <label for="search" class="form-label text-light small mb-1">Cari Nama Obat:</label>
+                        <input type="text" id="search" name="search" class="form-control form-control-sm bg-dark text-light border-secondary"
+                               placeholder="Ketik nama obat..." value="{{ $searchKeyword ?? '' }}">
+                    </div>
 
-                {{-- Cari Nama Obat --}}
-                <div class="col-md-auto">
-                    <label for="search" class="form-label mb-0">Cari Nama Obat:</label>
-                    <input type="text" id="search" name="search" class="form-control"
-                           placeholder="Ketik nama obat..." value="{{ $searchKeyword ?? '' }}">
-                </div>
-
-                {{-- Tombol Cari --}}
-                <div class="col-md-auto">
-                    <button type="button" id="searchBtn" class="btn btn-warning">
-                        <i class="bi bi-search"></i> Cari
-                    </button>
+                    {{-- Tombol Cari --}}
+                    <div class="col-12 col-sm-4 col-md-2 d-grid">
+                        <button type="button" id="searchBtn" class="btn btn-warning btn-sm">
+                            <i class="bi bi-search me-1"></i>Cari
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
     {{-- Card Chart --}}
-    <div class="card shadow-sm">
-        <div class="card-body">
+    <div class="card shadow-sm bg-dark border-0">
+        <div class="card-body p-2 p-md-3">
             @if (isset($data) && $data->count() === 0)
                 <div class="alert alert-info text-center">
                     <i class="bi bi-info-circle-fill me-1"></i> Tidak ada data obat yang ditemukan.

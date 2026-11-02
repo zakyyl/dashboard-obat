@@ -3,51 +3,52 @@
 @section('title', 'Stok Obat Masuk')
 
 @section('content')
-<div class="container py-4 text-white min-vh-100">
-    <h2 class="mb-4 text-center">
-        GRAFIK STOK OBAT MASUK
+<div class="container-fluid px-2 px-md-4 mt-3 mt-md-4 text-white min-vh-100">
+    <h2 class="mb-3 mb-md-4 text-center text-warning fs-4 fs-md-2">
+        <i class="bi bi-box-arrow-in-down me-2"></i>GRAFIK STOK OBAT MASUK
         <br>
-        <small class="text-muted">
+        <small class="text-muted fs-6">
             {{ \Carbon\Carbon::parse($startDate)->translatedFormat('d F Y') }}
             s/d
             {{ \Carbon\Carbon::parse($endDate)->translatedFormat('d F Y') }}
         </small>
     </h2>
 
-    <div class="card mb-4 shadow-sm">
-        <div class="card-body">
-            <form id="searchForm" method="GET" action="{{ route('obat.stok-barang-masuk') }}"
-                class="row gy-2 gx-3 align-items-end">
+    <div class="card mb-3 mb-md-4 shadow-sm bg-dark border-0">
+        <div class="card-body p-3">
+            <form id="searchForm" method="GET" action="{{ route('obat.stok-barang-masuk') }}">
+                <div class="row g-2 align-items-end">
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <label for="start_date" class="form-label text-light small mb-1">Dari Tanggal:</label>
+                        <input type="date" id="start_date" name="start_date" value="{{ $startDate }}"
+                            class="form-control form-control-sm bg-dark text-light border-secondary">
+                    </div>
 
-                <div class="col-md-auto">
-                    <label for="start_date" class="form-label mb-0">Dari Tanggal:</label>
-                    <input type="date" id="start_date" name="start_date" value="{{ $startDate }}" class="form-control">
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <label for="end_date" class="form-label text-light small mb-1">Sampai Tanggal:</label>
+                        <input type="date" id="end_date" name="end_date" value="{{ $endDate }}"
+                            class="form-control form-control-sm bg-dark text-light border-secondary">
+                    </div>
 
+                    <div class="col-12 col-sm-8 col-md-4">
+                        <label for="kode_brng" class="form-label text-light small mb-1">Cari Kode / Nama Obat:</label>
+                        <input type="text" id="kode_brng" name="kode_brng"
+                            class="form-control form-control-sm bg-dark text-light border-secondary"
+                            placeholder="Ketik kode atau nama..." value="{{ $kodeBrng ?? '' }}">
+                    </div>
 
-                </div>
-
-                <div class="col-md-auto">
-                    <label for="end_date" class="form-label mb-0">Sampai Tanggal:</label>
-                    <input type="date" id="end_date" name="end_date" value="{{ $endDate }}" class="form-control">
-                </div>
-
-                <div class="col-md-auto">
-                    <label for="kode_brng" class="form-label mb-0">Cari Kode / Nama Obat:</label>
-                    <input type="text" id="kode_brng" name="kode_brng" class="form-control"
-                        placeholder="Ketik kode atau nama..." value="{{ $kodeBrng ?? '' }}">
-                </div>
-
-                <div class="col-md-auto">
-                    <button type="button" id="searchBtn" class="btn btn-warning">
-                        <i class="bi bi-search"></i> Cari
-                    </button>
+                    <div class="col-12 col-sm-4 col-md-2 d-grid">
+                        <button type="button" id="searchBtn" class="btn btn-warning btn-sm">
+                            <i class="bi bi-search me-1"></i>Cari
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-body">
+    <div class="card shadow-sm bg-dark border-0 mb-4">
+        <div class="card-body p-2 p-md-3">
             @if ($data->count() === 0)
             <div class="alert alert-info text-center">
                 <i class="bi bi-info-circle-fill me-1"></i> Tidak ada data obat masuk.
