@@ -3,90 +3,101 @@
 @section('title', 'Status Data RM Rawat Inap')
 
 @section('content')
-<div class="container">
-    <h2 class="mb-4 text-center">Status Data Rawat Inap</h2>
+<div class="container-fluid px-2 px-md-4 mt-3 mt-md-4">
+    <h2 class="mb-3 mb-md-4 text-center text-warning fs-4 fs-md-2">
+        <i class="bi bi-file-earmark-check me-2"></i>Status Data Rekam Medis Rawat Inap
+    </h2>
 
-    {{-- Filter Box --}}
-    <form method="GET" action="{{ route('statusrm-ranap.index') }}" class="row mb-4 g-3" autocomplete="off">
-        <div class="col-md-4">
-            <label for="tanggal_awal" class="form-label">Tanggal Awal Keluar</label>
-            <input type="date" name="tanggal_awal" id="tanggal_awal" class="form-control" value="{{ $tanggal_awal }}">
+    <div class="card mb-3 mb-md-4 shadow-sm bg-dark border-0">
+        <div class="card-body p-3">
+            <form method="GET" action="{{ route('statusrm-ranap.index') }}" autocomplete="off">
+                <div class="row g-2 align-items-end">
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <label for="tanggal_awal" class="form-label text-light small mb-1">Tgl Awal Keluar:</label>
+                        <input type="date" name="tanggal_awal" id="tanggal_awal"
+                            class="form-control form-control-sm bg-dark text-light border-secondary" value="{{ $tanggal_awal }}">
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-3">
+                        <label for="tanggal_akhir" class="form-label text-light small mb-1">Tgl Akhir Keluar:</label>
+                        <input type="date" name="tanggal_akhir" id="tanggal_akhir"
+                            class="form-control form-control-sm bg-dark text-light border-secondary" value="{{ $tanggal_akhir }}">
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-2">
+                        <label for="ns_group" class="form-label text-light small mb-1">Nurse Station:</label>
+                        <select name="ns_group" id="ns_group" class="form-select form-select-sm bg-dark text-light border-secondary">
+                            <option value="">Semua NS</option>
+                            @foreach($nurse_stations as $ns)
+                            <option value="{{ $ns->ket }}" {{ ($ns_group_selected ?? '') == $ns->ket ? 'selected' : '' }}>
+                                {{ $ns->ket }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-12 col-sm-6 col-md-2">
+                        <label for="no_rawat" class="form-label text-light small mb-1">Nomor Rawat:</label>
+                        <input type="text" name="no_rawat" id="no_rawat"
+                            class="form-control form-control-sm bg-dark text-light border-secondary"
+                            value="{{ $no_rawat ?? '' }}" placeholder="No. Rawat">
+                    </div>
+                    <div class="col-12 col-md-2 d-grid">
+                        <button type="submit" class="btn btn-warning btn-sm">
+                            <i class="bi bi-funnel me-1"></i>Filter
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
-        <div class="col-md-4">
-            <label for="tanggal_akhir" class="form-label">Tanggal Akhir Keluar</label>
-            <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control"
-                value="{{ $tanggal_akhir }}">
-        </div>
-        <div class="col-md-4">
-            <label for="ns_group" class="form-label">Nurse Station</label>
-            <select name="ns_group" id="ns_group" class="form-select">
-                <option value="">Semua Nurse Station</option>
-                @foreach($nurse_stations as $ns)
-                <option value="{{ $ns->ket }}" {{ ($ns_group_selected ?? '' )==$ns->ket ? 'selected' : '' }}>
-                    {{ $ns->ket }}
-                </option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-md-4">
-            <label for="no_rawat" class="form-label">Nomor Rawat</label>
-            <input type="text" name="no_rawat" id="no_rawat" class="form-control" value="{{ $no_rawat ?? '' }}"
-                placeholder="Masukkan No. Rawat">
-        </div>
-        <div class="col-md-4 d-flex align-items-end">
-            <button type="submit" class="btn btn-warning w-100">
-                <i class="fa-solid fa-search me-1"></i> Filter
-            </button>
-        </div>
-    </form>
+    </div>
 
-    {{-- Data Table --}}
-    <div class="card shadow-sm">
-        <div class="card-body">
+    <div class="card shadow-sm bg-dark border-0">
+        <div class="card-body p-2 p-md-3">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="mb-0">Data Pasien | Total: {{ $data_ranap->total() }}</h5>
+                <h5 class="mb-0 fw-semibold fs-6 fs-md-5 text-warning">
+                    Data Pasien <span class="badge bg-secondary text-light ms-1">{{ $data_ranap->total() }} Pasien</span>
+                </h5>
             </div>
             <div class="table-responsive">
-                <table class="table table-bordered table-striped mb-0">
-                    <thead class="table-dark text-center">
+                <table class="table table-dark table-striped table-bordered align-middle text-light mb-0" style="min-width: 820px;">
+                    <thead class="table-secondary text-dark text-center">
                         <tr>
-                            <th style="width: 110px;">Aksi</th>
-                            <th>No. Rawat</th>
-                            <th>No. RM</th>
-                            <th>Nama Pasien</th>
-                            <th>Kamar</th>
-                            <th>Tgl. Keluar</th>
-                            <th>DPJP</th>
+                            <th style="width: 80px;">Aksi</th>
+                            <th style="width: 15%;">No. Rawat</th>
+                            <th style="width: 12%;">No. RM</th>
+                            <th style="width: 22%;">Nama Pasien</th>
+                            <th style="width: 15%;">Kamar</th>
+                            <th style="width: 13%;">Tgl. Keluar</th>
+                            <th style="width: 23%;">DPJP</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody style="font-size: 0.875rem;">
                         @forelse ($data_ranap as $item)
                         <tr>
-                            <td>
-                                <button type="button" class="btn btn-sm btn-warning btn-kelengkapan"
+                            <td class="text-center">
+                                <button type="button" class="btn btn-sm btn-warning btn-kelengkapan py-0 px-2"
                                     data-bs-toggle="modal" data-bs-target="#kelengkapanModal"
                                     data-norawat="{{ $item->no_rawat }}" data-namapasien="{{ $item->nm_pasien }}"
                                     title="Lihat Kelengkapan Berkas">
-                                    <i class="fa-solid fa-check-circle me-2"></i> Cek
+                                    <i class="bi bi-check-circle me-1"></i>Cek
                                 </button>
                             </td>
-                            <td>{{ $item->no_rawat }}</td>
-                            <td>{{ $item->no_rkm_medis }}</td>
-                            <td>{{ $item->nm_pasien }}</td>
-                            <td>{{ $item->kamar }}</td>
-                            <td>{{ \Carbon\Carbon::parse($item->tgl_keluar)->format('d-m-Y') }}</td>
-                            <td>{{ $item->nm_dokter_dpjp }}</td>
+                            <td class="font-monospace text-nowrap">{{ $item->no_rawat }}</td>
+                            <td class="font-monospace">{{ $item->no_rkm_medis }}</td>
+                            <td class="fw-semibold">{{ $item->nm_pasien }}</td>
+                            <td><span class="badge bg-secondary">{{ $item->kamar }}</span></td>
+                            <td class="text-nowrap">{{ \Carbon\Carbon::parse($item->tgl_keluar)->format('d-m-Y') }}</td>
+                            <td>{{ $item->nm_dokter }}</td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="text-center">Data tidak ditemukan.</td>
+                            <td colspan="7" class="text-center text-muted py-3">Data tidak ditemukan.</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+
             @if($data_ranap->hasPages())
-            <div class="d-flex justify-content-end mt-3">
+            <div class="d-flex justify-content-center justify-content-md-end mt-3">
                 {{ $data_ranap->appends(request()->query())->links('vendor.pagination.dark-theme') }}
             </div>
             @endif
@@ -94,39 +105,37 @@
     </div>
 
     {{-- Modal Kelengkapan Berkas --}}
-    <div class="modal fade" id="kelengkapanModal" tabindex="-1" aria-labelledby="kelengkapanModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="kelengkapanModalLabel">
-                        Kelengkapan Berkas: <span id="namaPasienModal" class="fw-bold"></span>
-                        | No. Rawat: <strong id="noRawatModal"></strong>
+    <div class="modal fade" id="kelengkapanModal" tabindex="-1" aria-labelledby="kelengkapanModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content bg-dark text-light border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title fs-6" id="kelengkapanModalLabel">
+                        Kelengkapan Berkas: <span id="namaPasienModal" class="fw-bold text-warning"></span>
+                        | <span class="font-monospace text-muted" id="noRawatModal"></span>
                     </h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" style="max-height: 65vh; overflow-y: auto;">
+                <div class="modal-body p-2 p-md-3">
                     <div class="table-responsive">
-                        <table class="table table-bordered table-striped mb-0">
-                            <thead class="table-dark text-center">
+                        <table class="table table-dark table-bordered table-striped mb-0">
+                            <thead class="table-secondary text-dark">
                                 <tr>
                                     <th>Nama Berkas</th>
-                                    <th>Status</th>
+                                    <th style="width: 120px;" class="text-center">Status</th>
                                 </tr>
                             </thead>
-                            <tbody id="isiKelengkapan">
+                            <tbody id="isiKelengkapan" style="font-size: 0.875rem;">
                                 <tr>
                                     <td colspan="2" class="text-center py-4">
-                                        Memuat data... <i class="fa fa-spinner fa-spin ms-2"></i>
+                                        Memuat data... <i class="bi bi-arrow-repeat spin ms-2"></i>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
@@ -137,27 +146,23 @@
 @push('scripts')
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // FUNGSI encodeNoRawat DIHAPUS
-
     document.querySelectorAll('.btn-kelengkapan').forEach(button => {
         button.addEventListener('click', function() {
-            const noRawat = this.dataset.norawat; // Menggunakan noRawat langsung
+            const noRawat = this.dataset.norawat;
             const namaPasien = this.dataset.namapasien;
 
             document.getElementById('namaPasienModal').innerText = namaPasien;
             document.getElementById('noRawatModal').innerText = noRawat;
 
             const tbody = document.getElementById('isiKelengkapan');
-            tbody.innerHTML = `<tr><td colspan="2" class="text-center py-4">Memuat data... <i class="fa fa-spinner fa-spin ms-2"></i></td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="2" class="text-center py-4 text-warning">Memuat data...</td></tr>`;
 
-            // PERUBAHAN UTAMA: noRawat digunakan langsung tanpa encode
             fetch(`{{ url('/dashboard/status-rm-ranap/kelengkapan') }}/${noRawat}`)
                 .then(response => {
                     if (!response.ok) throw new Error('Network response was not ok');
                     return response.json();
                 })
-                .then(result => { // Ganti nama variabel 'data' menjadi 'result' untuk menghindari kebingungan
-                    // Mengikuti struktur baru dari jawaban sebelumnya (data dibungkus)
+                .then(result => {
                     if (Array.isArray(result.data) && result.data.length) {
                         let htmlRows = '';
                         const selectedNS = document.getElementById('ns_group').value;
@@ -165,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const icuItems = ['Kriteria Masuk ICU', 'Kriteria Keluar ICU'];
                         const kebidananItems = ['Catatan Persalinan'];
 
-                        result.data.forEach((item, index) => { // Menggunakan result.data
+                        result.data.forEach((item, index) => {
                             let showItem = true;
                             const isIcuItem = icuItems.includes(item.nama);
                             const isKebidananItem = kebidananItems.includes(item.nama);
@@ -199,7 +204,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                             const borderClass = (subIndex < item.submenu.length - 1) ? 'border-bottom' : '';
                                             submenuContent += `
                                                 <div class="d-flex justify-content-between align-items-center py-2 ${borderClass}">
-                                                    <span><i class="fa-regular fa-calendar-alt me-2"></i>${subItem.tanggal}</span>
+                                                    <span><i class="bi bi-calendar-event me-2"></i>${subItem.tanggal}</span>
                                                     <span class="badge ${profesiBadgeClass} rounded-pill">${subItem.nm_dokter}</span>
                                                 </div>`;
                                         });
@@ -207,22 +212,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
                                     htmlRows += `
                                         <tr data-bs-toggle="collapse" href="#submenu-${index}" role="button">
-                                            <td>${item.nama} <i class="fa fa-caret-down ms-2"></i></td>
-                                            <td><span class="badge ${badgeClass}">${item.status}</span></td>
+                                            <td>${item.nama} <i class="bi bi-chevron-down ms-2"></i></td>
+                                            <td class="text-center"><span class="badge ${badgeClass}">${item.status}</span></td>
                                         </tr>
                                         <tr>
-                                            <td colspan="2" class="p-0" style="border: none;">
-                                                <div class="collapse" id="submenu-${index}"><div class="p-3">${submenuContent}</div></div>
+                                            <td colspan="2" class="p-0 border-0">
+                                                <div class="collapse" id="submenu-${index}"><div class="p-3 bg-secondary bg-opacity-10">${submenuContent}</div></div>
                                             </td>
                                         </tr>`;
                                 } else {
-                                    htmlRows += `<tr><td>${item.nama}</td><td><span class="badge ${badgeClass}">${item.status}</span></td></tr>`;
+                                    htmlRows += `<tr><td>${item.nama}</td><td class="text-center"><span class="badge ${badgeClass}">${item.status}</span></td></tr>`;
                                 }
                             }
                         });
                         tbody.innerHTML = htmlRows;
                     } else {
-                        tbody.innerHTML = '<tr><td colspan="2" class="text-center">Tidak ada data kelengkapan.</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="2" class="text-center text-muted">Tidak ada data kelengkapan.</td></tr>';
                     }
                 })
                 .catch(error => {

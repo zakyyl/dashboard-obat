@@ -78,15 +78,21 @@ class RawatInapController extends Controller
     {
         $bulan_dari = $request->get('bulan_dari', date('Y-01'));
         $bulan_sampai = $request->get('bulan_sampai', date('Y-12'));
+        $kd_pj = $request->get('kd_pj', 'all');
 
-        $results = DB::table('reg_periksa')
+        $query = DB::table('reg_periksa')
             ->select(
                 DB::raw("DATE_FORMAT(tgl_registrasi, '%Y-%m') AS bulan"),
                 DB::raw('COUNT(*) AS jumlah')
             )
             ->where('status_lanjut', 'Ranap')
-            ->whereBetween('tgl_registrasi', [$bulan_dari . '-01', $bulan_sampai . '-31'])
-            ->groupBy(DB::raw("DATE_FORMAT(tgl_registrasi, '%Y-%m')"))
+            ->whereBetween('tgl_registrasi', [$bulan_dari . '-01', $bulan_sampai . '-31']);
+
+        if ($kd_pj && $kd_pj !== 'all') {
+            $query->where('kd_pj', $kd_pj);
+        }
+
+        $results = $query->groupBy(DB::raw("DATE_FORMAT(tgl_registrasi, '%Y-%m')"))
             ->orderBy(DB::raw("DATE_FORMAT(tgl_registrasi, '%Y-%m')"))
             ->get();
 
@@ -98,6 +104,11 @@ class RawatInapController extends Controller
             $labelsRanap[] = Carbon::createFromFormat('Y-m', $item->bulan)->translatedFormat('F');
         }
 
-        return view('dashboard.pasien_ranap', compact('dataRanap', 'labelsRanap', 'bulan_dari', 'bulan_sampai'));
+        $penjabList = DB::table('penjab')
+            ->where('png_jawab', '!=', '-')
+            ->orderBy('png_jawab')
+            ->get();
+
+        return view('dashboard.pasien_ranap', compact('dataRanap', 'labelsRanap', 'bulan_dari', 'bulan_sampai', 'penjabList', 'kd_pj'));
     }
 }

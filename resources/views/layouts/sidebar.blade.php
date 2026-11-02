@@ -151,8 +151,8 @@ $role = Auth::user()->role ?? null;
                 <span>Pasien Rawat Jalan</span>
             </a>
             <a href="{{ url('/dashboard/pasien-polri') }}"
-                class="list-group-item list-group-item-action {{ request()->is('dashboard/pasien-ralan') ? 'active' : '' }}">
-                <i class="bi bi-building me-3"></i>
+                class="list-group-item list-group-item-action {{ request()->is('dashboard/pasien-polri') ? 'active' : '' }}">
+                <i class="bi bi-shield-shaded me-3"></i>
                 <span>Pasien Polri</span>
             </a>
         </div>

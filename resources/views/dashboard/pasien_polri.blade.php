@@ -3,30 +3,36 @@
 @section('title', 'Data Pasien POLRI')
 
 @section('content')
-<div class="container mt-4">
-    <h2 class="mb-4 text-center text-warning">
+<div class="container-fluid px-2 px-md-4 mt-3 mt-md-4">
+    <h2 class="mb-3 mb-md-4 text-center text-warning fs-4 fs-md-2">
         <i class="bi bi-layout-text-window me-2"></i>Laporan Anggota POLRI/PNS & Keluarga Yang Dirawat
         <br>
-        <small class="text-muted">
+        <small class="text-muted fs-6">
             {{ \Carbon\Carbon::parse($tanggal_dari)->translatedFormat('d F Y') }} -
             {{ \Carbon\Carbon::parse($tanggal_sampai)->translatedFormat('d F Y') }}
         </small>
     </h2>
 
-    <div class="card mb-4 shadow-sm bg-dark border-0">
-        <div class="card-body">
+    <div class="card mb-3 mb-md-4 shadow-sm bg-dark border-0">
+        <div class="card-body p-3">
             <form method="GET" action="{{ route('dashboard.pasienPolri') }}">
-                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
-                    <input type="text" name="search" class="form-control form-control-sm bg-dark text-light border-secondary"
-                        placeholder="Cari nama pasien..." value="{{ $search }}" style="width: 200px;">
+                <div class="row g-2 align-items-center">
+                    <div class="col-12 col-md-4">
+                        <input type="text" name="search" class="form-control form-control-sm bg-dark text-light border-secondary"
+                            placeholder="Cari nama pasien..." value="{{ $search }}">
+                    </div>
 
-                    <div class="d-flex gap-2">
+                    <div class="col-6 col-md-3">
                         <input type="date" name="tanggal_dari" value="{{ $tanggal_dari }}"
                             class="form-control form-control-sm bg-dark text-light border-secondary">
+                    </div>
 
+                    <div class="col-6 col-md-3">
                         <input type="date" name="tanggal_sampai" value="{{ $tanggal_sampai }}"
                             class="form-control form-control-sm bg-dark text-light border-secondary">
+                    </div>
 
+                    <div class="col-12 col-md-2 d-grid">
                         <button class="btn btn-warning btn-sm">
                             <i class="bi bi-funnel me-1"></i>Filter
                         </button>
@@ -37,32 +43,32 @@
     </div>
 
     <div class="card shadow-sm bg-dark border-0">
-        <div class="card-body">
+        <div class="card-body p-2 p-md-3">
             <div class="table-responsive">
-                <table class="table table-sm table-striped table-bordered align-middle text-light">
+                <table class="table table-sm table-striped table-bordered align-middle text-light mb-0" style="min-width: 760px;">
                     <thead class="bg-warning text-dark text-center">
                         <tr>
-                            <th style="width: 15%">Nama Pasien</th>
-                            <th style="width: 8%">NIP</th>
-                            <th style="width: 7%">Pangkat</th>
+                            <th style="width: 18%">Nama Pasien</th>
+                            <th style="width: 10%">NIP</th>
+                            <th style="width: 10%">Pangkat</th>
                             <th style="width: 10%">Golongan</th>
-                            <th style="width: 12%">Jabatan</th>
-                            <th style="width: 12%">Satuan</th>
+                            <th style="width: 14%">Jabatan</th>
+                            <th style="width: 14%">Satuan</th>
                             <th style="width: 12%">No. Rawat</th>
-                            <th style="width: 10%">Tgl Registrasi</th>
+                            <th style="width: 12%">Tgl Registrasi</th>
                         </tr>
                     </thead>
-                    <tbody style="font-size: 0.9rem;">
+                    <tbody style="font-size: 0.875rem;">
                         @forelse($pasien as $row)
                         <tr>
-                            <td>{{ $row->nm_pasien }}</td>
+                            <td class="text-nowrap fw-semibold">{{ $row->nm_pasien }}</td>
                             <td>{{ $row->nip }}</td>
                             <td>{{ $row->nama_pangkat ?? '-' }}</td>
                             <td>{{ $row->nama_golongan ?? '-' }}</td>
                             <td>{{ $row->nama_jabatan ?? '-' }}</td>
                             <td>{{ $row->nama_satuan ?? '-' }}</td>
                             <td>{{ $row->no_rawat }}</td>
-                            <td>{{ \Carbon\Carbon::parse($row->tgl_registrasi)->format('d-m-Y') }}</td>
+                            <td class="text-nowrap">{{ \Carbon\Carbon::parse($row->tgl_registrasi)->format('d-m-Y') }}</td>
                         </tr>
                         @empty
                         <tr>
