@@ -12,6 +12,10 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Flatpickr Datepicker CSS (Theme Dark) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+
     <style>
         :root {
             --bs-body-bg: #1c1917;
@@ -375,6 +379,97 @@
         }
         /* END CSS for Dark Theme Pagination */
 
+        /* Custom Flatpickr Styling (Gold/Dark Theme) */
+        .flatpickr-calendar {
+            background: #292524 !important;
+            border: 1px solid #451a03 !important;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.75) !important;
+            border-radius: 8px !important;
+            z-index: 99999 !important;
+        }
+        .flatpickr-calendar .flatpickr-months {
+            background: #1c1917 !important;
+            border-top-left-radius: 8px !important;
+            border-top-right-radius: 8px !important;
+        }
+        .flatpickr-calendar .flatpickr-month {
+            color: #fbbf24 !important;
+            fill: #fbbf24 !important;
+        }
+        .flatpickr-calendar .flatpickr-current-month .cur-month {
+            color: #fbbf24 !important;
+            font-weight: 600 !important;
+        }
+        .flatpickr-calendar .flatpickr-current-month input.cur-year {
+            color: #fbbf24 !important;
+            font-weight: 600 !important;
+        }
+        .flatpickr-calendar .flatpickr-current-month .numInputWrapper span.arrowUp:after {
+            border-bottom-color: #fbbf24 !important;
+        }
+        .flatpickr-calendar .flatpickr-current-month .numInputWrapper span.arrowDown:after {
+            border-top-color: #fbbf24 !important;
+        }
+        .flatpickr-calendar span.flatpickr-weekday {
+            background: #1c1917 !important;
+            color: #d1d5db !important;
+            font-weight: 600 !important;
+        }
+        .flatpickr-calendar .flatpickr-day {
+            color: #e5e7eb !important;
+            border-radius: 6px !important;
+        }
+        .flatpickr-calendar .flatpickr-day:hover,
+        .flatpickr-calendar .flatpickr-day:focus {
+            background: #451a03 !important;
+            color: #fbbf24 !important;
+            border-color: #f59e0b !important;
+        }
+        .flatpickr-calendar .flatpickr-day.today {
+            border-color: #f59e0b !important;
+            color: #fbbf24 !important;
+        }
+        .flatpickr-calendar .flatpickr-day.selected,
+        .flatpickr-calendar .flatpickr-day.startRange,
+        .flatpickr-calendar .flatpickr-day.endRange {
+            background: #f59e0b !important;
+            border-color: #f59e0b !important;
+            color: #1c1917 !important;
+            font-weight: bold !important;
+        }
+        .flatpickr-calendar .flatpickr-day.prevMonthDay,
+        .flatpickr-calendar .flatpickr-day.nextMonthDay {
+            color: #6b7280 !important;
+        }
+        .flatpickr-calendar .flatpickr-prev-month,
+        .flatpickr-calendar .flatpickr-next-month {
+            color: #fbbf24 !important;
+            fill: #fbbf24 !important;
+        }
+        .flatpickr-calendar .flatpickr-prev-month:hover svg,
+        .flatpickr-calendar .flatpickr-next-month:hover svg {
+            fill: #f59e0b !important;
+        }
+        input.flatpickr-input[readonly] {
+            cursor: pointer;
+            background-color: #212529 !important;
+            color: #fef3c7 !important;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23fbbf24' class='bi bi-calendar3' viewBox='0 0 16 16'%3E%3Cpath d='M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z'/%3E%3Cpath d='M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 14px 14px;
+            padding-right: 2.25rem !important;
+        }
+        input.flatpickr-input[readonly]:focus {
+            border-color: #f59e0b !important;
+            box-shadow: 0 0 0 0.25rem rgba(245, 158, 11, 0.25) !important;
+        }
+        @media (max-width: 480px) {
+            .flatpickr-calendar {
+                max-width: 92vw !important;
+            }
+        }
+
     </style>
 </head>
 
@@ -393,8 +488,24 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Flatpickr Datepicker JS & Indonesian Locale -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi Flatpickr global untuk semua input tanggal
+            if (typeof flatpickr !== 'undefined') {
+                flatpickr.localize(flatpickr.l10ns.id);
+                flatpickr("input[type=date]", {
+                    altInput: true,
+                    altFormat: "d-m-Y",
+                    dateFormat: "Y-m-d",
+                    disableMobile: true,
+                    locale: "id",
+                    allowInput: false
+                });
+            }
+
             const bodyElement = document.body;
             const sidebarToggle = document.getElementById('sidebarToggle');
 
