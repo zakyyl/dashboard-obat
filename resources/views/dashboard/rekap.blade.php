@@ -311,6 +311,16 @@ function updateDateInputs() {
     document.getElementById('start_date_year').disabled = false;
     document.getElementById('end_date_year').disabled = false;
   }
+
+  // Sinkronisasi status disabled pada Flatpickr altInput (jika ada)
+  var sDay = document.getElementById('start_date_day');
+  var eDay = document.getElementById('end_date_day');
+  if (sDay && sDay._flatpickr && sDay._flatpickr.altInput) {
+    sDay._flatpickr.altInput.disabled = (periode !== 'day');
+  }
+  if (eDay && eDay._flatpickr && eDay._flatpickr.altInput) {
+    eDay._flatpickr.altInput.disabled = (periode !== 'day');
+  }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
